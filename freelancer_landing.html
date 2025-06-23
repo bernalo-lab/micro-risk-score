@@ -12,15 +12,23 @@
     }
 
     async function getRiskScore() {
+      const emailField = document.getElementById("email");
+      const resultBox = document.getElementById("result");
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(emailField.value)) {
+        resultBox.innerHTML = "<span class='text-red-600'>Please enter a valid email address.</span>";
+        return;
+      }
+
       const data = {
         name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
-        email: document.getElementById("email").value,
+        email: emailField.value,
         occupation: document.getElementById("lastName").value,
         postcode: document.getElementById("postcode").value,
         company: document.getElementById("website").value,
       };
 
-      const resultBox = document.getElementById("result");
       resultBox.innerHTML = "<em>Calculating risk score...</em>";
 
       try {
@@ -37,6 +45,7 @@
 
         const result = await response.json();
         resultBox.innerHTML = `
+          <h3 class="text-lg font-semibold mb-2">Risk Score Result:</h3>
           <strong>Score:</strong> ${result.score} <br/>
           <strong>Confidence:</strong> ${result.confidence}% <br/>
           <strong>Factors:</strong> ${Array.isArray(result.factors) ? result.factors.join(', ') : result.factors}
@@ -75,8 +84,8 @@
     <div class="max-w-lg mx-auto p-8 shadow rounded bg-gray-100">
       <h2 class="text-2xl font-semibold text-center mb-6">AI-Powered Risk Scoring</h2>
       <input id="firstName" type="text" placeholder="First Name" class="mb-3 p-2 w-full border rounded" />
-      <input id="lastName" type="text" placeholder="Last Name" class="mb-3 p-2 w-full border rounded" />
       <input id="email" type="email" placeholder="Email" class="mb-3 p-2 w-full border rounded" />
+      <input id="lastName" type="text" placeholder="Last Name" class="mb-3 p-2 w-full border rounded" />
       <input id="postcode" type="text" placeholder="Postcode" class="mb-3 p-2 w-full border rounded" />
       <input id="website" type="text" placeholder="Company Website (optional)" class="mb-4 p-2 w-full border rounded" />
       <button onclick="getRiskScore()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Get Risk Score</button>
