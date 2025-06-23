@@ -12,21 +12,31 @@
     }
 
     async function getRiskScore() {
-      const emailField = document.getElementById("email");
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const postcode = document.getElementById("postcode").value.trim();
+      const website = document.getElementById("website").value.trim();
       const resultBox = document.getElementById("result");
 
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(emailField.value)) {
+
+      if (!firstName || !lastName || !email || !postcode) {
+        resultBox.innerHTML = "<span class='text-red-600'>All fields except website are required.</span>";
+        return;
+      }
+
+      if (!emailPattern.test(email)) {
         resultBox.innerHTML = "<span class='text-red-600'>Please enter a valid email address.</span>";
         return;
       }
 
       const data = {
-        name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
-        email: emailField.value,
-        occupation: document.getElementById("lastName").value,
-        postcode: document.getElementById("postcode").value,
-        company: document.getElementById("website").value,
+        name: firstName + " " + lastName,
+        email,
+        occupation: lastName,
+        postcode,
+        company: website
       };
 
       resultBox.innerHTML = "<em>Calculating risk score...</em>";
