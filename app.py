@@ -3,7 +3,7 @@ from flask_cors import CORS
 import random
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://micro-risk-score.vercel.app"])
 
 @app.route('/api/risk-score', methods=['POST'])
 def risk_score():
