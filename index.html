@@ -35,7 +35,7 @@
       const postcode = document.getElementById('postcode').value;
       const company = document.getElementById('company').value;
 
-      const response = await fetch('https://risk-api.onrender.com/api/risk-score', {
+      const response = await fetch('https://micro-risk-score.onrender.com/api/risk-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, occupation, postcode, company })
