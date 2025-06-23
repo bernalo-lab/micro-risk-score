@@ -1,39 +1,50 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RiskPeek – AI Risk Scores for Freelancers</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RiskPeek – AI Risk Score for Freelancers</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-white text-gray-800 font-sans">
-  <!-- Content omitted for brevity (same as previous step) -->
-  <footer class="text-center text-sm text-gray-500 py-6">
-    <p>© 2025 RiskPeek. Empowering smarter freelancers.</p>
+
+  <!-- Hero -->
+  <section class="text-center py-20 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+    <h1 class="text-5xl font-bold mb-4">AI-Powered Risk Score for Freelancers</h1>
+    <p class="text-xl mb-8">Instantly assess and showcase your financial trustworthiness with RiskPeek.</p>
+    <a href="#features" class="bg-white text-indigo-600 px-6 py-3 rounded-full font-semibold shadow hover:bg-gray-100 transition">Learn More</a>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-20 px-6 bg-gray-50">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+      <div>
+        <h3 class="text-2xl font-bold mb-2">Real-Time Analysis</h3>
+        <p>Get your financial risk profile computed on the fly using smart AI insights.</p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-bold mb-2">Secure & Private</h3>
+        <p>Your data is encrypted and never stored. Your privacy is our priority.</p>
+      </div>
+      <div>
+        <h3 class="text-2xl font-bold mb-2">Build Credibility</h3>
+        <p>Display your score to win client trust, secure deals, or apply for services.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-20 text-center bg-white">
+    <h2 class="text-4xl font-bold mb-4">Try RiskPeek for Free</h2>
+    <p class="text-lg mb-6">Start assessing your risk score today – no sign-up required.</p>
+    <a href="https://micro-risk-score.onrender.com/api/risk-score" class="bg-indigo-600 text-white px-8 py-3 rounded-full shadow hover:bg-indigo-700 transition">Test API Now</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-500 py-6 border-t">
+    © 2025 RiskPeek. Empowering smarter freelancers.
   </footer>
-  <script>
-    const form = document.getElementById('riskForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const occupation = document.getElementById('occupation').value;
-      const postcode = document.getElementById('postcode').value;
-      const company = document.getElementById('company').value;
 
-      const response = await fetch('https://micro-risk-score.onrender.com/api/risk-score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, occupation, postcode, company })
-      });
-
-      const data = await response.json();
-      document.getElementById('result').classList.remove('hidden');
-      document.getElementById('riskScore').textContent = data.score;
-      document.getElementById('confidence').textContent = `${data.confidence}%`;
-      document.getElementById('factors').textContent = data.factors.join(', ');
-    });
-  </script>
 </body>
 </html>
