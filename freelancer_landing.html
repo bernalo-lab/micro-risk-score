@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,25 +13,37 @@
 
     async function getRiskScore() {
       const data = {
-        firstName: document.getElementById("firstName").value,
+        name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
         email: document.getElementById("email").value,
-        lastName: document.getElementById("lastName").value,
+        occupation: document.getElementById("lastName").value,
         postcode: document.getElementById("postcode").value,
-        website: document.getElementById("website").value,
+        company: document.getElementById("website").value,
       };
 
-      const response = await fetch("https://micro-risk-score.onrender.com/api/risk-score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      const resultBox = document.getElementById("result");
+      resultBox.innerHTML = "<em>Calculating risk score...</em>";
 
-      const result = await response.json();
-      document.getElementById("result").innerHTML = `
-        <strong>Score:</strong> ${result.score} <br/>
-        <strong>Confidence:</strong> ${result.confidence}% <br/>
-        <strong>Factors:</strong> ${result.reason}
-      `;
+      try {
+        const response = await fetch("https://micro-risk-score.onrender.com/api/risk-score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Server error: ${text}`);
+        }
+
+        const result = await response.json();
+        resultBox.innerHTML = `
+          <strong>Score:</strong> ${result.score} <br/>
+          <strong>Confidence:</strong> ${result.confidence}% <br/>
+          <strong>Factors:</strong> ${Array.isArray(result.factors) ? result.factors.join(', ') : result.factors}
+        `;
+      } catch (err) {
+        resultBox.innerHTML = `<span class="text-red-600">Error: ${err.message}</span>`;
+      }
     }
   </script>
 </head>
@@ -62,8 +75,8 @@
     <div class="max-w-lg mx-auto p-8 shadow rounded bg-gray-100">
       <h2 class="text-2xl font-semibold text-center mb-6">AI-Powered Risk Scoring</h2>
       <input id="firstName" type="text" placeholder="First Name" class="mb-3 p-2 w-full border rounded" />
-      <input id="email" type="email" placeholder="Email" class="mb-3 p-2 w-full border rounded" />
       <input id="lastName" type="text" placeholder="Last Name" class="mb-3 p-2 w-full border rounded" />
+      <input id="email" type="email" placeholder="Email" class="mb-3 p-2 w-full border rounded" />
       <input id="postcode" type="text" placeholder="Postcode" class="mb-3 p-2 w-full border rounded" />
       <input id="website" type="text" placeholder="Company Website (optional)" class="mb-4 p-2 w-full border rounded" />
       <button onclick="getRiskScore()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Get Risk Score</button>
