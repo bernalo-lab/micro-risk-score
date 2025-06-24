@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RiskPeek Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4 font-sans">
+  <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
+    <h2 class="text-2xl font-bold mb-4 text-blue-800">📊 RiskPeek Admin Dashboard</h2>
+
+    <div class="mb-6">
+      <label for="password" class="block mb-2 font-medium text-gray-700">Enter Admin Password</label>
+      <input type="password" id="adminPassword" class="p-2 border rounded w-full" placeholder="Enter password">
+      <button onclick="fetchData()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+      <p id="errorMsg" class="text-red-600 mt-2 hidden">Incorrect password. Please try again.</p>
+    </div>
+
+    <div id="dashboardContent" class="hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <canvas id="scoreChart" height="100"></canvas>
+        <canvas id="confidenceChart" height="100"></canvas>
+      </div>
+      <div class="mb-6">
+        <canvas id="volumeChart" height="80"></canvas>
+      </div>
+
+      <div class="overflow-x-auto mt-6">
+        <table class="table-auto w-full text-left border text-sm">
+          <thead class="bg-gray-200">
+            <tr><th>Name</th><th>Email</th><th>Country</th><th>Score</th><th>Confidence</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody id="logTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchData() {
+      const password = document.getElementById('adminPassword').value;
+      const res = await fetch('/api/admin-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        document.getElementById('errorMsg').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      document.getElementById('errorMsg').classList.add('hidden');
+
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = '';
+      const scores = [];
+      const confidences = [];
+      const names = [];
+      const timestamps = [];
+
+      const volumeMap = {};
+
+      data.entries.forEach(e => {
+        const ts = new Date(e.timestamp).toLocaleString();
+        const row = `<tr>
+          <td>${e.first_name} ${e.last_name}</td>
+          <td>${e.email}</td>
+          <td>${e.country}</td>
+          <td>${e.score}</td>
+          <td>${e.confidence}</td>
+          <td>${ts}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+
+        scores.push(e.score);
+        confidences.push(e.confidence);
+        names.push(e.first_name + " " + e.last_name);
+
+        const dateKey = new Date(e.timestamp).toISOString().split('T')[0];
+        volumeMap[dateKey] = (volumeMap[dateKey] || 0) + 1;
+      });
+
+      // Score Distribution
+      new Chart(document.getElementById("scoreChart"), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{
+            label: 'Risk Score',
+            data: scores,
+            backgroundColor: 'rgba(59,130,246,0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, max: 100 } },
+          plugins: { title: { display: true, text: 'Risk Scores by User' }}
+        }
+      });
+
+      // Confidence vs Score
+      new Chart(document.getElementById("confidenceChart"), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Confidence vs Score',
+            data: scores.map((s, i) => ({ x: s, y: confidences[i], label: names[i] })),
+            backgroundColor: 'rgba(34,197,94,0.7)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: 'Risk Score' }, min: 0, max: 100 },
+            y: { title: { display: true, text: 'Confidence' }, min: 0, max: 100 }
+          },
+          plugins: { title: { display: true, text: 'Confidence vs Risk Score' } }
+        }
+      });
+
+      // Submission Volume
+      const volumeLabels = Object.keys(volumeMap).sort();
+      const volumeCounts = volumeLabels.map(k => volumeMap[k]);
+
+      new Chart(document.getElementById("volumeChart"), {
+        type: 'line',
+        data: {
+          labels: volumeLabels,
+          datasets: [{
+            label: 'Submissions',
+            data: volumeCounts,
+            borderColor: 'rgba(234,88,12,0.9)',
+            backgroundColor: 'rgba(234,88,12,0.3)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { title: { display: true, text: 'Submission Volume Over Time' } }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
