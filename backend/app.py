@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from datetime import datetime
 from flask_cors import CORS
@@ -6,13 +5,14 @@ from scoring import calculate_risk_score
 from pymongo import MongoClient
 import os
 
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "https://micro-risk-score.vercel.app"}}, supports_credentials=True)
+
 # Replace this with your actual connection string (use environment variable ideally)
 MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://toyinsogeke:pHCxSon6SckWubCE@financial-sandbox.haxec4g.mongodb.net/?retryWrites=true&w=majority&appName=financial-sandbox")
 client = MongoClient(MONGO_URI)
 db = client["risklogDB"]
 collection = db["submissions"]
-
-CORS(app, resources={r"/api/*": {"origins": "https://micro-risk-score.vercel.app"}}, supports_credentials=True)
 
 @app.route('/api/global-risk-score', methods=['POST'])
 def global_risk_score():
