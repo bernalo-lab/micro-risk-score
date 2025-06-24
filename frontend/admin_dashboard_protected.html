@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RiskPeek Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4 font-sans">
+  <div class="max-w-4xl mx-auto bg-white rounded shadow p-6">
+    <h2 class="text-2xl font-bold mb-4 text-blue-800">📊 RiskPeek Admin Dashboard</h2>
+
+    <div class="mb-6">
+      <label for="password" class="block mb-2 font-medium text-gray-700">Enter Admin Password</label>
+      <input type="password" id="adminPassword" class="p-2 border rounded w-full" placeholder="Enter password">
+      <button onclick="fetchData()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+      <p id="errorMsg" class="text-red-600 mt-2 hidden">Incorrect password. Please try again.</p>
+    </div>
+
+    <div id="dashboardContent" class="hidden">
+      <canvas id="scoreChart" height="100"></canvas>
+      <div class="mt-6 overflow-x-auto">
+        <table class="table-auto w-full text-left border mt-6">
+          <thead class="bg-gray-200">
+            <tr><th>Name</th><th>Email</th><th>Country</th><th>Score</th><th>Confidence</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody id="logTable" class="text-sm"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchData() {
+      const password = document.getElementById('adminPassword').value;
+      const res = await fetch('/api/admin-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        document.getElementById('errorMsg').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      document.getElementById('errorMsg').classList.add('hidden');
+
+      // Populate table
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = '';
+      data.entries.forEach(e => {
+        const row = `<tr>
+          <td>${e.first_name} ${e.last_name}</td>
+          <td>${e.email}</td>
+          <td>${e.country}</td>
+          <td>${e.score}</td>
+          <td>${e.confidence}</td>
+          <td>${new Date(e.timestamp).toLocaleString()}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+
+      // Draw chart
+      const ctx = document.getElementById('scoreChart');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.entries.map(e => `${e.first_name} ${e.last_name}`),
+          datasets: [{
+            label: 'Risk Score',
+            data: data.entries.map(e => e.score),
+            backgroundColor: 'rgba(59,130,246,0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, max: 100 } }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

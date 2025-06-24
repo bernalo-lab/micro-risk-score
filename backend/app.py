@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_cors import CORS
 from scoring import calculate_risk_score
 from pymongo import MongoClient
@@ -20,8 +20,9 @@ def global_risk_score():
         data = request.get_json()
         result = calculate_risk_score(data)
 
+        # Log to MongoDB with full PII and scoring data
         log_data = {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "first_name": data.get("firstName"),
             "last_name": data.get("lastName"),
             "email": data.get("email"),
@@ -40,6 +41,37 @@ def global_risk_score():
         collection.insert_one(log_data)
 
         return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin-data', methods=['POST'])
+def admin_data():
+    try:
+        data = request.get_json()
+        password = data.get("password")
+        admin_password = os.getenv("ADMIN_PASSWORD", "changeme")  # Set this in Render settings
+
+        if password != admin_password:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        # Query the last 100 records
+        entries = list(collection.find({}).sort("timestamp", -1).limit(100))
+
+        # Prepare for frontend (convert ObjectId and datetime)
+        def format_entry(e):
+            return {
+                "first_name": e.get("first_name"),
+                "last_name": e.get("last_name"),
+                "email": e.get("email"),
+                "country": e.get("country"),
+                "score": float(e.get("score", 0)),
+                "confidence": float(e.get("confidence", 0)),
+                "timestamp": e.get("timestamp", datetime.utcnow()).isoformat()
+            }
+
+        formatted = [format_entry(e) for e in entries]
+        return jsonify({"entries": formatted}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
