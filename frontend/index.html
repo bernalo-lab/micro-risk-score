@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RiskPeek Global - Risk Score Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <section class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-4 text-center">🌍 Global Risk Score – RiskPeek</h1>
+    <form id="riskForm" class="space-y-4">
+      <!-- Tier 1 -->
+      <h2 class="text-xl font-semibold">Tier 1 – Basic Info</h2>
+      <input type="text" id="firstName" placeholder="First Name" class="w-full border p-2 rounded" required>
+      <input type="text" id="lastName" placeholder="Last Name" class="w-full border p-2 rounded" required>
+      <input type="email" id="email" placeholder="Email" class="w-full border p-2 rounded" required>
+      <input type="text" id="postcode" placeholder="Postcode" class="w-full border p-2 rounded" required>
+      <input type="text" id="country" placeholder="Country" class="w-full border p-2 rounded" required>
+
+      <!-- Tier 2 -->
+      <h2 class="text-xl font-semibold pt-6">Tier 2 – Identity & Work History</h2>
+      <input type="text" id="idType" placeholder="ID Type (e.g., Passport, Driving License)" class="w-full border p-2 rounded">
+      <input type="url" id="linkedin" placeholder="LinkedIn Profile (optional)" class="w-full border p-2 rounded">
+      <input type="url" id="github" placeholder="GitHub Profile (optional)" class="w-full border p-2 rounded">
+
+      <!-- Tier 3 -->
+      <h2 class="text-xl font-semibold pt-6">Tier 3 – Financial & Digital Footprint</h2>
+      <select id="paymentHistory" class="w-full border p-2 rounded">
+        <option value="">Select payment history option</option>
+        <option value="Simulated">Simulated - On Time</option>
+        <option value="None">None</option>
+      </select>
+      <input type="number" id="reputationScore" placeholder="Reputation Score (0–10)" class="w-full border p-2 rounded">
+
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700">Calculate Risk Score</button>
+    </form>
+
+    <div id="result" class="mt-6 text-sm text-left bg-gray-100 p-4 rounded shadow hidden"></div>
+  </section>
+
+  <script>
+    const form = document.getElementById('riskForm');
+    const resultBox = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultBox.classList.remove('hidden');
+      resultBox.innerHTML = '<em>Calculating...</em>';
+
+      const data = {
+        name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        postcode: document.getElementById('postcode').value,
+        country: document.getElementById('country').value,
+        idType: document.getElementById('idType').value,
+        linkedin: document.getElementById('linkedin').value,
+        github: document.getElementById('github').value,
+        paymentHistory: document.getElementById('paymentHistory').value,
+        reputationScore: parseFloat(document.getElementById('reputationScore').value) || 0
+      };
+
+      try {
+        const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!res.ok) throw new Error('Server Error');
+
+        const result = await res.json();
+
+        resultBox.innerHTML = \`
+          <h3 class="font-semibold text-lg mb-2">Risk Score Result:</h3>
+          <p><strong>Score:</strong> \${result.score}</p>
+          <p><strong>Confidence:</strong> \${result.confidence}%</p>
+          <p><strong>Factors:</strong> \${result.factors.join(', ')}</p>
+        \`;
+      } catch (err) {
+        resultBox.innerHTML = '<span class="text-red-600">Error retrieving score. Please try again later.</span>';
+      }
+    });
+  </script>
+</body>
+</html>
