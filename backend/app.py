@@ -22,16 +22,16 @@ def global_risk_score():
 
         log_data = {
             "timestamp": datetime.utcnow(),
-            "first_name": data.get("first_name"),
-            "last_name": data.get("last_name"),
+            "first_name": data.get("firstName"),
+            "last_name": data.get("lastName"),
             "email": data.get("email"),
             "postcode": data.get("postcode"),
             "country": data.get("country"),
-            "id_type": data.get("id_type"),
+            "id_type": data.get("idType"),
             "linkedin": data.get("linkedin"),
             "github": data.get("github"),
-            "payment_history": data.get("payment_history"),
-            "reputation_score": data.get("reputation_score"),
+            "payment_history": data.get("paymentHistory"),
+            "reputation_score": data.get("reputationScore"),
             "score": result["score"],
             "confidence": result["confidence"],
             "factors": result["factors"]
