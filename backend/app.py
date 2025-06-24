@@ -4,7 +4,7 @@ from flask_cors import CORS
 from scoring import calculate_risk_score
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://micro-risk-score.vercel.app"])
 
 @app.route('/api/global-risk-score', methods=['POST'])
 def global_risk_score():
@@ -16,4 +16,4 @@ def global_risk_score():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
