@@ -72,12 +72,12 @@
 
         const result = await res.json();
 
-        resultBox.innerHTML = `
+        resultBox.innerHTML = \`
           <h3 class="font-semibold text-lg mb-2">Risk Score Result:</h3>
           <p><strong>Score:</strong> \${result.score}</p>
           <p><strong>Confidence:</strong> \${result.confidence}%</p>
           <p><strong>Factors:</strong> \${result.factors.join(', ')}</p>
-        `;
+        \`;
       } catch (err) {
         resultBox.innerHTML = '<span class="text-red-600">Error retrieving score. Please try again later.</span>';
       }
