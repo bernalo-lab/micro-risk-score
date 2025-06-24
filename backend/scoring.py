@@ -35,8 +35,13 @@ def calculate_risk_score(data):
         score += 10
         factors.append("Simulated payment history accepted")
 
-    if data.get('reputationScore', 0) > 0:
-        score += min(data['reputationScore'], 10)
+    try:
+        rep_score = float(data.get('reputationScore', 0)) or 0
+    except (ValueError, TypeError):
+        rep_score = 0
+
+    if rep_score > 0:
+        score += min(rep_score, 10)
         factors.append("Reputation score from social signals")
 
     # Normalize
