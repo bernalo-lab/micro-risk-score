@@ -1,48 +1,100 @@
-# Micro Risk Score API
+# 🌍 RiskPeek Global – AI-Powered Risk Scoring Platform
 
-This repo contains both the frontend and backend for a lightweight AI-powered risk scoring service.
+**RiskPeek** is an AI-powered micro risk scoring engine designed for global freelancers, micro-businesses, and independent professionals. It helps assess financial and professional trustworthiness in real-time using an open, tiered model.
 
-## 🔧 Backend (Flask on Render)
-- Files: `app.py`, `requirements.txt`
-- Deploy via: https://render.com
-- Make sure Render uses `python app.py` as the start command and port `5000`.
+🔗 [Live Frontend (Vercel)](https://micro-risk-score.vercel.app)  
+🔗 [Live Backend API (Render)](https://micro-risk-score.onrender.com/api/global-risk-score)
 
-## 🌐 Frontend (Vercel)
-- File: `index.html`
-- Fetch API: `https://risk-api.onrender.com/api/risk-score`
-- Just upload to Vercel as a static site or connect to GitHub for CI/CD.
+---
 
-## 🔁 API Endpoint
-`POST https://risk-api.onrender.com/api/risk-score`
-Returns JSON with:
-- `score`: float
-- `confidence`: float
-- `factors`: list of strings
+## 🚀 Features
 
-Enjoy!
-=======
-# micro-risk-score
-🔍 Lightweight AI-powered micro risk scoring API for gig workers and SMEs. Built with Flask and TailwindCSS. Instant insights via a simple POST request.
+- 🌐 **Global-Ready**: Supports inputs across all geographies
+- 🧠 **AI-Informed Logic**: Uses signals from identity, financial, and reputation inputs
+- 🔒 **Privacy-Conscious**: Client-side only form + CORS-enabled secure backend
+- 🧩 **Modular Scoring Engine**: Easily extendable tiers (basic info, ID, history, digital footprint)
 
-# 🔍 Micro Risk Score API
+---
 
-AI-powered risk scoring API for freelancers, gig workers, and small businesses.  
-Built with Flask (backend) and TailwindCSS (frontend).
+## 📊 Scoring Tiers
 
-## 🚀 Live Demo
-👉 [Visit Site](https://your-vercel-app.vercel.app)  
-👉 API Base: `https://your-render-app.onrender.com/api/risk-score`
+| Tier | Data Evaluated                             | Impact on Score         |
+|------|--------------------------------------------|--------------------------|
+| 1️⃣  | Name, Email, Postcode, Country             | Basic trustworthiness   |
+| 2️⃣  | ID Type, LinkedIn, GitHub profiles         | Work verification       |
+| 3️⃣  | Payment history, Digital reputation        | Financial credibility   |
 
-## 📦 Features
-- Real-time risk scoring based on job, location, and digital footprint
-- JSON API ready to plug into apps and dashboards
-- Fully open-source and easy to customise
+---
 
-## 📂 Tech Stack
-- Flask + Python
-- TailwindCSS + HTML + Vanilla JS
-- Hosted on Render + Vercel
+## 🧪 Try It Locally
+
+### Backend (Flask API)
+
+```bash
+cd backend
+pip install -r ../requirements.txt
+python app.py
+```
+
+Endpoint: `POST /api/global-risk-score`
+
+### Frontend
+
+Open in browser:
+
+```bash
+cd frontend
+open index.html
+```
+
+> Edit endpoint in `index.html` if using local backend:  
+> Replace `https://micro-risk-score.onrender.com` with `http://127.0.0.1:5000`
+
+---
+
+## 📦 Tech Stack
+
+- **Frontend**: HTML5 + TailwindCSS
+- **Backend**: Python Flask
+- **Deployment**: Vercel (frontend), Render (API)
+
+---
+
+## 🔧 Project Structure
+
+```
+riskpeek-global/
+│
+├── backend/
+│   ├── app.py          # Flask API
+│   └── scoring.py      # Modular scoring logic
+│
+├── frontend/
+│   └── index.html      # Global scoring form
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🤝 Contribute / Collaborate
+
+We welcome PRs, improvements, and ideas. Ideal ways to contribute:
+- Add scoring rules for new geographies
+- Connect external data (gov APIs, credit bureaus)
+- Build mobile-friendly or React UI
+- Translate for global audiences
+
+---
+
+## 📧 Contact
+
+📨 hello@riskpeek.com  
+🧑‍💼 Project by [Bernalo Labs](https://bernalo.com)  
+
+---
 
 ## 📄 License
-MIT — feel free to use, fork, or adapt.
 
+MIT – Free to use, improve, fork, and deploy commercially.
