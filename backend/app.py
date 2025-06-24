@@ -36,7 +36,7 @@ def global_risk_score():
             "score": result["score"],
             "confidence": result["confidence"],
             "factors": result["factors"],
-            "submitted_via_form": data.get("submitted_via_form", false)  # 👈 new flag only for form/API
+            "submitted_via_form": data.get("submitted_via_form", "false")  # 👈 new flag only for form/API
         }
 
         collection.insert_one(log_data)
