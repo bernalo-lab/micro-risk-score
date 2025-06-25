@@ -75,7 +75,15 @@
         <canvas id="proFreeChart"></canvas>
       </div>
 
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Top 5 High-Risk Countries</h2>
+        <canvas id="topRiskCountriesChart"></canvas>
+      </div>
 
+    <div class="mb-10">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Confidence Score Distribution</h2>
+      <canvas id="confidenceDistributionChart"></canvas>
+    </div>
 
 
     </div>
@@ -94,8 +102,8 @@ function login() {
   }
 }
 
-let scoreChart, confidenceChart, volumeChart, newUsersChart, riskTrendChart;
-let distributionChart, avgScoreChart, topUsersChart, documentTypeChart, proFreeChart;
+let scoreChart, confidenceChart, volumeChart, newUsersChart, riskTrendChart, topRiskCountriesChart;
+let distributionChart, avgScoreChart, topUsersChart, documentTypeChart, proFreeChart, confidenceDistributionChart;
 
 function fetchData() {
   fetch("https://micro-risk-score.onrender.com/api/submissions")
@@ -497,6 +505,110 @@ function fetchData() {
           plugins: {
             legend: {
               position: 'bottom'
+            }
+          }
+        }
+      });
+
+      if (topRiskCountriesChart) topRiskCountriesChart.destroy();
+
+      const countryScores = {};
+      data.forEach(entry => {
+        const country = entry.country || "Unknown";
+        if (!countryScores[country]) {
+          countryScores[country] = { total: 0, count: 0 };
+        }
+        countryScores[country].total += entry.score;
+        countryScores[country].count += 1;
+      });
+
+      const avgByCountry = Object.entries(countryScores).map(([country, stats]) => ({
+        country,
+        avgScore: stats.total / stats.count
+      }));
+
+      const top5 = avgByCountry
+        .sort((a, b) => b.avgScore - a.avgScore)
+        .slice(0, 5);
+
+      topRiskCountriesChart = new Chart(document.getElementById("topRiskCountriesChart"), {
+        type: "bar",
+        data: {
+          labels: top5.map(e => e.country),
+          datasets: [{
+            label: "Average Risk Score",
+            data: top5.map(e => e.avgScore.toFixed(1)),
+            backgroundColor: "rgba(239,68,68,0.6)",
+            borderColor: "rgba(239,68,68,1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          scales: {
+            x: {
+              beginAtZero: true,
+              suggestedMax: 100,
+              title: {
+                display: true,
+                text: "Average Risk Score"
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Country"
+              }
+            }
+          }
+        }
+      });
+
+      if (confidenceDistributionChart) confidenceDistributionChart.destroy();
+
+      const confidenceBuckets = {
+        "0–20%": 0,
+        "21–40%": 0,
+        "41–60%": 0,
+        "61–80%": 0,
+        "81–100%": 0
+      };
+
+      data.forEach(entry => {
+        const c = entry.confidence;
+        if (c <= 20) confidenceBuckets["0–20%"]++;
+        else if (c <= 40) confidenceBuckets["21–40%"]++;
+        else if (c <= 60) confidenceBuckets["41–60%"]++;
+        else if (c <= 80) confidenceBuckets["61–80%"]++;
+        else confidenceBuckets["81–100%"]++;
+      });
+
+      confidenceDistributionChart = new Chart(document.getElementById("confidenceDistributionChart"), {
+        type: "bar",
+        data: {
+          labels: Object.keys(confidenceBuckets),
+          datasets: [{
+            label: "Number of Users",
+            data: Object.values(confidenceBuckets),
+            backgroundColor: "rgba(16,185,129,0.6)",
+            borderColor: "rgba(5,150,105,1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Users"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Confidence Score Range"
+              }
             }
           }
         }
