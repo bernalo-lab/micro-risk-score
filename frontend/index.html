@@ -22,7 +22,7 @@
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.target).entries());
 
-    fetch('/api/register', {
+    fetch('https://micro-risk-score.onrender.com/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -35,7 +35,7 @@
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.target).entries());
 
-    fetch('/api/login', {
+    fetch('https://micro-risk-score.onrender.com/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
