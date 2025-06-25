@@ -10,6 +10,12 @@ import jwt
 import bcrypt
 
 load_dotenv()
+print("🔍 Loaded Environment Variables:")
+print("EMAIL_HOST:", os.getenv("EMAIL_HOST"))
+print("EMAIL_PORT:", os.getenv("EMAIL_PORT"))
+print("EMAIL_USER:", os.getenv("EMAIL_USER"))
+print("EMAIL_FROM:", os.getenv("EMAIL_FROM"))
+print("MONGO_URI (partial):", os.getenv("MONGO_URI", "")[:30] + "...")
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "https://micro-risk-score.vercel.app"}}, supports_credentials=True)
@@ -50,6 +56,8 @@ def register():
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         token = serializer.dumps(email, salt="email-confirm")
 
+        print("📤 Using SMTP Host(in Register):", app.config["MAIL_SERVER"])
+
         users.insert_one({
             "email": email,
             "password": hashed,
@@ -57,6 +65,8 @@ def register():
             "verified": False,
             "created_at": datetime.utcnow()
         })
+
+        print("📤 SMTP Username(in Register):", app.config["MAIL_USERNAME"])
 
         link = f"{request.host_url}api/verify/{token}"
         msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
