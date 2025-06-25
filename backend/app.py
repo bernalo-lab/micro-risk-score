@@ -12,7 +12,7 @@ import bcrypt
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": "https://micro-risk-score.vercel.app"}}, supports_credentials=True)
 
 # MongoDB setup
 client = MongoClient(os.getenv("MONGO_URI"))
