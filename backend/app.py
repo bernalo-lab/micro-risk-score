@@ -1,26 +1,114 @@
-from flask import Flask, request, jsonify
-from datetime import datetime, timezone
+
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
-from scoring import calculate_risk_score
+from flask_mail import Mail, Message
 from pymongo import MongoClient
+from itsdangerous import URLSafeTimedSerializer
+from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 import os
+import jwt
+import bcrypt
+
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://micro-risk-score.vercel.app"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Replace this with your actual connection string (use environment variable ideally)
-MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://toyinsogeke:pHCxSon6SckWubCE@financial-sandbox.haxec4g.mongodb.net/?retryWrites=true&w=majority&appName=financial-sandbox")
-client = MongoClient(MONGO_URI)
+# MongoDB setup
+client = MongoClient(os.getenv("MONGO_URI"))
 db = client["risklogDB"]
-collection = db["submissions"]
+users = db["users"]
+submissions = db["submissions"]
 
-@app.route('/api/global-risk-score', methods=['POST'])
+# Flask-Mail setup
+app.config.update(
+    MAIL_SERVER=os.getenv("EMAIL_HOST"),
+    MAIL_PORT=int(os.getenv("EMAIL_PORT", 587)),
+    MAIL_USERNAME=os.getenv("EMAIL_USER"),
+    MAIL_PASSWORD=os.getenv("EMAIL_PASS"),
+    MAIL_USE_TLS=True,
+    MAIL_USE_SSL=False
+)
+mail = Mail(app)
+
+# Token signing
+serializer = URLSafeTimedSerializer(os.getenv("JWT_SECRET"))
+JWT_SECRET = os.getenv("JWT_SECRET")
+EMAIL_FROM = os.getenv("EMAIL_FROM", "no-reply@example.com")
+
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+    name = data.get("name")
+
+    if users.find_one({"email": email}):
+        return jsonify({"error": "User already exists"}), 409
+
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    token = serializer.dumps(email, salt="email-confirm")
+
+    users.insert_one({
+        "email": email,
+        "password": hashed,
+        "name": name,
+        "verified": False,
+        "created_at": datetime.utcnow()
+    })
+
+    link = f"{request.host_url}api/verify/{token}"
+    msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
+    msg.body = f"Welcome to RiskPeek! Please verify your email: {link}"
+    mail.send(msg)
+
+    return jsonify({"message": "User registered. Check email to verify."}), 201
+
+@app.route("/api/verify/<token>")
+def verify_email(token):
+    try:
+        email = serializer.loads(token, salt="email-confirm", max_age=3600)
+        result = users.update_one({"email": email}, {"$set": {"verified": True}})
+        if result.modified_count:
+            return redirect("https://micro-risk-score.vercel.app?verified=true")
+        return "Already verified", 200
+    except Exception as e:
+        return f"Invalid or expired token: {str(e)}", 400
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+
+    user = users.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    if not user.get("verified"):
+        return jsonify({"error": "Email not verified"}), 403
+
+    if not bcrypt.checkpw(password.encode(), user["password"]):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    payload = {
+        "email": email,
+        "exp": datetime.utcnow() + timedelta(hours=12)
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    return jsonify({"token": token, "verified": True}), 200
+
+@app.route("/api/global-risk-score", methods=["POST"])
 def global_risk_score():
     try:
         data = request.get_json()
-        result = calculate_risk_score(data)
+        result = {
+            "score": 73,
+            "confidence": 92,
+            "factors": ["Payment History", "Reputation Score"]
+        }
 
-        # Log to MongoDB with full PII and scoring data
         log_data = {
             "timestamp": datetime.now(timezone.utc),
             "first_name": data.get("firstName"),
@@ -37,54 +125,13 @@ def global_risk_score():
             "confidence": result["confidence"],
             "factors": result["factors"],
             "device_type": data.get("device_type", "Unknown"),
-            "submitted_via_form": data.get("submitted_via_form", "false")  # 👈 new flag only for form/API
+            "submitted_via_form": data.get("submitted_via_form", "false")
         }
 
-        collection.insert_one(log_data)
-
+        submissions.insert_one(log_data)
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/admin-data', methods=['POST'])
-def admin_data():
-    try:
-        data = request.get_json()
-        password = data.get("password")
-        admin_password = os.getenv("ADMIN_PASSWORD", "changeme")  # Set this in Render settings
-
-        if password != admin_password:
-            return jsonify({"error": "Unauthorized"}), 401
-
-        # Query the last 100 records
-        entries = list(collection.find({}).sort("timestamp", -1).limit(100))
-
-        # Prepare for frontend (convert ObjectId and datetime)
-        def format_entry(e):
-            return {
-                "first_name": e.get("first_name"),
-                "last_name": e.get("last_name"),
-                "email": e.get("email"),
-                "country": e.get("country"),
-                "score": float(e.get("score", 0)),
-                "confidence": float(e.get("confidence", 0)),
-                "timestamp": e.get("timestamp", datetime.utcnow()).isoformat()
-            }
-
-        formatted = [format_entry(e) for e in entries]
-        return jsonify({"entries": formatted}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-# ✅ New route for the dashboard to fetch all submissions
-@app.route("/api/submissions", methods=["GET"])
-def get_all_submissions():
-    try:
-        records = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
-        return jsonify(records)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

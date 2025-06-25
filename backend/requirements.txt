@@ -4,4 +4,7 @@ flask-cors
 pymongo[srv]==4.13.0
 dnspython
 
-
+itsdangerous
+python-dotenv
+Flask-Mail
+PyJWT
