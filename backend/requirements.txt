@@ -8,3 +8,4 @@ itsdangerous
 python-dotenv
 Flask-Mail
 PyJWT
+bcrypt
