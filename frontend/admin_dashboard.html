@@ -55,6 +55,22 @@
         <canvas id="topUsersChart"></canvas>
       </div>
 
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">New Users Over Time</h2>
+        <canvas id="newUsersChart"></canvas>
+      </div>
+
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Most Used Identity Documents</h2>
+        <canvas id="documentTypeChart"></canvas>
+      </div>
+
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Risk Score Trends by Month</h2>
+        <canvas id="riskTrendChart"></canvas>
+      </div>
+
+
 
 
 
@@ -74,8 +90,8 @@ function login() {
   }
 }
 
-let scoreChart, confidenceChart, volumeChart;
-let distributionChart, avgScoreChart, topUsersChart;
+let scoreChart, confidenceChart, volumeChart, newUsersChart, riskTrendChart;
+let distributionChart, avgScoreChart, topUsersChart, documentTypeChart;
 
 function fetchData() {
   fetch("https://micro-risk-score.onrender.com/api/submissions")
@@ -306,6 +322,144 @@ function fetchData() {
           }
         }
       });
+
+      if (newUsersChart) newUsersChart.destroy();
+
+      const userSignupCounts = {};
+      data.forEach(entry => {
+        const signupDate = new Date(entry.timestamp).toLocaleDateString();
+        userSignupCounts[signupDate] = (userSignupCounts[signupDate] || 0) + 1;
+      });
+
+      const sortedSignupDates = Object.keys(userSignupCounts).sort(
+        (a, b) => new Date(a) - new Date(b)
+      );
+
+      newUsersChart = new Chart(document.getElementById("newUsersChart"), {
+        type: "line",
+        data: {
+          labels: sortedSignupDates,
+          datasets: [{
+            label: "New Users",
+            data: sortedSignupDates.map(date => userSignupCounts[date]),
+            borderColor: "rgba(59,130,246,1)",
+            backgroundColor: "rgba(59,130,246,0.3)",
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Users"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Date"
+              }
+            }
+          }
+        }
+      });
+
+      if (documentTypeChart) documentTypeChart.destroy();
+
+      const docTypeCounts = {};
+      data.forEach(entry => {
+        const type = entry.idType || "Unknown";
+        docTypeCounts[type] = (docTypeCounts[type] || 0) + 1;
+      });
+
+      documentTypeChart = new Chart(document.getElementById("documentTypeChart"), {
+        type: "pie",
+        data: {
+          labels: Object.keys(docTypeCounts),
+          datasets: [{
+            label: "Document Type",
+            data: Object.values(docTypeCounts),
+            backgroundColor: [
+              "rgba(59,130,246,0.6)",
+              "rgba(16,185,129,0.6)",
+              "rgba(251,191,36,0.6)",
+              "rgba(239,68,68,0.6)",
+              "rgba(107,114,128,0.6)"
+            ],
+            borderColor: [
+              "rgba(59,130,246,1)",
+              "rgba(16,185,129,1)",
+              "rgba(251,191,36,1)",
+              "rgba(239,68,68,1)",
+              "rgba(107,114,128,1)"
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right'
+            }
+          }
+        }
+      });
+
+      if (riskTrendChart) riskTrendChart.destroy();
+
+      const monthlyScores = {};
+      data.forEach(entry => {
+        const date = new Date(entry.timestamp);
+        const month = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+        if (!monthlyScores[month]) {
+          monthlyScores[month] = { total: 0, count: 0 };
+        }
+        monthlyScores[month].total += entry.score;
+        monthlyScores[month].count += 1;
+      });
+
+      const months = Object.keys(monthlyScores).sort();
+      const avgMonthlyScores = months.map(month => 
+        (monthlyScores[month].total / monthlyScores[month].count).toFixed(1)
+      );
+
+      riskTrendChart = new Chart(document.getElementById("riskTrendChart"), {
+        type: "line",
+        data: {
+          labels: months,
+          datasets: [{
+            label: "Average Risk Score",
+            data: avgMonthlyScores,
+            borderColor: "rgba(234,88,12,1)",
+            backgroundColor: "rgba(234,88,12,0.3)",
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 100,
+              title: {
+                display: true,
+                text: "Average Risk Score"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Month"
+              }
+            }
+          }
+        }
+      });
+
 
 
     });
