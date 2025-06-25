@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from flask_mail import Mail, Message
@@ -62,7 +61,12 @@ def register():
         link = f"{request.host_url}api/verify/{token}"
         msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
         msg.body = f"Welcome to RiskPeek! Please verify your email: {link}"
-        mail.send(msg)
+        try:
+            print("✅ Attempting to send email...")
+            mail.send(msg)
+            print(f"✅ Email sent to {email}")
+        except Exception as mail_error:
+            print(f"❌ Failed to send email: {mail_error}")
 
         return jsonify({"message": "User registered. Check email to verify."}), 201
     except Exception as e:
