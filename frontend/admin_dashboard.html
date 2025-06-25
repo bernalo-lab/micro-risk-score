@@ -45,6 +45,17 @@
         <canvas id="distributionChart"></canvas>
       </div>
 
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Average Risk Score by Country</h2>
+        <canvas id="avgScoreChart"></canvas>
+      </div>
+
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Top 10 High-Risk Users</h2>
+        <canvas id="topUsersChart"></canvas>
+      </div>
+
+
 
 
     </div>
@@ -64,7 +75,7 @@ function login() {
 }
 
 let scoreChart, confidenceChart, volumeChart;
-let distributionChart;
+let distributionChart, avgScoreChart, topUsersChart;
 
 function fetchData() {
   fetch("https://micro-risk-score.onrender.com/api/submissions")
@@ -203,8 +214,98 @@ function fetchData() {
         }
       });
 
+      if (avgScoreChart) avgScoreChart.destroy();
+
+      const countryRiskMap = {};
+      data.forEach(entry => {
+        const country = entry.country || "Unknown";
+        if (!countryRiskMap[country]) {
+          countryRiskMap[country] = { total: 0, count: 0 };
+        }
+        countryRiskMap[country].total += entry.score;
+        countryRiskMap[country].count += 1;
+      });
+
+      const avgCountries = Object.keys(countryRiskMap);
+      const avgScores = avgCountries.map(
+        c => (countryRiskMap[c].total / countryRiskMap[c].count).toFixed(1)
+      );
+
+      avgScoreChart = new Chart(document.getElementById("avgScoreChart"), {
+        type: "bar",
+        data: {
+          labels: avgCountries,
+          datasets: [{
+            label: "Average Risk Score",
+            data: avgScores,
+            backgroundColor: "rgba(96,165,250,0.6)",
+            borderColor: "rgba(59,130,246,1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 100,
+              title: {
+                display: true,
+                text: "Average Risk Score"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Country"
+              }
+            }
+          }
+        }
+      });
 
 
+      if (topUsersChart) topUsersChart.destroy();
+
+      const topUsers = data
+        .map(entry => ({
+          name: `${entry.first_name} ${entry.last_name}`,
+          score: entry.score
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+      topUsersChart = new Chart(document.getElementById("topUsersChart"), {
+        type: "bar",
+        data: {
+          labels: topUsers.map(u => u.name),
+          datasets: [{
+            label: "Risk Score",
+            data: topUsers.map(u => u.score),
+            backgroundColor: "rgba(239,68,68,0.6)",  // red
+            borderColor: "rgba(239,68,68,1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          scales: {
+            x: {
+              beginAtZero: true,
+              suggestedMax: 100,
+              title: {
+                display: true,
+                text: "Risk Score"
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "User"
+              }
+            }
+          }
+        }
+      });
 
 
     });
