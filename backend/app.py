@@ -77,7 +77,7 @@ def admin_data():
         return jsonify({"error": str(e)}), 500
 
 # ✅ New route for the dashboard to fetch all submissions
-@app.route("/api/admin-submissions", methods=["GET"])
+@app.route("/api/submissions", methods=["GET"])
 def get_all_submissions():
     try:
         records = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
