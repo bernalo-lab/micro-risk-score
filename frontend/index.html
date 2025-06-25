@@ -56,11 +56,13 @@
     }
 
 
-    <!-- const form = document.getElementById("riskForm"); -->
-    const form = {
-      document.getElementById("riskForm"),
-      device_type: getDeviceType()
-    };
+    const form = document.getElementById("riskForm");
+    const formData = new FormData(form);
+
+    const submissionData = Object.fromEntries(formData.entries());
+    submissionData.deviceType = getDeviceType();
+
+
     const resultBox = document.getElementById("resultBox");
 
     form.addEventListener("submit", async (e) => {
@@ -68,9 +70,8 @@
       resultBox.innerHTML = "Calculating risk score...";
       resultBox.classList.remove("hidden");
 
-      const formData = new FormData(form);
       const data = {};
-      formData.forEach((value, key) => data[key] = value);
+      submissionData.forEach((value, key) => data[key] = value);
 
       try {
         const response = await fetch("https://micro-risk-score.onrender.com/api/global-risk-score", {
