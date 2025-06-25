@@ -48,53 +48,48 @@
   </div>
 
   <script>
-    function getDeviceType() {
-      const ua = navigator.userAgent;
-      if (/mobile/i.test(ua)) return "Mobile";
-      if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
-      return "Desktop";
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return "Mobile";
+    if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
+    return "Desktop";
+  }
+
+  const form = document.getElementById("riskForm");
+  const resultBox = document.getElementById("resultBox");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    resultBox.innerHTML = "Calculating risk score...";
+    resultBox.classList.remove("hidden");
+
+    const formData = new FormData(form);
+    const submissionData = Object.fromEntries(formData.entries());
+    submissionData.device_type = getDeviceType(); // ← Use underscore for consistency with backend
+
+    try {
+      const response = await fetch("https://micro-risk-score.onrender.com/api/global-risk-score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (!response.ok) throw new Error("Network error");
+      const result = await response.json();
+
+      resultBox.innerHTML = `
+        <h3 class="font-semibold text-lg mb-2">Risk Score Result:</h3>
+        <p><strong>Score:</strong> ${result.score}</p>
+        <p><strong>Confidence:</strong> ${result.confidence}%</p>
+        <p><strong>Factors:</strong> ${result.factors.join(', ')}</p>
+      `;
+    } catch (err) {
+      resultBox.innerHTML = `<span class="text-red-600">Error: Failed to fetch score</span>`;
     }
 
-
-    const form = document.getElementById("riskForm");
-    const formData = new FormData(form);
-
-    const submissionData = Object.fromEntries(formData.entries());
-    submissionData.deviceType = getDeviceType();
-
-
-    const resultBox = document.getElementById("resultBox");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      resultBox.innerHTML = "Calculating risk score...";
-      resultBox.classList.remove("hidden");
-
-      const data = {};
-      submissionData.forEach((value, key) => data[key] = value);
-
-      try {
-        const response = await fetch("https://micro-risk-score.onrender.com/api/global-risk-score", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) throw new Error("Network error");
-        const result = await response.json();
-
-        resultBox.innerHTML = `
-          <h3 class="font-semibold text-lg mb-2">Risk Score Result:</h3>
-          <p><strong>Score:</strong> ${result.score}</p>
-          <p><strong>Confidence:</strong> ${result.confidence}%</p>
-          <p><strong>Factors:</strong> ${result.factors.join(', ')}</p>
-        `;
-      } catch (err) {
-        resultBox.innerHTML = `<span class="text-red-600">Error: Failed to fetch score</span>`;
-      }
-
-      resultBox.scrollIntoView({ behavior: "smooth" });
-    });
-  </script>
+    resultBox.scrollIntoView({ behavior: "smooth" });
+  });
+</script>
 </body>
 </html>
+
