@@ -76,5 +76,14 @@ def admin_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ✅ New route for the dashboard to fetch all submissions
+@app.route("/api/admin-submissions", methods=["GET"])
+def get_all_submissions():
+    try:
+        records = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
+        return jsonify(records)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
