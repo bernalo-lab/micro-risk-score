@@ -37,6 +37,16 @@ app.config.update(
 )
 mail = Mail(app)
 
+
+@app.route("/api/debug-env")
+def debug_env():
+    return {
+        "EMAIL_HOST": os.getenv("EMAIL_HOST"),
+        "EMAIL_PORT": os.getenv("EMAIL_PORT"),
+        "EMAIL_FROM": os.getenv("EMAIL_FROM")
+    }
+
+
 # Token signing
 serializer = URLSafeTimedSerializer(os.getenv("JWT_SECRET"))
 JWT_SECRET = os.getenv("JWT_SECRET")
