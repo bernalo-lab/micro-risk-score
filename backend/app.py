@@ -39,31 +39,34 @@ EMAIL_FROM = os.getenv("EMAIL_FROM", "no-reply@example.com")
 
 @app.route("/api/register", methods=["POST"])
 def register():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-    name = data.get("name")
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        name = data.get("name")
 
-    if users.find_one({"email": email}):
-        return jsonify({"error": "User already exists"}), 409
+        if users.find_one({"email": email}):
+            return jsonify({"error": "User already exists"}), 409
 
-    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    token = serializer.dumps(email, salt="email-confirm")
+        hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        token = serializer.dumps(email, salt="email-confirm")
 
-    users.insert_one({
-        "email": email,
-        "password": hashed,
-        "name": name,
-        "verified": False,
-        "created_at": datetime.utcnow()
-    })
+        users.insert_one({
+            "email": email,
+            "password": hashed,
+            "name": name,
+            "verified": False,
+            "created_at": datetime.utcnow()
+        })
 
-    link = f"{request.host_url}api/verify/{token}"
-    msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
-    msg.body = f"Welcome to RiskPeek! Please verify your email: {link}"
-    mail.send(msg)
+        link = f"{request.host_url}api/verify/{token}"
+        msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
+        msg.body = f"Welcome to RiskPeek! Please verify your email: {link}"
+        mail.send(msg)
 
-    return jsonify({"message": "User registered. Check email to verify."}), 201
+        return jsonify({"message": "User registered. Check email to verify."}), 201
+    except Exception as e:
+        return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 
 @app.route("/api/verify/<token>")
 def verify_email(token):
@@ -78,26 +81,29 @@ def verify_email(token):
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
 
-    user = users.find_one({"email": email})
-    if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+        user = users.find_one({"email": email})
+        if not user:
+            return jsonify({"error": "Invalid credentials"}), 401
 
-    if not user.get("verified"):
-        return jsonify({"error": "Email not verified"}), 403
+        if not user.get("verified"):
+            return jsonify({"error": "Email not verified"}), 403
 
-    if not bcrypt.checkpw(password.encode(), user["password"]):
-        return jsonify({"error": "Invalid credentials"}), 401
+        if not bcrypt.checkpw(password.encode(), user["password"]):
+            return jsonify({"error": "Invalid credentials"}), 401
 
-    payload = {
-        "email": email,
-        "exp": datetime.utcnow() + timedelta(hours=12)
-    }
-    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-    return jsonify({"token": token, "verified": True}), 200
+        payload = {
+            "email": email,
+            "exp": datetime.utcnow() + timedelta(hours=12)
+        }
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+        return jsonify({"token": token, "verified": True}), 200
+    except Exception as e:
+        return jsonify({"error": f"Login failed: {str(e)}"}), 500
 
 @app.route("/api/global-risk-score", methods=["POST"])
 def global_risk_score():
@@ -131,7 +137,7 @@ def global_risk_score():
         submissions.insert_one(log_data)
         return jsonify(result), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Risk score calculation failed: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
