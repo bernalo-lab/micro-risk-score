@@ -28,7 +28,7 @@
 
     <div id="dashboard" style="display: none;">
       <div class="mb-10">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Risk Scores by User</h2>
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Users by Country</h2>
         <canvas id="scoreChart"></canvas>
       </div>
       <div class="mb-10">
@@ -70,20 +70,48 @@ function fetchData() {
       if (confidenceChart) confidenceChart.destroy();
       if (volumeChart) volumeChart.destroy();
 
+      
+      const countryCounts = {};
+      data.forEach(entry => {
+        const country = entry.country || "Unknown";
+        countryCounts[country] = (countryCounts[country] || 0) + 1;
+      });
+
+      const countryLabels = Object.keys(countryCounts);
+      const countryValues = Object.values(countryCounts);
+
       scoreChart = new Chart(document.getElementById("scoreChart"), {
         type: "bar",
         data: {
-          labels: names,
+          labels: countryLabels,
           datasets: [{
-            label: "Risk Score",
-            data: scores,
+            label: "User Count",
+            data: countryValues,
             backgroundColor: "rgba(59,130,246,0.5)",
             borderColor: "rgba(59,130,246,1)",
             borderWidth: 1
           }]
         },
-        options: { scales: { y: { beginAtZero: true } } }
+        options: {
+          indexAxis: 'y',
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Number of Users'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Country'
+              }
+            }
+          }
+        }
       });
+
 
       confidenceChart = new Chart(document.getElementById("confidenceChart"), {
         type: "scatter",
