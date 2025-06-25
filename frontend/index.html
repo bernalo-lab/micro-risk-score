@@ -48,7 +48,19 @@
   </div>
 
   <script>
-    const form = document.getElementById("riskForm");
+    function getDeviceType() {
+      const ua = navigator.userAgent;
+      if (/mobile/i.test(ua)) return "Mobile";
+      if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
+      return "Desktop";
+    }
+
+
+    <!-- const form = document.getElementById("riskForm"); -->
+    const form = {
+      document.getElementById("riskForm"),
+      device_type: getDeviceType()
+    };
     const resultBox = document.getElementById("resultBox");
 
     form.addEventListener("submit", async (e) => {
