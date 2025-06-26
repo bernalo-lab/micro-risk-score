@@ -203,7 +203,7 @@ def advanced_risk_score(data):
 def global_risk_score():
     try:
         data = request.get_json()
-        score, confidence, factors = calculate_score(data)
+        score, confidence, factors = advanced_risk_score(data)
         result = {
             "score": score,
             "confidence": confidence,
