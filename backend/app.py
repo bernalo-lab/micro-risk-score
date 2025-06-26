@@ -364,3 +364,19 @@ def export_pdf():
         return send_file(buffer, as_attachment=True, download_name="riskpeek_score_history.pdf")
     except Exception as e:
         return jsonify({"error": f"PDF export failed: {str(e)}"}), 401
+
+
+
+@app.route("/api/assessments", methods=["GET"])
+def user_assessments():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user_email = payload["email"]
+        results = list(submissions.find(
+            {"submitted_by": user_email},
+            {"_id": 0, "timestamp": 1, "assessed_name": 1, "assessed_email": 1, "score": 1, "confidence": 1, "factors": 1}
+        ).sort("timestamp", -1))
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"error": f"Assessment fetch failed: {str(e)}"}), 401
