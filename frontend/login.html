@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - RiskPeek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white rounded-2xl shadow-xl p-10 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-blue-700 text-center mb-6">Login to Your Account</h2>
+    <form id="loginForm" class="space-y-4">
+      <input type="email" name="email" placeholder="Email Address" required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+      <input type="password" name="password" placeholder="Password" required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+      <button type="submit"
+        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+        Login
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      Don't have an account?
+      <a href="/register.html" class="text-blue-600 hover:underline">Register</a>
+    </p>
+
+    <p class="text-center text-xs text-gray-400 mt-2">
+      <a href="/" class="text-red-500 hover:underline">Back to Home</a>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim();
+      const password = form.password.value;
+
+      // Basic validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      const res = await fetch('https://micro-risk-score.onrender.com/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem('jwt', data.token);
+        window.location.href = '/dashboard.html';
+      } else {
+        alert(data.error || "Login failed.");
+      }
+    });
+  </script>
+</body>
+</html>
