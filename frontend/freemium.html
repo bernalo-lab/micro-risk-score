@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Freemium Risk Score - RiskPeek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-blue-700">Freemium Risk Score</h2>
+      <a href="/" class="text-blue-600 hover:underline text-sm">Back to Home</a>
+    </div>
+
+    <form id="riskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
+      <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
+      <input type="email" name="email" placeholder="Email Address" required class="p-3 border rounded" />
+      <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
+      <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
+      <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
+      <input type="url" name="linkedin" placeholder="LinkedIn Profile" class="p-3 border rounded" />
+      <input type="url" name="github" placeholder="GitHub Profile" class="p-3 border rounded" />
+      <select name="paymentHistory" class="p-3 border rounded">
+        <option value="">Payment History</option>
+        <option value="excellent">Excellent</option>
+        <option value="good">Good</option>
+        <option value="average">Average</option>
+        <option value="poor">Poor</option>
+      </select>
+      <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
+      <div class="md:col-span-2">
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+          Calculate Risk Score
+        </button>
+      </div>
+    </form>
+
+    <div id="resultBox" class="mt-6 text-center text-blue-800 hidden"></div>
+  </div>
+
+  <script>
+    // Handle form submission (freemium - no backend save)
+    document.getElementById('riskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.submitted_via_form = "false";  // explicitly freemium
+
+      const res = await fetch('/api/global-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('resultBox');
+
+      if (res.ok) {
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+    });
+  </script>
+</body>
+</html>
