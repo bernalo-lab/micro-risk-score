@@ -37,6 +37,23 @@ app.config.update(
 )
 mail = Mail(app)
 
+from functools import wraps
+from flask import request, Response
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        expected_password = os.getenv("ADMIN_PASSWORD")
+        if not auth or auth.username != "admin" or auth.password != expected_password:
+            return Response(
+                "Access Denied: Invalid credentials\n",
+                401,
+                {"WWW-Authenticate": 'Basic realm="Login Required"'}
+            )
+        return f(*args, **kwargs)
+    return decorated
+
 
 @app.route("/api/debug-env")
 def debug_env():
@@ -46,6 +63,13 @@ def debug_env():
         "EMAIL_FROM": os.getenv("EMAIL_FROM")
     }
 
+@app.route("/api/submissions", methods=["GET"])
+def get_submissions():
+    try:
+        all_data = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
+        return jsonify(all_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Token signing
 serializer = URLSafeTimedSerializer(os.getenv("JWT_SECRET"))
@@ -238,6 +262,13 @@ def global_risk_score():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": f"Risk score calculation failed: {str(e)}"}), 500
+
+
+@app.route("/admin-dashboard")
+@admin_required
+def admin_dashboard():
+    return "<h1>Admin Dashboard: Access Granted</h1>"
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
