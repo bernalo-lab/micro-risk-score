@@ -97,7 +97,8 @@ def register():
             "password": hashed,
             "name": name,
             "verified": False,
-            "created_at": datetime.utcnow()
+            "created_at": datetime.utcnow(),
+            "consent": False
         })
 
         print("📤 SMTP Username(in Register):", app.config["MAIL_USERNAME"])
@@ -272,3 +273,90 @@ def admin_dashboard():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+
+from flask import send_file
+import io
+import pandas as pd
+from bson.json_util import dumps
+
+@app.route("/api/profile", methods=["GET", "PUT"])
+def user_profile():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user = users.find_one({"email": payload["email"]})
+        if request.method == "GET":
+            return jsonify({
+                "name": user.get("name"),
+                "email": user.get("email"),
+                "consent": user.get("consent", False)
+            }), 200
+        elif request.method == "PUT":
+            data = request.get_json()
+            users.update_one({"email": payload["email"]}, {
+                "$set": {
+                    "name": data.get("name"),
+                    "email": data.get("email"),
+                    "consent": data.get("consent", False)
+                }
+            })
+            return jsonify({"message": "Profile updated"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Profile access failed: {str(e)}"}), 401
+
+@app.route("/api/score-history", methods=["GET"])
+def score_history():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        history = list(submissions.find({"email": payload["email"]}, {
+            "_id": 0,
+            "timestamp": 1,
+            "score": 1,
+            "confidence": 1,
+            "factors": 1
+        }).sort("timestamp", -1))
+        return jsonify(history), 200
+    except Exception as e:
+        return jsonify({"error": f"History access failed: {str(e)}"}), 401
+
+@app.route("/download/csv")
+def export_csv():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        records = list(submissions.find({"email": payload["email"]}))
+        df = pd.DataFrame(records)
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+        return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name='riskpeek_score_history.csv'
+        )
+    except Exception as e:
+        return jsonify({"error": f"CSV export failed: {str(e)}"}), 401
+
+@app.route("/download/pdf")
+def export_pdf():
+    from fpdf import FPDF
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        records = list(submissions.find({"email": payload["email"]}))
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt="RiskPeek - User Score History", ln=True, align="C")
+        pdf.ln(10)
+        for item in records:
+            pdf.cell(200, 10, txt=f"{item.get('timestamp')} | Score: {item.get('score')} | Confidence: {item.get('confidence')}%", ln=True)
+        buffer = io.BytesIO()
+        pdf.output(buffer)
+        buffer.seek(0)
+        return send_file(buffer, as_attachment=True, download_name="riskpeek_score_history.pdf")
+    except Exception as e:
+        return jsonify({"error": f"PDF export failed: {str(e)}"}), 401

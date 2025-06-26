@@ -62,7 +62,7 @@
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
       payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-      payload.submitted_via_form = "true";
+      payload.submitted_via_form = "true"
 
       const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
         method: 'POST',
