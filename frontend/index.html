@@ -5,24 +5,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Welcome to RiskPeek</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-10 rounded-xl shadow-xl text-center w-full max-w-xl">
-        <h1 class="text-2xl font-bold text-blue-700 mb-4">Welcome to RiskPeek</h1>
-        <p class="text-gray-700 mb-6">
-            Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
-            Register now to receive more accurate scores, store your assessments, and unlock premium insights.
-        </p>
-        <div class="flex justify-center space-x-4">
-            <a href="/register.html">
-                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</button>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-10 max-w-2xl w-full">
+        <div class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-700 mb-4">Welcome to RiskPeek</h1>
+            <p class="text-gray-600 text-md sm:text-lg leading-relaxed mb-8">
+                Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
+                Register now to receive more accurate scores, store your assessments, and unlock premium insights.
+            </p>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="/register.html" class="w-full sm:w-auto">
+                <button class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition duration-200">
+                    Register
+                </button>
             </a>
-            <a href="/login.html">
-                <button class="border border-blue-600 text-blue-600 px-4 py-2 rounded hover:bg-blue-100">Login</button>
+            <a href="/login.html" class="w-full sm:w-auto">
+                <button class="w-full sm:w-auto border border-blue-600 text-blue-600 px-6 py-3 rounded-xl hover:bg-blue-50 transition duration-200">
+                    Login
+                </button>
             </a>
-            <a href="/freemium.html">
-                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Try Without Login</button>
+            <a href="/freemium.html" class="w-full sm:w-auto">
+                <button class="w-full sm:w-auto bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition duration-200">
+                    Try Without Login
+                </button>
             </a>
         </div>
     </div>
