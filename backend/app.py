@@ -129,16 +129,87 @@ def login():
     except Exception as e:
         return jsonify({"error": f"Login failed: {str(e)}"}), 500
 
+def advanced_risk_score(data):
+    score = 0
+    factors = []
+    confidence = 0
+
+    # Define scoring weights
+    weights = {
+        'payment_history': 30,
+        'reputation_score': 20,
+        'linkedin': 10,
+        'github': 10,
+        'country_risk': 20,
+        'address_provided': 5,
+        'id_provided': 5
+    }
+
+    # Payment history factor
+    if data.get('payment_history'):
+        score += weights['payment_history']
+        factors.append("Payment History")
+
+    # Reputation score (0-10 scale)
+    try:
+        rep_score = float(data.get('reputation_score', 0))
+        score += (rep_score / 10.0) * weights['reputation_score']
+        if rep_score > 0:
+            factors.append("Reputation Score")
+    except ValueError:
+        pass
+
+    # LinkedIn presence
+    if data.get('linkedin'):
+        score += weights['linkedin']
+        factors.append("LinkedIn")
+
+    # GitHub presence
+    if data.get('github'):
+        score += weights['github']
+        factors.append("GitHub")
+
+    # Country risk adjustment
+    high_risk_countries = ['Nigeria', 'Iran', 'North Korea', 'Pakistan', 'Albania', 'Bangladesh']
+    low_risk_countries = ['USA', 'UK', 'Germany', 'Canada', 'Singapore', 'Australia', 'Germany']
+    country = data.get('country', '').strip()
+
+    if country in high_risk_countries:
+        score += 0
+        factors.append("High Risk Country")
+    elif country in low_risk_countries:
+        score += weights['country_risk']
+        factors.append("Low Risk Country")
+    else:
+        score += weights['country_risk'] / 2
+        factors.append("Medium Risk Country")
+
+    # Address check
+    if data.get('postcode'):
+        score += weights['address_provided']
+        factors.append("Address")
+
+    # ID check
+    if data.get('id_type'):
+        score += weights['id_provided']
+        factors.append("ID Provided")
+
+    # Confidence score proportional to score, max 100
+    confidence = min(100, 50 + int(score / 2))
+
+    return int(score), int(confidence), factors
+
 @app.route("/api/global-risk-score", methods=["POST"])
 def global_risk_score():
     try:
         data = request.get_json()
+        score, confidence, factors = calculate_score(data)
         result = {
-            "score": 73,
-            "confidence": 92,
-            "factors": ["Payment History", "Reputation Score"]
+            "score": score,
+            "confidence": confidence,
+            "factors": factors # ["Payment History", "Reputation Score"] - Dynamically generated if needed
         }
-
+        
         is_freemium = data.get("submitted_via_form", "false") == "false"
 
         if not is_freemium:
