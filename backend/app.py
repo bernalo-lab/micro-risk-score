@@ -146,13 +146,13 @@ def advanced_risk_score(data):
     }
 
     # Payment history factor
-    if data.get('payment_history'):
+    if data.get('paymentHistory'):
         score += weights['payment_history']
         factors.append("Payment History")
 
     # Reputation score (0-10 scale)
     try:
-        rep_score = float(data.get('reputation_score', 0))
+        rep_score = float(data.get('reputationScore', 0))
         score += (rep_score / 10.0) * weights['reputation_score']
         if rep_score > 0:
             factors.append("Reputation Score")
@@ -190,7 +190,7 @@ def advanced_risk_score(data):
         factors.append("Address")
 
     # ID check
-    if data.get('id_type'):
+    if data.get('idType'):
         score += weights['id_provided']
         factors.append("ID Provided")
 
