@@ -39,7 +39,7 @@
         const email = form.email.value.trim();
         const password = form.password.value;
 
-        const res = await fetch('/api/register', {
+        const res = await fetch('https://micro-risk-score.onrender.com/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })
