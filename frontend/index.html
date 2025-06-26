@@ -1,177 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Risk Score – RiskPeek</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Welcome to RiskPeek</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
 </head>
-<body class="bg-gray-50 font-sans">
-<script>
-  function showRegister() {
-    document.getElementById('coverPage').classList.add('hidden');
-    document.getElementById('registerForm').classList.remove('hidden');
-  }
-
-  function showLogin() {
-    document.getElementById('coverPage').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
-  }
-
-  function handleRegister(event) {
-    event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.target).entries());
-
-    fetch('https://micro-risk-score.onrender.com/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-      alert(res.message || 'Check your email to verify your account.');
-    });
-  }
-
-  function handleLogin(event) {
-    event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.target).entries());
-
-    fetch('https://micro-risk-score.onrender.com/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-      if (res.token && res.verified) {
-        localStorage.setItem('token', res.token);
-        window.location.reload();
-      } else {
-        alert('Login failed or email not verified.');
-      }
-    });
-  }
-</script>
-
-<!-- Cover Page -->
-<div id="coverPage" class="min-h-screen flex items-center justify-center p-6 bg-blue-100">
-  <div class="bg-white p-8 rounded-lg shadow-lg text-center max-w-xl">
-    <h1 class="text-3xl font-bold mb-4 text-blue-700">Welcome to RiskPeek</h1>
-    <p class="text-gray-700 mb-6">
-      Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
-      Register now to receive more accurate scores, store your assessments, and unlock premium insights.
-    </p>
-    <div class="space-x-4">
-      <button onclick="showRegister()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Register</button>
-      <button onclick="showLogin()" class="border border-blue-600 text-blue-600 px-6 py-2 rounded hover:bg-blue-100">Login</button>
+<body class="bg-blue-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-10 rounded-xl shadow-xl text-center w-full max-w-xl">
+        <h1 class="text-2xl font-bold text-blue-700 mb-4">Welcome to RiskPeek</h1>
+        <p class="text-gray-700 mb-6">
+            Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
+            Register now to receive more accurate scores, store your assessments, and unlock premium insights.
+        </p>
+        <div class="flex justify-center space-x-4">
+            <a href="/register.html">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</button>
+            </a>
+            <a href="/login.html">
+                <button class="border border-blue-600 text-blue-600 px-4 py-2 rounded hover:bg-blue-100">Login</button>
+            </a>
+            <a href="/freemium.html">
+                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Try Without Login</button>
+            </a>
+        </div>
     </div>
-  </div>
-</div>
-<!-- Registration Form -->
-<div id="registerForm" class="hidden p-6 flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow max-w-md w-full">
-    <h2 class="text-xl font-bold mb-4 text-blue-700">Register</h2>
-    <form onsubmit="handleRegister(event)">
-      <input type="text" name="name" placeholder="Full Name" required class="w-full mb-3 p-2 border rounded" />
-      <input type="email" name="email" placeholder="Email" required class="w-full mb-3 p-2 border rounded" />
-      <input type="password" name="password" placeholder="Password" required class="w-full mb-3 p-2 border rounded" />
-      <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Sign Up</button>
-    </form>
-  </div>
-</div>
-
-<!-- Login Form -->
-<div id="loginForm" class="hidden p-6 flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow max-w-md w-full">
-    <h2 class="text-xl font-bold mb-4 text-blue-700">Login</h2>
-    <form onsubmit="handleLogin(event)">
-      <input type="email" name="email" placeholder="Email" required class="w-full mb-3 p-2 border rounded" />
-      <input type="password" name="password" placeholder="Password" required class="w-full mb-3 p-2 border rounded" />
-      <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
-    </form>
-  </div>
-</div>
-
-  <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
-      <h2 class="text-2xl font-bold text-center text-blue-800 mb-4">🌍 Global Risk Score – RiskPeek</h2>
-
-      <!-- Result Box -->
-      <div id="resultBox" class="bg-green-50 border border-green-300 text-green-800 p-4 rounded mb-6 hidden text-center">
-        <!-- JS-injected result here -->
-      </div>
-
-      <!-- Risk Score Form -->
-      <form id="riskForm" class="space-y-4">
-        <h3 class="text-lg font-semibold text-gray-700">Tier 1 – Basic Info</h3>
-        <input type="text" placeholder="First Name" name="firstName" required class="w-full p-2 border rounded" />
-        <input type="text" placeholder="Last Name" name="lastName" required class="w-full p-2 border rounded" />
-        <input type="email" placeholder="Email Address" name="email" required class="w-full p-2 border rounded" />
-        <input type="text" placeholder="Postcode" name="postcode" required class="w-full p-2 border rounded" />
-        <input type="text" placeholder="Country" name="country" required class="w-full p-2 border rounded" />
-
-        <h3 class="text-lg font-semibold text-gray-700 mt-6">Tier 2 – Identity & Work History</h3>
-        <input type="text" placeholder="ID Type (e.g., Passport, Driving License)" name="idType" class="w-full p-2 border rounded" />
-        <input type="url" placeholder="LinkedIn Profile (optional)" name="linkedin" class="w-full p-2 border rounded" />
-        <input type="url" placeholder="GitHub Profile (optional)" name="github" class="w-full p-2 border rounded" />
-
-        <h3 class="text-lg font-semibold text-gray-700 mt-6">Tier 3 – Financial & Digital Footprint</h3>
-        <select name="paymentHistory" class="w-full p-2 border rounded">
-          <option value="">Select payment history option</option>
-          <option value="excellent">Excellent</option>
-          <option value="good">Good</option>
-          <option value="average">Average</option>
-          <option value="poor">Poor</option>
-        </select>
-        <input type="number" name="reputationScore" min="0" max="10" step="0.1" placeholder="Reputation Score (0–10)" class="w-full p-2 border rounded" />
-        <input type="hidden" name="submitted_via_form" value="true" />
-        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
-          Calculate Risk Score
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-  function getDeviceType() {
-    const ua = navigator.userAgent;
-    if (/mobile/i.test(ua)) return "Mobile";
-    if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
-    return "Desktop";
-  }
-
-  const form = document.getElementById("riskForm");
-  const resultBox = document.getElementById("resultBox");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    resultBox.innerHTML = "Calculating risk score...";
-    resultBox.classList.remove("hidden");
-
-    const formData = new FormData(form);
-    const submissionData = Object.fromEntries(formData.entries());
-    submissionData.device_type = getDeviceType(); // ← Use underscore for consistency with backend
-
-    try {
-      const response = await fetch("https://micro-risk-score.onrender.com/api/global-risk-score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
-      });
-
-      if (!response.ok) throw new Error("Network error");
-      const result = await response.json();
-
-      resultBox.innerHTML = `
-        <h3 class="font-semibold text-lg mb-2">Risk Score Result:</h3>
-        <p><strong>Score:</strong> ${result.score}</p>
-        <p><strong>Confidence:</strong> ${result.confidence}%</p>
-        <p><strong>Factors:</strong> ${result.factors.join(', ')}</p>
-      `;
-    } catch (err) {
-      resultBox.innerHTML = `<span class="text-red-600">Error: Failed to fetch score</span>`;
-    }
-
-    resultBox.scrollIntoView({ behavior: "smooth" });
-  });
-</script>
 </body>
 </html>
-
