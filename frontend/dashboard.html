@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - RiskPeek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-blue-700">Risk Score Dashboard</h2>
+      <button onclick="logout()" class="text-red-600 hover:underline text-sm">Logout</button>
+    </div>
+
+    <form id="riskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
+      <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
+      <input type="email" name="email" placeholder="Email Address" required class="p-3 border rounded" />
+      <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
+      <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
+      <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
+      <input type="url" name="linkedin" placeholder="LinkedIn Profile" class="p-3 border rounded" />
+      <input type="url" name="github" placeholder="GitHub Profile" class="p-3 border rounded" />
+      <select name="paymentHistory" class="p-3 border rounded">
+        <option value="">Payment History</option>
+        <option value="excellent">Excellent</option>
+        <option value="good">Good</option>
+        <option value="average">Average</option>
+        <option value="poor">Poor</option>
+      </select>
+      <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
+      <div class="md:col-span-2">
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+          Calculate Risk Score
+        </button>
+      </div>
+    </form>
+
+    <div id="resultBox" class="mt-6 text-center text-blue-800 hidden"></div>
+  </div>
+
+  <script>
+    // Logout functionality
+    function logout() {
+      localStorage.removeItem('jwt');
+      window.location.href = '/';
+    }
+
+    // Risk score form submission
+    document.getElementById('riskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        alert("You must be logged in.");
+        window.location.href = '/login.html';
+        return;
+      }
+
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.submitted_via_form = "true";
+
+      const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('resultBox');
+
+      if (res.ok) {
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+    });
+  </script>
+</body>
+</html>
