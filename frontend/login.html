@@ -57,7 +57,7 @@
 
       if (res.ok && data.token) {
         localStorage.setItem('jwt', data.token);
-        window.location.href = '/dashboard.html';
+        window.location.href = '/profile.html';
       } else {
         alert(data.error || "Login failed.");
       }
