@@ -51,7 +51,7 @@
       payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
       payload.submitted_via_form = "false";  // explicitly freemium
 
-      const res = await fetch('/api/global-risk-score', {
+      const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

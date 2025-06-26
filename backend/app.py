@@ -139,26 +139,31 @@ def global_risk_score():
             "factors": ["Payment History", "Reputation Score"]
         }
 
-        log_data = {
-            "timestamp": datetime.now(timezone.utc),
-            "first_name": data.get("firstName"),
-            "last_name": data.get("lastName"),
-            "email": data.get("email"),
-            "postcode": data.get("postcode"),
-            "country": data.get("country"),
-            "id_type": data.get("idType"),
-            "linkedin": data.get("linkedin"),
-            "github": data.get("github"),
-            "payment_history": data.get("paymentHistory"),
-            "reputation_score": data.get("reputationScore"),
-            "score": result["score"],
-            "confidence": result["confidence"],
-            "factors": result["factors"],
-            "device_type": data.get("device_type", "Unknown"),
-            "submitted_via_form": data.get("submitted_via_form", "false")
-        }
+        is_freemium = data.get("submitted_via_form", "false") == "false"
 
-        submissions.insert_one(log_data)
+        if not is_freemium:
+            log_data = {
+                "timestamp": datetime.now(timezone.utc),
+                "first_name": data.get("firstName"),
+                "last_name": data.get("lastName"),
+                "email": data.get("email"),
+                "postcode": data.get("postcode"),
+                "country": data.get("country"),
+                "id_type": data.get("idType"),
+                "linkedin": data.get("linkedin"),
+                "github": data.get("github"),
+                "payment_history": data.get("paymentHistory"),
+                "reputation_score": data.get("reputationScore"),
+                "score": result["score"],
+                "confidence": result["confidence"],
+                "factors": result["factors"],
+                "device_type": data.get("device_type", "Unknown"),
+                "submitted_via_form": "true"
+            }
+            submissions.insert_one(log_data)
+        else:
+            print("🆓 Freemium user - result not saved to DB.")
+
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": f"Risk score calculation failed: {str(e)}"}), 500
