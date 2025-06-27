@@ -136,7 +136,7 @@
 
   <script>
     async function loadUser() {
-      const res = await fetch("https://www.riskpeek.tech/api/me", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const res = await fetch("https://www.riskpeek.tech/api/profile", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
       if (res.ok) {
         const user = await res.json();
         document.getElementById("fullName").value = user.fullName || "";
@@ -147,7 +147,7 @@
     }
 
     async function loadHistory() {
-      const res = await fetch("https://www.riskpeek.tech/api/history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const res = await fetch("https://www.riskpeek.tech/api/score-history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
       const data = await res.json();
       const tbody = document.getElementById("scoreTable");
       const exportContainer = document.getElementById("exportButtons");
