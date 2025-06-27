@@ -1,45 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>User Profile - RiskPeek</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.tailwindcss.com">
-function showTab(tab) {
-  document.getElementById("historyTab").classList.toggle("hidden", tab !== "history");
-  document.getElementById("assessmentsTab").classList.toggle("hidden", tab !== "assessments");
-  document.getElementById("tabHistory").classList.toggle("border-blue-600", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-blue-700", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-gray-600", tab !== "history");
-  document.getElementById("tabAssessments").classList.toggle("border-blue-600", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-blue-700", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-gray-600", tab !== "assessments");
-
-  if (tab === "assessments") loadAssessments();
-}
-async function loadAssessments() {
-  const res = await fetch("/api/assessments", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
-  const data = await res.json();
-  const tbody = document.getElementById("assessmentsTable");
-  tbody.innerHTML = "";
-  if (res.ok && data.length > 0) {
-    data.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="border p-2">${row.timestamp}</td>
-        <td class="border p-2">${row.assessed_name || "-"}</td>
-        <td class="border p-2">${row.score}</td>
-        <td class="border p-2">${row.confidence}%</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } else {
-    tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No assessments found.</td></tr>";
-  }
-}
-
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-gray-100 to-blue-50 min-h-screen flex justify-center p-6">
   <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-3xl">
@@ -83,68 +48,50 @@ async function loadAssessments() {
       </button>
     </div>
 
-
-
-
     <hr class="my-8" />
 
-    <div>
-      
-<div class="mt-8">
-  <div class="flex border-b mb-4">
-    <button id="tabHistory" onclick="showTab('history')" class="py-2 px-4 font-semibold border-b-2 border-blue-600 text-blue-700">My History</button>
-    <button id="tabAssessments" onclick="showTab('assessments')" class="py-2 px-4 font-semibold text-gray-600 hover:text-blue-700">Assessments I've Made</button>
-  </div>
+    <div class="mt-8">
+      <div class="flex border-b mb-4">
+        <button id="tabHistory" onclick="showTab('history')" class="py-2 px-4 font-semibold border-b-2 border-blue-600 text-blue-700">My History</button>
+        <button id="tabAssessments" onclick="showTab('assessments')" class="py-2 px-4 font-semibold text-gray-600 hover:text-blue-700">Assessments I've Made</button>
+      </div>
 
-  <div id="historyTab">
-    <table class="table-auto w-full text-sm border">
-      <thead class="bg-blue-100">
-        <tr>
-          <th class="border p-2">Date</th>
-          <th class="border p-2">Score</th>
-          <th class="border p-2">Confidence</th>
-          <th class="border p-2">Factors</th>
-        </tr>
-      </thead>
-      <tbody id="scoreTable" class="text-center"></tbody>
-    </table>
-  </div>
+      <div id="historyTab">
+        <table class="table-auto w-full text-sm border">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="border p-2">Date</th>
+              <th class="border p-2">Score</th>
+              <th class="border p-2">Confidence</th>
+              <th class="border p-2">Factors</th>
+            </tr>
+          </thead>
+          <tbody id="scoreTable" class="text-center"></tbody>
+        </table>
+      </div>
 
-  <div id="assessmentsTab" class="hidden">
-    <table class="table-auto w-full text-sm border">
-      <thead class="bg-blue-100">
-        <tr>
-          <th class="border p-2">Date</th>
-          <th class="border p-2">Assessed Name</th>
-          <th class="border p-2">Score</th>
-          <th class="border p-2">Confidence</th>
-        </tr>
-      </thead>
-      <tbody id="assessmentsTable" class="text-center"></tbody>
-    </table>
-  </div>
-</div>
+      <div id="assessmentsTab" class="hidden">
+        <table class="table-auto w-full text-sm border">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="border p-2">Date</th>
+              <th class="border p-2">Assessed Name</th>
+              <th class="border p-2">Score</th>
+              <th class="border p-2">Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="assessmentsTable" class="text-center"></tbody>
+        </table>
+      </div>
 
-      <table class="table-auto w-full text-sm border">
-        <thead class="bg-blue-100">
-          <tr>
-            <th class="border p-2">Date</th>
-            <th class="border p-2">Score</th>
-            <th class="border p-2">Confidence</th>
-            <th class="border p-2">Factors</th>
-          </tr>
-        </thead>
-        <tbody id="scoreTable" class="text-center"></tbody>
-      </table>
-
-      <div class="mt-6 flex gap-4">
+      <div id="exportButtons" class="mt-6 flex gap-4 hidden">
         <a href="/download/csv" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export CSV</a>
         <a href="/download/pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export PDF</a>
       </div>
     </div>
   </div>
 
-  <!-- Modal - Start New Risk Assessment -->
+  <!-- Modals and scripts -->
   <div id="riskModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
       <button onclick="closeRiskModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
@@ -165,99 +112,100 @@ async function loadAssessments() {
     </div>
   </div>
 
-
-<!-- Assess Someone Else Modal -->
-<div id="assessModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
-    <button onclick="closeAssessModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
-    <h3 class="text-xl font-bold mb-4">Assess Someone Else</h3>
-    <form id="assessForm" class="grid grid-cols-1 gap-4">
-      <input name="assessed_name" placeholder="Person/Company Name (Optional)" class="p-2 border rounded" />
-      <input name="assessed_email" type="email" placeholder="Email (Optional)" class="p-2 border rounded" />
-      <input name="country" placeholder="Country" required class="p-2 border rounded" />
-      <input name="reputation_score" type="number" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" required class="p-2 border rounded" />
-      <select name="payment_history" required class="p-2 border rounded">
-        <option value="">Payment History</option>
-        <option value="excellent">Excellent</option>
-        <option value="good">Good</option>
-        <option value="average">Average</option>
-        <option value="poor">Poor</option>
-      </select>
-      <button type="submit" class="bg-blue-600 text-white py-2 rounded">Submit Assessment</button>
-    </form>
-    <div id="assessResult" class="mt-4 text-sm text-gray-700 hidden"></div>
+  <div id="assessModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
+      <button onclick="closeAssessModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
+      <h3 class="text-xl font-bold mb-4">Assess Someone Else</h3>
+      <form id="assessForm" class="grid grid-cols-1 gap-4">
+        <input name="assessed_name" placeholder="Person/Company Name (Optional)" class="p-2 border rounded" />
+        <input name="assessed_email" type="email" placeholder="Email (Optional)" class="p-2 border rounded" />
+        <input name="country" placeholder="Country" required class="p-2 border rounded" />
+        <input name="reputation_score" type="number" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" required class="p-2 border rounded" />
+        <select name="payment_history" required class="p-2 border rounded">
+          <option value="">Payment History</option>
+          <option value="excellent">Excellent</option>
+          <option value="good">Good</option>
+          <option value="average">Average</option>
+          <option value="poor">Poor</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white py-2 rounded">Submit Assessment</button>
+      </form>
+      <div id="assessResult" class="mt-4 text-sm text-gray-700 hidden"></div>
+    </div>
   </div>
-</div>
-
-<script>
-function openAssessModal() {
-  document.getElementById("assessModal").classList.remove("hidden");
-  document.getElementById("assessModal").classList.add("flex");
-}
-function closeAssessModal() {
-  document.getElementById("assessModal").classList.add("hidden");
-  document.getElementById("assessModal").classList.remove("flex");
-}
-document.getElementById("assessForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const payload = Object.fromEntries(formData.entries());
-  payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-  payload.submitted_by_user = "true";
-
-  const res = await fetch("/api/global-risk-score", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  const data = await res.json();
-  const resultBox = document.getElementById("assessResult");
-  if (res.ok) {
-    resultBox.classList.remove("hidden");
-    resultBox.innerHTML = `<strong>Score:</strong> ${data.score} <br/><strong>Confidence:</strong> ${data.confidence}%<br/><strong>Factors:</strong> ${data.factors.join(", ")}`;
-  } else {
-    resultBox.innerHTML = `<span class='text-red-500'>${data.error || "Error calculating score"}</span>`;
-    resultBox.classList.remove("hidden");
-  }
-});
-
-function showTab(tab) {
-  document.getElementById("historyTab").classList.toggle("hidden", tab !== "history");
-  document.getElementById("assessmentsTab").classList.toggle("hidden", tab !== "assessments");
-  document.getElementById("tabHistory").classList.toggle("border-blue-600", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-blue-700", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-gray-600", tab !== "history");
-  document.getElementById("tabAssessments").classList.toggle("border-blue-600", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-blue-700", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-gray-600", tab !== "assessments");
-
-  if (tab === "assessments") loadAssessments();
-}
-async function loadAssessments() {
-  const res = await fetch("/api/assessments", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
-  const data = await res.json();
-  const tbody = document.getElementById("assessmentsTable");
-  tbody.innerHTML = "";
-  if (res.ok && data.length > 0) {
-    data.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="border p-2">${row.timestamp}</td>
-        <td class="border p-2">${row.assessed_name || "-"}</td>
-        <td class="border p-2">${row.score}</td>
-        <td class="border p-2">${row.confidence}%</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } else {
-    tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No assessments found.</td></tr>";
-  }
-}
-
-</script>
-
 
   <script>
+    async function loadUser() {
+      const res = await fetch("/api/me", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      if (res.ok) {
+        const user = await res.json();
+        document.getElementById("fullName").value = user.fullName || "";
+        document.getElementById("email").value = user.email || "";
+        document.getElementById("consent").checked = !!user.consent;
+      }
+      loadHistory();
+    }
+
+    async function loadHistory() {
+      const res = await fetch("/api/history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const data = await res.json();
+      const tbody = document.getElementById("scoreTable");
+      const exportContainer = document.getElementById("exportButtons");
+      tbody.innerHTML = "";
+      if (res.ok && data.length > 0) {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border p-2">${row.timestamp}</td>
+            <td class="border p-2">${row.score}</td>
+            <td class="border p-2">${row.confidence}%</td>
+            <td class="border p-2">${row.factors.join(", ")}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        exportContainer.classList.remove("hidden");
+      } else {
+        tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
+        exportContainer.classList.add("hidden");
+      }
+    }
+
+    async function loadAssessments() {
+      const res = await fetch("/api/assessments", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const data = await res.json();
+      const tbody = document.getElementById("assessmentsTable");
+      const exportContainer = document.getElementById("exportButtons");
+      tbody.innerHTML = "";
+      if (res.ok && data.length > 0) {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border p-2">${row.timestamp}</td>
+            <td class="border p-2">${row.assessed_name || "-"}</td>
+            <td class="border p-2">${row.score}</td>
+            <td class="border p-2">${row.confidence}%</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        exportContainer.classList.remove("hidden");
+      } else {
+        tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
+        exportContainer.classList.add("hidden");
+      }
+    }
+
+    function showTab(tab) {
+      document.getElementById("historyTab").classList.toggle("hidden", tab !== "history");
+      document.getElementById("assessmentsTab").classList.toggle("hidden", tab !== "assessments");
+      document.getElementById("tabHistory").classList.toggle("border-blue-600", tab === "history");
+      document.getElementById("tabHistory").classList.toggle("text-blue-700", tab === "history");
+      document.getElementById("tabHistory").classList.toggle("text-gray-600", tab !== "history");
+      document.getElementById("tabAssessments").classList.toggle("border-blue-600", tab === "assessments");
+      document.getElementById("tabAssessments").classList.toggle("text-blue-700", tab === "assessments");
+      document.getElementById("tabAssessments").classList.toggle("text-gray-600", tab !== "assessments");
+      if (tab === "assessments") loadAssessments();
+    }
+
     function openRiskModal() {
       document.getElementById("riskModal").classList.remove("hidden");
       document.getElementById("riskModal").classList.add("flex");
@@ -266,68 +214,19 @@ async function loadAssessments() {
       document.getElementById("riskModal").classList.add("hidden");
       document.getElementById("riskModal").classList.remove("flex");
     }
-
-    document.getElementById("riskForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
-      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-      payload.submitted_via_form = "true";
-
-      const res = await fetch("/api/global-risk-score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      const resultBox = document.getElementById("riskResult");
-      if (res.ok) {
-        resultBox.classList.remove("hidden");
-        resultBox.innerHTML = `<strong>Score:</strong> ${data.score} <br/><strong>Confidence:</strong> ${data.confidence}%<br/><strong>Factors:</strong> ${data.factors.join(", ")}`;
-      } else {
-        resultBox.innerHTML = `<span class='text-red-500'>${data.error || "Error calculating score"}</span>`;
-        resultBox.classList.remove("hidden");
-      }
-    });
-
+    function openAssessModal() {
+      document.getElementById("assessModal").classList.remove("hidden");
+      document.getElementById("assessModal").classList.add("flex");
+    }
+    function closeAssessModal() {
+      document.getElementById("assessModal").classList.add("hidden");
+      document.getElementById("assessModal").classList.remove("flex");
+    }
     function logout() {
       localStorage.removeItem("jwt");
       window.location.href = "/";
     }
-  
-function showTab(tab) {
-  document.getElementById("historyTab").classList.toggle("hidden", tab !== "history");
-  document.getElementById("assessmentsTab").classList.toggle("hidden", tab !== "assessments");
-  document.getElementById("tabHistory").classList.toggle("border-blue-600", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-blue-700", tab === "history");
-  document.getElementById("tabHistory").classList.toggle("text-gray-600", tab !== "history");
-  document.getElementById("tabAssessments").classList.toggle("border-blue-600", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-blue-700", tab === "assessments");
-  document.getElementById("tabAssessments").classList.toggle("text-gray-600", tab !== "assessments");
-
-  if (tab === "assessments") loadAssessments();
-}
-async function loadAssessments() {
-  const res = await fetch("/api/assessments", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
-  const data = await res.json();
-  const tbody = document.getElementById("assessmentsTable");
-  tbody.innerHTML = "";
-  if (res.ok && data.length > 0) {
-    data.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="border p-2">${row.timestamp}</td>
-        <td class="border p-2">${row.assessed_name || "-"}</td>
-        <td class="border p-2">${row.score}</td>
-        <td class="border p-2">${row.confidence}%</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } else {
-    tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No assessments found.</td></tr>";
-  }
-}
-
-</script>
+    window.addEventListener("DOMContentLoaded", loadUser);
+  </script>
 </body>
 </html>
