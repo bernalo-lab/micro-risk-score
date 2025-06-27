@@ -136,13 +136,19 @@
 
   <script>
     async function loadUser() {
-      const res = await fetch("/api/profile", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
-      if (res.ok) {
-        const user = await res.json();
-        document.getElementById("fullName").value = user.fullName || "";
-        document.getElementById("email").value = user.email || "";
-        document.getElementById("consent").checked = !!user.consent;
+      const res = await fetch("/api/profile", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+
+      if (!res.ok) {
+        console.error("Error status:", res.status);
+        return;
       }
+
+      const user = await res.json();
+      document.getElementById("fullName").value = user.fullName || "";
+      document.getElementById("email").value = user.email || "";
+      document.getElementById("consent").checked = !!user.consent;
+
       loadHistory();
     }
 
