@@ -271,10 +271,6 @@ def admin_dashboard():
     return "<h1>Admin Dashboard: Access Granted</h1>"
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
-
 from flask import send_file
 import io
 import pandas as pd
@@ -361,8 +357,6 @@ def export_pdf():
     except Exception as e:
         return jsonify({"error": f"PDF export failed: {str(e)}"}), 401
 
-
-
 @app.route("/api/assessments", methods=["GET"])
 def user_assessments():
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
@@ -376,3 +370,7 @@ def user_assessments():
         return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": f"Assessment fetch failed: {str(e)}"}), 401
+
+# (any other routes)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
