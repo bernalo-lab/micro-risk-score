@@ -147,7 +147,7 @@
       }
 
       const user = await res.json();
-      document.getElementById("fullName").value = user.fullName || "";
+      document.getElementById("fullName").value = user.name || "";
       document.getElementById("email").value = user.email || "";
       document.getElementById("consent").checked = !!user.consent;
 
@@ -155,7 +155,7 @@
     }
 
     async function loadHistory() {
-      const res = await fetch("/api/score-history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const res = await fetch("https://micro-risk-score.onrender.com/api/score-history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
       const data = await res.json();
       const tbody = document.getElementById("scoreTable");
       const exportContainer = document.getElementById("exportButtons");
