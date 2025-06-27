@@ -18,13 +18,7 @@ print("EMAIL_FROM:", os.getenv("EMAIL_FROM"))
 print("MONGO_URI (partial):", os.getenv("MONGO_URI", "")[:30] + "...")
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": [
-    "https://micro-risk-score.vercel.app",
-    "https://micro-risk-score.onrender.com",
-    "https://www.riskpeek.tech",
-    "https://api.riskpeek.tech",
-    "https://riskpeek.tech"
-]}}, supports_credentials=True)
+CORS(app, supports_credentials=True)
 
 # MongoDB setup
 client = MongoClient(os.getenv("MONGO_URI"))
