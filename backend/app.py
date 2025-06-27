@@ -281,6 +281,10 @@ from bson.json_util import dumps
 
 @app.route("/api/profile", methods=["GET", "PUT", "OPTIONS"])
 def user_profile():
+
+    if request.method == "OPTIONS":
+        return '', 200
+
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
@@ -304,8 +308,12 @@ def user_profile():
     except Exception as e:
         return jsonify({"error": f"Profile access failed: {str(e)}"}), 401
 
-@app.route("/api/score-history", methods=["GET"])
+@app.route("/api/score-history", methods=["GET", "OPTIONS"])
 def score_history():
+
+    if request.method == "OPTIONS":
+        return '', 200
+
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
@@ -360,8 +368,12 @@ def export_pdf():
     except Exception as e:
         return jsonify({"error": f"PDF export failed: {str(e)}"}), 401
 
-@app.route("/api/assessments", methods=["GET"])
+@app.route("/api/assessments", methods=["GET", "OPTIONS"])
 def user_assessments():
+
+    if request.method == "OPTIONS":
+        return '', 200
+
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
