@@ -280,7 +280,7 @@ import io
 import pandas as pd
 from bson.json_util import dumps
 
-@app.route("/api/profile", methods=["GET", "PUT"])
+@app.route("/api/profile", methods=["GET", "PUT", "OPTIONS"])
 def user_profile():
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     try:
