@@ -136,7 +136,7 @@
 
   <script>
     async function loadUser() {
-      const res = await fetch("/api/profile", {
+      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
         method: 'GET',
         headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
       });
