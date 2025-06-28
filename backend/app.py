@@ -289,7 +289,7 @@ def assessment_risk_score():
                 "legalName": data.get("legalName"),
                 "taxId": data.get("taxID"),
                 "businessNumber": data.get("businessNumber"),
-                "countryOfIncorporation": data.get("countryOfIncorporation"),
+                "country": data.get("countryOfIncorporation"),
                 "addressProof": data.get("addressProof"),
                 "linkedin": data.get("linkedin"),
                 "website": data.get("website"),
