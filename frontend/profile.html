@@ -202,8 +202,8 @@
 
       <!-- Step 6: Observations -->
       <div class="assess-step hidden" id="assessStep6">
-        <select name="observations" required class="w-full p-3 border rounded">
-          <option value=""></option>
+        <select name="observation" required class="w-full p-3 border rounded">
+          <option value="">Observation</option>
           <option value="concern">Concern</option>
           <option value="positive">Positive</option>
         </select>
@@ -408,6 +408,7 @@
       }
     });
   </script>
+
   <script>
     function updateRequiredFields(step) {
       document.querySelectorAll(".assess-step").forEach((div, i) => {
@@ -567,9 +568,9 @@ function calculateCompositeRisk(data) {
 
   // Observations
   let obsScore=75;
-  if(data.observations){
-    if(data.observations.toLowerCase().includes("concern")) obsScore=50;
-    if(data.observations.toLowerCase().includes("positive")) obsScore=90;
+  if(data.observation){
+    if(data.observation.toLowerCase().includes("concern")) obsScore=50;
+    if(data.observation.toLowerCase().includes("positive")) obsScore=90;
   }
   add(obsScore,obsScore,0.10,0.02);
 
@@ -597,6 +598,8 @@ function calculateCompositeRisk(data) {
 
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
+      payload.submitted_By = document.getElementById("email").value;
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
 
       const result  = calculateCompositeRisk(payload);
 
@@ -613,7 +616,34 @@ function calculateCompositeRisk(data) {
         </div>
       `;
 
+      // Include Risk Category to payload
+      payload.riskCategory = result.label;
+
+      // Insert into database
+      const res = await fetch('https://micro-risk-score.onrender.com/api/assessment-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('newRiskResult');
+
+      if (res.ok) {
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+
+
       resultBox.classList.remove("hidden");
+
     });
   </script>
 

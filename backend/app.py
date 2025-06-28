@@ -28,6 +28,7 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client["risklogDB"]
 users = db["users"]
 submissions = db["submissions"]
+accessOthers = db["accessOthers"]
 
 # Flask-Mail setup
 app.config.update(
@@ -267,6 +268,58 @@ def global_risk_score():
     except Exception as e:
         return jsonify({"error": f"Risk score calculation failed: {str(e)}"}), 500
 
+@app.route("/api/assessment-risk-score", methods=["POST"])
+def assessment-risk-score():
+
+    try:
+        data = request.get_json()
+
+        # Validate data
+        if not data.get("submitted_By"):
+            return jsonify({"error": "Invalid Submitted By Email"}), 401
+
+        if not data.get("assessedEmail"):
+            return jsonify({"error": "Invalid Assessed Email"}), 401
+
+
+        log_data = {
+          "timestamp": datetime.now(timezone.utc),
+                "submitted_By": data.get("submittedBy"),
+                "assessedEmail": data.get("assessedEmail"),
+                "legalName": data.get("legalName"),
+                "assessedEmail": data.get("assessedEmail"),
+                "taxId": data.get("taxID"),
+                "businessNumber": data.get("businessNumber"),
+                "countryOfIncorporation": data.get("countryOfIncorporation"),
+                "addressProof": data.get("addressProof"),
+                "linkedin": data.get("linkedin"),
+                "website": data.get("website"),
+                "yearsActive": data.get("yearsActive"),
+                "numberOfEmployees": data.get("numberOfEmployees"),
+                "legalDisputes": data.get("legalDisputes"),
+                "paymentHhistory": data.get("paymentHistory"),
+                "annualRevenue": data.get("annualRevenue"),
+                "creditScore": data.get("creditScore"),
+                "bankVerification": data.get("bankVerification"),
+                "amlStatus": data.get("amlStatus"),
+                "sanctionsScreening": data.get("sanctionsScreening"),
+                "gdprCompliance": data.get("gdprCompliance"),
+                "reputationScore": data.get("reputationScore"),
+                "gdprCompliance": data.get("gdprCompliance"),
+                "domainAge": data.get("domainAge"),
+                "socialMediaPresence": data.get("socialMediaPresence"),
+                "score": data.get("score"),
+                "confidence": data.get("confidence"),
+                "riskCategory": data.get("riskCategory"),
+                "device_type": data.get("device_type", "Unknown"),
+                "observation": data.get("observation"),
+                "notes": data.get("observationNotes"),
+                "submitted_via_form": "true"
+            }
+        accessOthers.insert_one(log_data)
+
+    except Exception as e:
+        return jsonify({"error": f"Assessment Risk score DB insertion failed: {str(e)}"}), 500
 
 @app.route("/admin-dashboard")
 @admin_required
