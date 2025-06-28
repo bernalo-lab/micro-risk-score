@@ -164,6 +164,7 @@
       const user = await res.json();
       document.getElementById("fullName").value = user.name || "";
       document.getElementById("email").value = user.email || "";
+      localStorage.setItem("registeredEmail") = document.getElementById("email").value
       document.getElementById("consent").checked = !!user.consent;
 
       loadHistory();
@@ -231,7 +232,7 @@
 
     function openNewRiskModal() {
       const userEmail = document.getElementById("email").value;
-      document.getElementById("newRiskEmail").value = userEmail;
+      document.getElementById("newRiskEmail").value = localStorage.getItem("registeredEmail");
 
       document.getElementById("newRiskModal").classList.remove("hidden");
       document.getElementById("newRiskModal").classList.add("flex");
