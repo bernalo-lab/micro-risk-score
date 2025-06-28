@@ -100,7 +100,7 @@
       <form id="newRiskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
         <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
-        <input type="email" name="email" placeholder="Email Address" required class="p-3 border rounded cursor-not-allowed" readonly" />
+        <input type="email" id="newRiskEmail name="email" placeholder="Email Address" required class="p-3 border rounded cursor-not-allowed" readonly" />
         <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
         <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
         <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
@@ -231,7 +231,17 @@
     }
 
     function openNewRiskModal() {
-      document.getElementById("newRiskEmail").value = localStorage.getItem("email");      
+      //document.getElementById("newRiskEmail").value = localStorage.getItem("email");      
+
+      // Check if the element exists before using it
+      const emailField = document.getElementById("newRiskEmail");
+      if (emailField) {
+        // Get the email from the profile input field
+        const userEmail = document.getElementById("email").value;
+        emailField.value = userEmail;
+      } else {
+        console.error("Email Issue: Element 'newRiskEmail' input not found in the DOM.");
+      }
 
       document.getElementById("newRiskModal").classList.remove("hidden");
       document.getElementById("newRiskModal").classList.add("flex");
