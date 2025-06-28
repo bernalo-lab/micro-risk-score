@@ -125,28 +125,94 @@
   </div>
   
 
+  <!-- Assess Someone Else Modal -->
+  <div id="assessOthersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-3xl relative">
+      <button onclick="closeAssessOthersModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+      <h2 id="assessStepTitle" class="text-xl font-bold text-blue-700 mb-4">Step 1 of 6: Identity</h2>
 
+      <form id="assessOthersForm" class="space-y-4">
+        <!-- Step 1: Identity -->
+        <div class="assess-step" id="assessStep1">
+          <input name="legalName" placeholder="Full Legal Name" required class="w-full p-3 border rounded" />
+          <input name="businessNumber" placeholder="Business Registration Number" class="w-full p-3 border rounded" />
+          <input name="taxId" placeholder="Tax ID" class="w-full p-3 border rounded" />
+          <input name="country" placeholder="Country of Incorporation" required class="w-full p-3 border rounded" />
+          <input name="addressProof" placeholder="Proof of Address (e.g., Document)" class="w-full p-3 border rounded" />
+        </div>
 
-  <div id="assessModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
-      <button onclick="closeAssessModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
-      <h3 class="text-xl font-bold mb-4">Assess Someone Else</h3>
-      <form id="assessForm" class="grid grid-cols-1 gap-4">
-        <input name="assessed_name" placeholder="Person/Company Name (Optional)" class="p-2 border rounded" />
-        <input name="assessed_email" type="email" placeholder="Email (Optional)" class="p-2 border rounded" />
-        <input name="country" placeholder="Country" required class="p-2 border rounded" />
-        <input name="reputation_score" type="number" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" required class="p-2 border rounded" />
-        <select name="payment_history" required class="p-2 border rounded">
+      <!-- Step 2: Reputation -->
+      <div class="assess-step hidden" id="assessStep2">
+        <input name="linkedin" placeholder="LinkedIn URL" class="w-full p-3 border rounded" />
+        <input name="website" placeholder="Website URL" class="w-full p-3 border rounded" />
+        <input name="yearsActive" placeholder="Years Active" class="w-full p-3 border rounded" />
+        <input name="employees" placeholder="Number of Employees" class="w-full p-3 border rounded" />
+        <select name="legalDisputes" class="w-full p-3 border rounded">
+          <option value="">Any Legal Disputes?</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Step 3: Financial -->
+      <div class="assess-step hidden" id="assessStep3">
+        <select name="paymentHistory" required class="w-full p-3 border rounded">
           <option value="">Payment History</option>
           <option value="excellent">Excellent</option>
           <option value="good">Good</option>
           <option value="average">Average</option>
           <option value="poor">Poor</option>
         </select>
-        <button type="submit" class="bg-blue-600 text-white py-2 rounded">Submit Assessment</button>
-      </form>
-      <div id="assessResult" class="mt-4 text-sm text-gray-700 hidden"></div>
-    </div>
+        <input name="annualRevenue" placeholder="Annual Revenue Range" class="w-full p-3 border rounded" />
+        <input name="creditScore" placeholder="Credit Score" class="w-full p-3 border rounded" />
+        <input name="bankVerification" placeholder="Bank Verification Status" class="w-full p-3 border rounded" />
+      </div>
+
+      <!-- Step 4: Compliance -->
+      <div class="assess-step hidden" id="assessStep4">
+        <select name="amlStatus" class="w-full p-3 border rounded">
+          <option value="">AML/KYC Status</option>
+          <option value="verified">Verified</option>
+          <option value="pending">Pending</option>
+          <option value="unknown">Unknown</option>
+        </select>
+        <select name="sanctionsScreening" class="w-full p-3 border rounded">
+          <option value="">Sanctions Screening</option>
+          <option value="pass">Pass</option>
+          <option value="fail">Fail</option>
+        </select>
+        <select name="gdprCompliance" class="w-full p-3 border rounded">
+          <option value="">GDPR Compliance</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Step 5: Digital Footprint -->
+      <div class="assess-step hidden" id="assessStep5">
+        <input name="domainAge" placeholder="Domain Age (Years)" class="w-full p-3 border rounded" />
+        <select name="socialMediaPresence" class="w-full p-3 border rounded">
+          <option value="">Social Media Presence</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <!-- Step 6: Observations -->
+      <div class="assess-step hidden" id="assessStep6">
+        <textarea name="notes" placeholder="Any additional observations or comments..." rows="4" class="w-full p-3 border rounded"></textarea>
+   </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-6">
+        <button type="button" id="assessPrevBtn" onclick="prevAssessStep()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hidden">Previous</button>
+        <button type="button" id="assessNextBtn" onclick="nextAssessStep()" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+        <button type="submit" id="assessSubmitBtn" class="bg-green-600 text-white px-4 py-2 rounded hidden">Submit</button>
+      </div>
+    </form>
+
+    <div id="assessResult" class="mt-4 text-center text-blue-800 hidden"></div>
+  </div>
   </div>
 
   <script>
