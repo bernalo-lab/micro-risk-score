@@ -291,7 +291,8 @@ def user_profile():
         user = users.find_one({"email": payload["email"]})
         if request.method == "GET":
             return jsonify({
-                "name": user.get("name"), # "email": user.get("email"),
+                "name": user.get("name"),
+                "email": user.get("email"),
                 "consent": user.get("consent", False)
             }), 200
         elif request.method == "PUT":
