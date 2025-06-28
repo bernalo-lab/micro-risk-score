@@ -287,7 +287,6 @@ def assessment_risk_score():
                 "submitted_By": data.get("submittedBy"),
                 "assessedEmail": data.get("assessedEmail"),
                 "legalName": data.get("legalName"),
-                "assessedEmail": data.get("assessedEmail"),
                 "taxId": data.get("taxID"),
                 "businessNumber": data.get("businessNumber"),
                 "countryOfIncorporation": data.get("countryOfIncorporation"),
