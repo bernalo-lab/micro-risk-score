@@ -269,7 +269,7 @@ def global_risk_score():
         return jsonify({"error": f"Risk score calculation failed: {str(e)}"}), 500
 
 @app.route("/api/assessment-risk-score", methods=["POST"])
-def assessment-risk-score():
+def assessment_risk_score():
 
     try:
         data = request.get_json()
