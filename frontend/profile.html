@@ -164,7 +164,7 @@
       const user = await res.json();
       document.getElementById("fullName").value = user.name || "";
       document.getElementById("email").value = user.email || "";
-      localStorage.setItem("registeredEmail") = document.getElementById("email").value
+      localStorage.setItem("registeredEmail", document.getElementById("email").value);
       document.getElementById("consent").checked = !!user.consent;
 
       loadHistory();
