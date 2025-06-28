@@ -592,7 +592,7 @@ function calculateCompositeRisk(data) {
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
 
-      const result  = calculateCompositeRiskScore(payload);
+      const result  = calculateCompositeRisk(payload);
 
       const resultBox=document.getElementById("assessResult");
       resultBox.innerHTML=`
