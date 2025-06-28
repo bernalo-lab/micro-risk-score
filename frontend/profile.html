@@ -135,6 +135,7 @@
         <!-- Step 1: Identity -->
         <div class="assess-step" id="assessStep1">
           <input name="legalName" placeholder="Full Legal Name" required class="w-full p-3 border rounded" />
+          <input type="email" name="assessedEmail" placeholder="Email Address" required class="w-full p-3 border rounded" />
           <input name="businessNumber" placeholder="Business Registration Number" class="w-full p-3 border rounded" />
           <input name="taxId" placeholder="Tax ID" class="w-full p-3 border rounded" />
           <input name="country" placeholder="Country of Incorporation" required class="w-full p-3 border rounded" />
@@ -201,8 +202,13 @@
 
       <!-- Step 6: Observations -->
       <div class="assess-step hidden" id="assessStep6">
+        <select name="observations" required class="w-full p-3 border rounded">
+          <option value=""></option>
+          <option value="concern">Concern</option>
+          <option value="positive">Positive</option>
+        </select>
         <textarea name="notes" placeholder="Any additional observations or comments..." rows="4" class="w-full p-3 border rounded"></textarea>
-   </div>
+      </div>
 
       <!-- Navigation Buttons -->
       <div class="flex justify-between mt-6">
