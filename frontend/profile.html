@@ -627,22 +627,15 @@ function calculateCompositeRisk(data) {
       });
 
       const data = await res.json();
-      const resultBox = document.getElementById('newRiskResult');
+      //const resultBox = document.getElementById('newRiskResult');
 
       if (res.ok) {
-        resultBox.innerHTML = `
-          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
-          <p><strong>Score:</strong> ${data.score}</p>
-          <p><strong>Confidence:</strong> ${data.confidence}%</p>
-          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
-        `;
         resultBox.classList.remove('hidden');
       } else {
         alert(data.error || "Failed to calculate score.");
       }
 
 
-      resultBox.classList.remove("hidden");
 
     });
   </script>
