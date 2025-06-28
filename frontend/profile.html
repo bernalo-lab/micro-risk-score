@@ -37,7 +37,7 @@
     </form>
 
     <div class="my-6">
-      <button onclick="openRiskModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+      <button type="button" onclick="window.open('newRiskAssessment.html', '_blank')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
         Start New Risk Assessment
       </button>
     </div>
@@ -92,25 +92,7 @@
   </div>
 
   <!-- Modals and scripts -->
-  <div id="riskModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
-      <button onclick="closeRiskModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
-      <h3 class="text-xl font-bold mb-4">New Risk Assessment</h3>
-      <form id="riskForm" class="grid grid-cols-1 gap-4">
-        <input name="country" placeholder="Country" required class="p-2 border rounded" />
-        <input name="reputation_score" type="number" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" required class="p-2 border rounded" />
-        <select name="payment_history" required class="p-2 border rounded">
-          <option value="">Payment History</option>
-          <option value="excellent">Excellent</option>
-          <option value="good">Good</option>
-          <option value="average">Average</option>
-          <option value="poor">Poor</option>
-        </select>
-        <button type="submit" class="bg-blue-600 text-white py-2 rounded">Submit</button>
-      </form>
-      <div id="riskResult" class="mt-4 text-sm text-gray-700 hidden"></div>
-    </div>
-  </div>
+  
 
   <div id="assessModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
@@ -241,7 +223,7 @@
       e.preventDefault();
 
       const consentValue = document.getElementById("consent").checked;
-      const nameValue = document.getElementById("fullName");
+      const nameValue = document.getElementById("fullName").value;
 
       const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
         method: "PUT",
