@@ -236,5 +236,33 @@
     }
     window.addEventListener("DOMContentLoaded", loadUser);
   </script>
+  <script>
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const consentValue = document.getElementById("consent").checked;
+      const nameValue = document.getElementById("fullName");
+
+      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("jwt")
+        },
+        body: JSON.stringify({
+          name: nameValue,
+          consent: consentValue
+        })
+      });
+
+      if (res.ok) {
+        alert("✅ Changes saved successfully!");
+      } else {
+        alert("⚠️ Failed to save changes.");
+        console.error("Save error:", res.status);
+      }
+    });
+
+  </script>
 </body>
 </html>

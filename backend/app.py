@@ -291,16 +291,14 @@ def user_profile():
         user = users.find_one({"email": payload["email"]})
         if request.method == "GET":
             return jsonify({
-                "name": user.get("name"),
-                "email": user.get("email"),
+                "name": user.get("name"), # "email": user.get("email"),
                 "consent": user.get("consent", False)
             }), 200
         elif request.method == "PUT":
             data = request.get_json()
             users.update_one({"email": payload["email"]}, {
                 "$set": {
-                    "name": data.get("name"),
-                    "email": data.get("email"),
+                    "name": data.get("name"), # "email": data.get("email"),
                     "consent": data.get("consent", False)
                 }
             })
