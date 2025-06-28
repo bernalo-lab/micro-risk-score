@@ -43,7 +43,7 @@
     </div>
 
     <div class="my-6">
-      <button onclick="openAssessModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+      <button onclick="openAssessOthersModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
         Assess Someone Else
       </button>
     </div>
@@ -321,15 +321,19 @@
       document.getElementById("newRiskModal").classList.remove("flex");
     }
 
-    function openAssessModal() {
-      document.getElementById("assessModal").classList.remove("hidden");
-      document.getElementById("assessModal").classList.add("flex");
+    function openAssessOthersModal() {
+      document.getElementById("assessOthersModal").classList.remove("hidden");
+      document.getElementById("assessOthersModal").classList.add("flex");
+      // Reset to step 1
+      currentAssessStep = 1;
+      showAssessStep(currentAssessStep);
     }
 
-    function closeAssessModal() {
-      document.getElementById("assessModal").classList.add("hidden");
-      document.getElementById("assessModal").classList.remove("flex");
+    function closeAssessOthersModal() {
+      document.getElementById("assessOthersModal").classList.add("hidden");
+      document.getElementById("assessOthersModal").classList.remove("flex");
     }
+
 
     function logout() {
       localStorage.removeItem("jwt");
@@ -397,5 +401,39 @@
       }
     });
   </script>
+
+  <script>
+    let currentAssessStep = 1;
+
+    function showAssessStep(step) {
+      // Hide all steps
+      document.querySelectorAll(".assess-step").forEach(div => div.classList.add("hidden"));
+      // Show current
+      document.getElementById(`assessStep${step}`).classList.remove("hidden");
+      // Update title
+     document.getElementById("assessStepTitle").textContent = `Step ${step} of 6: ${
+        ["Identity","Reputation","Financial","Compliance","Digital Footprint","Observations"][step-1]
+     }`;
+
+    // Manage buttons
+    document.getElementById("assessPrevBtn").classList.toggle("hidden", step === 1);
+    document.getElementById("assessNextBtn").classList.toggle("hidden", step === 6);
+    document.getElementById("assessSubmitBtn").classList.toggle("hidden", step !== 6);
+  }
+
+  function nextAssessStep() {
+    if (currentAssessStep < 6) {
+      currentAssessStep++;
+      showAssessStep(currentAssessStep);
+    }
+  }
+
+  function prevAssessStep() {
+    if (currentAssessStep > 1) {
+      currentAssessStep--;
+      showAssessStep(currentAssessStep);
+    }
+  }
+</script>
 </body>
 </html>
