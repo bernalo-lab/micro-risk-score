@@ -166,6 +166,7 @@
         <input name="annualRevenue" placeholder="Annual Revenue Range" class="w-full p-3 border rounded" />
         <input name="creditScore" placeholder="Credit Score" class="w-full p-3 border rounded" />
         <input name="bankVerification" placeholder="Bank Verification Status" class="w-full p-3 border rounded" />
+        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="w-full p-3 border rounded" />
       </div>
 
       <!-- Step 4: Compliance -->
@@ -186,7 +187,6 @@
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
       </div>
 
       <!-- Step 5: Digital Footprint -->
@@ -402,7 +402,18 @@
       }
     });
   </script>
-
+  <script>
+    function updateRequiredFields(step) {
+      document.querySelectorAll(".assess-step").forEach((div, i) => {
+        div.querySelectorAll("input, select, textarea").forEach(el => {
+          if (el.dataset.originalRequired === undefined) {
+            el.dataset.originalRequired = el.required;
+          }
+          el.required = (i === step - 1) && (el.dataset.originalRequired === "true" || el.dataset.originalRequired === true);
+        });
+      });
+    }
+  </script>
   <script>
     let currentAssessStep = 1;
 
@@ -420,6 +431,8 @@
     document.getElementById("assessPrevBtn").classList.toggle("hidden", step === 1);
     document.getElementById("assessNextBtn").classList.toggle("hidden", step === 6);
     document.getElementById("assessSubmitBtn").classList.toggle("hidden", step !== 6);
+
+    updateRequiredFields(step);
   }
 
   function nextAssessStep() {
