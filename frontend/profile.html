@@ -37,7 +37,7 @@
     </form>
 
     <div class="my-6">
-      <button type="button" onclick="window.open('newRiskAssessment.html', '_blank')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+      <button type="button" onclick="openNewRiskModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
         Start New Risk Assessment
       </button>
     </div>
@@ -92,7 +92,40 @@
   </div>
 
   <!-- Modals and scripts -->
+  <!-- New Risk Assessment Modal -->
+  <div id="newRiskModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl relative">
+      <button onclick="closeNewRiskModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+      <h2 class="text-2xl font-bold text-blue-700 mb-4">New Risk Assessment</h2>
+      <form id="newRiskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
+        <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
+        <input type="email" name="email" placeholder="Email Address" required class="p-3 border rounded" />
+        <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
+        <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
+        <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
+        <input type="url" name="linkedin" placeholder="LinkedIn Profile" class="p-3 border rounded" />
+        <input type="url" name="github" placeholder="GitHub Profile" class="p-3 border rounded" />
+        <select name="paymentHistory" class="p-3 border rounded">
+          <option value="">Payment History</option>
+          <option value="excellent">Excellent</option>
+          <option value="good">Good</option>
+          <option value="average">Average</option>
+          <option value="poor">Poor</option>
+        </select>
+        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
+        <div class="md:col-span-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+            Calculate Risk Score
+          </button>
+        </div>
+      </form>
+      <div id="newRiskResult" class="mt-6 text-center text-blue-800 hidden"></div>
+    </div>
+  </div>
   
+
+
 
   <div id="assessModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl relative">
@@ -196,22 +229,26 @@
       if (tab === "assessments") loadAssessments();
     }
 
-    function openRiskModal() {
-      document.getElementById("riskModal").classList.remove("hidden");
-      document.getElementById("riskModal").classList.add("flex");
+    function openNewRiskModal() {
+      document.getElementById("newRiskModal").classList.remove("hidden");
+      document.getElementById("newRiskModal").classList.add("flex");
     }
-    function closeRiskModal() {
-      document.getElementById("riskModal").classList.add("hidden");
-      document.getElementById("riskModal").classList.remove("flex");
+
+    function closeNewRiskModal() {
+      document.getElementById("newRiskModal").classList.add("hidden");
+      document.getElementById("newRiskModal").classList.remove("flex");
     }
+
     function openAssessModal() {
       document.getElementById("assessModal").classList.remove("hidden");
       document.getElementById("assessModal").classList.add("flex");
     }
+
     function closeAssessModal() {
       document.getElementById("assessModal").classList.add("hidden");
       document.getElementById("assessModal").classList.remove("flex");
     }
+
     function logout() {
       localStorage.removeItem("jwt");
       window.location.href = "/";
@@ -245,6 +282,38 @@
       }
     });
 
+  </script>
+  <script>
+    document.getElementById('newRiskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.submitted_via_form = "false";  // explicitly freemium
+
+      const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('newRiskResult');
+
+      if (res.ok) {
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+    });
   </script>
 </body>
 </html>
