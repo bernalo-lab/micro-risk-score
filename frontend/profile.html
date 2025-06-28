@@ -186,6 +186,7 @@
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
+        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
       </div>
 
       <!-- Step 5: Digital Footprint -->
@@ -435,5 +436,168 @@
     }
   }
 </script>
+
+  <script>
+function calculateCompositeRisk(data) {
+  let totalScore = 0;
+  let totalConfidence = 0;
+
+  function val(input, map) {
+    return map[input] ?? 0;
+  }
+
+  function numericRange(val, ranges) {
+    for (let r of ranges) {
+      if (val >= r.min) return r.score;
+    }
+    return 0;
+  }
+
+  // Helper: contribution
+  function add(scorePart, confPart, weight, confWeight) {
+    totalScore += scorePart * weight;
+    totalConfidence += confPart * confWeight;
+  }
+
+  // Identity & Verification
+  add(data.legalName ?100:0, data.legalName?100:0, 0.03,0.05);
+  add(data.businessNumber?100:50, data.businessNumber?100:50,0.04,0.05);
+  add(data.taxId?100:50, data.taxId?100:50,0.04,0.05);
+  add(data.country?100:0, data.country?100:0,0.04,0.04);
+  add(data.addressProof?100:50,data.addressProof?100:50,0.05,0.05);
+  add(
+    val(data.bankVerification,{"Verified":100,"Pending":50,"None":0,"":0}),
+    val(data.bankVerification,{"Verified":100,"Pending":50,"None":0,"":0}),
+    0.05,0.06
+  );
+
+  // Financial
+  add(
+    val(data.paymentHistory,{"excellent":100,"good":75,"average":50,"poor":25,"":0}),
+    val(data.paymentHistory,{"excellent":100,"good":75,"average":50,"poor":25,"":0}),
+    0.08,0.06
+  );
+
+  add(
+    val(data.annualRevenue, {">1M":100,">500k":75,">100k":50,"<100k":25,"":0}),
+    val(data.annualRevenue, {">1M":100,">500k":75,">100k":50,"<100k":25,"":0}),
+    0.05,0.04
+  );
+
+  const credit=parseInt(data.creditScore);
+  const creditScoreVal=numericRange(credit,[
+    {min:750,score:100},{min:650,score:75},{min:500,score:50},{min:1,score:25}
+  ]);
+  add(creditScoreVal,creditScoreVal,0.07,0.06);
+
+  const repScore=parseFloat(data.reputationScore);
+  add(isNaN(repScore)?0:repScore*10,isNaN(repScore)?0:repScore*10,0.05,0.03);
+
+  // Reputation & Maturity
+  add(data.linkedin?100:0,data.linkedin?100:0,0.03,0.02);
+  add(data.website?100:0,data.website?100:0,0.03,0.02);
+
+  const years=parseInt(data.yearsActive);
+  const yearsVal=numericRange(years,[
+    {min:10,score:100},{min:5,score:75},{min:2,score:50},{min:0,score:25}
+  ]);
+  add(yearsVal,yearsVal,0.05,0.04);
+
+  const employees=parseInt(data.numberOfEmployees);
+  const empVal=numericRange(employees,[
+    {min:50,score:100},{min:10,score:75},{min:3,score:50},{min:0,score:25}
+  ]);
+  add(empVal,empVal,0.03,0.03);
+
+  const domain=parseInt(data.domainAge);
+  const domVal=numericRange(domain,[
+    {min:10,score:100},{min:5,score:75},{min:2,score:50},{min:0,score:25}
+  ]);
+  add(domVal,domVal,0.03,0.03);
+
+  add(
+    val(data.socialMediaPresence,{"active":100,"inactive":25,"":0}),
+    val(data.socialMediaPresence,{"active":100,"inactive":25,"":0}),
+    0.03,0.02
+  );
+
+  // Compliance
+  add(
+    val(data.amlStatus,{"verified":100,"pending":50,"unknown":25,"":0}),
+    val(data.amlStatus,{"verified":100,"pending":50,"unknown":25,"":0}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.sanctionsScreening,{"pass":100,"fail":0,"":50}),
+    val(data.sanctionsScreening,{"pass":100,"fail":0,"":50}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.gdprCompliance,{"yes":100,"no":0,"":50}),
+    val(data.gdprCompliance,{"yes":100,"no":0,"":50}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.legalDisputes,{"no":100,"yes":0,"":50}),
+    val(data.legalDisputes,{"no":100,"yes":0,"":50}),
+    0.05,0.06
+  );
+
+  // Observations
+  let obsScore=75;
+  if(data.observations){
+    if(data.observations.toLowerCase().includes("concern")) obsScore=50;
+    if(data.observations.toLowerCase().includes("positive")) obsScore=90;
+  }
+  add(obsScore,obsScore,0.10,0.02);
+
+  // Normalize
+  const finalScore=Math.round(totalScore);
+  const finalConfidence=Math.min(Math.round(totalConfidence),100);
+
+  let riskLabel="Low Risk";
+  if(finalScore<60) riskLabel="High Risk";
+  else if(finalScore<80) riskLabel="Medium Risk";
+
+  return {
+    score:finalScore,
+    confidence:finalConfidence,
+    label:riskLabel
+  };
+}
+
+  </script>
+
+  <script>
+    document.getElementById('assessOthersForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+
+      const result  = calculateCompositeRiskScore(payload);
+
+      const resultBox=document.getElementById("assessResult");
+      resultBox.innerHTML=`
+        <div class="border rounded p-4 mt-4">
+          <h3 class="text-xl font-bold mb-2">Assessment Result</h3>
+          <p><strong>Composite Risk Score:</strong> ${result.score}/100</p>
+          <p><strong>Confidence Level:</strong> ${result.confidence}%</p>
+          <p><strong>Risk Category:</strong> <span class="${
+            result.label==="Low Risk"?"text-green-600":
+            result.label==="Medium Risk"?"text-yellow-600":"text-red-600"
+          } font-semibold">${result.label}</span></p>
+        </div>
+      `;
+
+      resultBox.classList.remove("hidden");
+    });
+  </script>
+
+
 </body>
 </html>
