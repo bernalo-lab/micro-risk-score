@@ -297,7 +297,7 @@ def assessment_risk_score():
                 "yearsActive": data.get("yearsActive"),
                 "numberOfEmployees": data.get("numberOfEmployees"),
                 "legalDisputes": data.get("legalDisputes"),
-                "paymentHhistory": data.get("paymentHistory"),
+                "paymentHistory": data.get("paymentHistory"),
                 "annualRevenue": data.get("annualRevenue"),
                 "creditScore": data.get("creditScore"),
                 "bankVerification": data.get("bankVerification"),
