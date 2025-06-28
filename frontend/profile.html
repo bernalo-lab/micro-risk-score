@@ -233,18 +233,21 @@
     function openNewRiskModal() {
       //document.getElementById("newRiskEmail").value = localStorage.getItem("email");      
 
-      // Check if the element exists before using it
-      const emailField = document.getElementById("newRiskEmail");
-      if (emailField) {
-        // Get the email from the profile input field
-        const userEmail = document.getElementById("email").value;
-        emailField.value = userEmail;
-      } else {
-        console.error("Email Issue: Element 'newRiskEmail' input not found in the DOM.");
-      }
+      // Show the modal first
+      const modal = document.getElementById("newRiskModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
 
-      document.getElementById("newRiskModal").classList.remove("hidden");
-      document.getElementById("newRiskModal").classList.add("flex");
+      // Wait for the browser to render the modal, then set the email
+      setTimeout(() => {
+        const userEmail = document.getElementById("email").value;
+        const emailField = document.getElementById("newRiskEmail");
+        if (emailField) {
+          emailField.value = userEmail;
+        } else {
+          console.error("newRiskEmail input not found in the DOM after opening modal.");
+        }
+      }, 50); // small delay ensures DOM is ready
     }
 
     function closeNewRiskModal() {
