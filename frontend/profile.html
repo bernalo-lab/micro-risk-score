@@ -286,9 +286,10 @@
         });
         exportContainer.classList.remove("hidden");
       } else {
+        tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
+
         <!-- Check if data exist for Registered User before disabling 'Export' buttons -->
         if (localStorage.getItem('email') == null) {
-          tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
           exportContainer.classList.add("hidden");
         }
       }
