@@ -85,9 +85,17 @@
       </div>
 
       <div id="exportButtons" class="mt-6 flex gap-4 hidden">
-        <a href="https://micro-risk-score.onrender.com/download/csv" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export CSV</a>
-        <a href="https://micro-risk-score.onrender.com/download/pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export PDF</a>
+        <button onclick="downloadCSV('history')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Download My History CSV
+        </button>
+        <button onclick="downloadCSV('assessments')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+          Download Assessments CSV
+        </button>
+        <a href="https://micro-risk-score.onrender.com/download/pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+          Download My History PDF
+        </a>
       </div>
+
     </div>
   </div>
 
@@ -676,12 +684,40 @@ function calculateCompositeRisk(data) {
       } else {
         alert(data.error || "Assessment Error: Failed to insert record into database.");
       }
-
-
-
     });
   </script>
 
-
+<script>
+  function downloadCSV(type) {
+    fetch(`https://micro-risk-score.onrender.com/download/csv?type=${type}`, {
+      headers: { Authorization: "Bearer " + localStorage.getItem("jwt") }
+    })
+    .then(res => {
+      if (res.status === 204) {
+        alert("You have no records to download.");
+        return;
+      }
+      return res.blob();
+    })
+    .then(blob => {
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = type === "assessments"
+          ? "riskpeek_assessments.csv"
+          : "riskpeek_score_history.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    })
+    .catch(err => {
+      console.error("Download error:", err);
+      alert("Download failed. Please try again.");
+    });
+  }
+</script>
 </body>
 </html>

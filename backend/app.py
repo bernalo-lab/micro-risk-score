@@ -385,19 +385,33 @@ def score_history():
 @app.route("/download/csv")
 def export_csv():
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    data_type = request.args.get("type", "history")  # default to 'history'
+
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        records = list(submissions.find({"email": payload["email"]}))
+
+        if data_type == "assessments":
+            records = list(accessOthers.find({"submittedBy": payload["email"]}))
+            filename = "riskpeek_assessments.csv"
+        else:
+            records = list(submissions.find({"email": payload["email"]}))
+            filename = "riskpeek_score_history.csv"
+
+        if not records:
+            return '', 204
+
         df = pd.DataFrame(records)
         output = io.StringIO()
         df.to_csv(output, index=False)
         output.seek(0)
+
         return send_file(
             io.BytesIO(output.getvalue().encode()),
             mimetype='text/csv',
             as_attachment=True,
-            download_name='riskpeek_score_history.csv'
+            download_name=filename
         )
+
     except Exception as e:
         return jsonify({"error": f"CSV export failed: {str(e)}"}), 401
 
