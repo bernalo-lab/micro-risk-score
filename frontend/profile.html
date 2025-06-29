@@ -91,9 +91,12 @@
         <button onclick="downloadCSV('assessments')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
           Download Assessments CSV
         </button>
-        <a href="https://micro-risk-score.onrender.com/download/pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+        <button onclick="downloadPDF('history')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
           Download My History PDF
-        </a>
+        </button>
+        <button onclick="downloadPDF('assessments')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+          Download Assessments PDF
+        </button>
       </div>
 
     </div>
@@ -720,6 +723,39 @@ function calculateCompositeRisk(data) {
       alert("Download failed. Please try again.");
     });
   }
+
+  function downloadPDF(type) {
+    fetch(`https://micro-risk-score.onrender.com/download/pdf?type=${type}`, {
+      headers: { Authorization: "Bearer " + localStorage.getItem("jwt") }
+    })
+    .then(res => {
+      if (res.status === 204) {
+        alert("You have no records to download.");
+        return;
+      }
+      return res.blob();
+    })
+    .then(blob => {
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = type === "assessments"
+          ? "riskpeek_assessments.pdf"
+          : "riskpeek_score_history.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+       window.URL.revokeObjectURL(url);
+    }
+  })
+  .catch(err => {
+      console.error("Download error:", err);
+      alert("Download failed. Please try again.");
+    });
+  }
 </script>
+
+
 </body>
 </html>

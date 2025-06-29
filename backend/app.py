@@ -419,20 +419,67 @@ def export_csv():
 def export_pdf():
     from fpdf import FPDF
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    data_type = request.args.get("type", "history")  # default to 'history'
+
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        records = list(submissions.find({"email": payload["email"]}))
+        user_email = payload["email"]
+
+        if data_type == "assessments":
+            records = list(accessOthers.find({"submittedBy": user_email}))
+            filename = "riskpeek_assessments.pdf"
+            title = "RiskPeek - Assessments I've Made"
+        else:
+            records = list(submissions.find({"email": user_email}))
+            filename = "riskpeek_score_history.pdf"
+            title = "RiskPeek - My History"
+
+        if not records:
+            return '', 204
+
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="RiskPeek - User Score History", ln=True, align="C")
+        pdf.cell(200, 10, txt=title, ln=True, align="C")
         pdf.ln(10)
+
         for item in records:
-            pdf.cell(200, 10, txt=f"{item.get('timestamp')} | Score: {item.get('score')} | Confidence: {item.get('confidence')}%", ln=True)
+            timestamp = str(item.get('timestamp', ''))
+            score = str(item.get('score', ''))
+            confidence = str(item.get('confidence', ''))
+
+            if data_type == "assessments":
+                risk_category = item.get('riskCategory', '')
+                pdf.multi_cell(
+                    0,
+                    10,
+                    txt=f"{timestamp}\nScore: {score}\nConfidence: {confidence}%\nRisk Category: {risk_category}",
+                    border=0,
+                    align="L"
+                )
+            else:
+                factors = ", ".join(item.get('factors', []))
+                pdf.multi_cell(
+                    0,
+                    10,
+                    txt=f"{timestamp}\nScore: {score}\nConfidence: {confidence}%\nFactors: {factors}",
+                    border=0,
+                    align="L"
+                )
+
+            pdf.ln(5)  # space between records
+
         buffer = io.BytesIO()
         pdf.output(buffer)
         buffer.seek(0)
-        return send_file(buffer, as_attachment=True, download_name="riskpeek_score_history.pdf")
+
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf"
+        )
+
     except Exception as e:
         return jsonify({"error": f"PDF export failed: {str(e)}"}), 401
 
