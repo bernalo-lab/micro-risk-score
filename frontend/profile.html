@@ -336,6 +336,9 @@
       currentAssessStep = 1;
       showAssessStep(currentAssessStep);
 
+      // Important: ensure only Step 1 fields are required
+      updateRequiredFields(currentAssessStep);
+
       // Reset submit button
       const submitBtn = document.getElementById("assessSubmitBtn");
       submitBtn.disabled = false;
