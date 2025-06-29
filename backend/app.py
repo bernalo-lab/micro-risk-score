@@ -467,14 +467,13 @@ def export_pdf():
                     align="L"
                 )
 
-            pdf.ln(5)  # space between records
+            pdf.ln(5)  # spacing between records
 
-        buffer = io.BytesIO()
-        pdf.output(buffer)
-        buffer.seek(0)
+        # ✅ Get PDF content correctly
+        pdf_output_bytes = pdf.output(dest='S').encode('latin1')
 
         return send_file(
-            buffer,
+            io.BytesIO(pdf_output_bytes),
             as_attachment=True,
             download_name=filename,
             mimetype="application/pdf"
