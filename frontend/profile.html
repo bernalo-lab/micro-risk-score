@@ -286,7 +286,8 @@
         });
         exportContainer.classList.remove("hidden");
       } else {
-        if (localStorage.getItem('email' && data.length < 1 ) { // Check if data exist for Registered User before disabling 'Export' buttons
+        <!-- Check if data exist for Registered User before disabling 'Export' buttons -->
+        if (localStorage.getItem('email') && data.length < 1 ) {
           tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
           exportContainer.classList.add("hidden");
         }
