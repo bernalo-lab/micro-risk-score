@@ -445,7 +445,7 @@ def user_assessments():
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user_email = payload["submittedBy"]
+        user_email = payload["email"]
         results = list(accessOthers.find(
             {"submittedBy": user_email},
             {"_id": 0, "timestamp": 1, "submittedBy": 1, "assessedEmail": 1, "score": 1, "confidence": 1, "riskCategory": 1}
