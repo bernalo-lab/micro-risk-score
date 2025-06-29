@@ -312,7 +312,7 @@ def assessment_risk_score():
                 "riskCategory": data.get("riskCategory"),
                 "device_type": data.get("device_type", "Unknown"),
                 "observation": data.get("observation"),
-                "notes": data.get("observationNotes"),
+                "notes": data.get("notes"),
                 "submitted_via_form": "true"
             }
         accessOthers.insert_one(log_data)

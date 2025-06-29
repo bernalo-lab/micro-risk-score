@@ -311,6 +311,9 @@
       modal.classList.remove("hidden");
       modal.classList.add("flex");
 
+      // Reset form fields
+      document.getElementById("newRiskForm").reset();
+
       // Wait for the browser to render the modal, then set the email
       setTimeout(() => {
         const userEmail = document.getElementById("email").value;
@@ -321,6 +324,11 @@
           console.error("newRiskEmail input not found in the DOM after opening modal.");
         }
       }, 50); // small delay ensures DOM is ready
+
+      // Clear previous result
+      document.getElementById("newRiskResult").classList.add("hidden");
+      document.getElementById("newRiskResult").innerHTML = "";
+
     }
 
     function closeNewRiskModal() {
@@ -331,6 +339,9 @@
     function openAssessOthersModal() {
       document.getElementById("assessOthersModal").classList.remove("hidden");
       document.getElementById("assessOthersModal").classList.add("flex");
+
+      // Reset form fields
+      document.getElementById("assessOthersForm").reset();
 
       // Reset to step 1
       currentAssessStep = 1;
