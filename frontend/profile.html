@@ -523,7 +523,7 @@ function calculateCompositeRisk(data) {
   ]);
   add(yearsVal,yearsVal,0.05,0.04);
 
-  const employees=parseInt(data.numberOfEmployees);
+  const employees=parseInt(data.employees);
   const empVal=numericRange(employees,[
     {min:50,score:100},{min:10,score:75},{min:3,score:50},{min:0,score:25}
   ]);
@@ -603,7 +603,9 @@ function calculateCompositeRisk(data) {
 
       const result  = calculateCompositeRisk(payload);
 
-      // Include Risk Category to payload
+      // Include other data points to payload
+      payload.riskCategory = result.score;
+      payload.riskCategory = result.confidence;
       payload.riskCategory = result.label;
 
       // Insert into database

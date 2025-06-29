@@ -294,7 +294,7 @@ def assessment_risk_score():
                 "linkedin": data.get("linkedin"),
                 "website": data.get("website"),
                 "yearsActive": data.get("yearsActive"),
-                "numberOfEmployees": data.get("numberOfEmployees"),
+                "numberOfEmployees": data.get("employees"),
                 "legalDisputes": data.get("legalDisputes"),
                 "paymentHistory": data.get("paymentHistory"),
                 "annualRevenue": data.get("annualRevenue"),
