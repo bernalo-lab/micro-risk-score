@@ -288,7 +288,7 @@
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td class="border p-2">${row.timestamp}</td>
-            <td class="border p-2">${row.assessed_name || "-"}</td>
+            <td class="border p-2">${row.assessedEmail || "-"}</td>
             <td class="border p-2">${row.score}</td>
             <td class="border p-2">${row.confidence}%</td>
             <td class="border p-2">${row.riskCategory}</td>
@@ -641,13 +641,12 @@ function calculateCompositeRisk(data) {
     document.getElementById('assessOthersForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
-
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
       const result  = calculateCompositeRisk(payload);
 
       // Include other data points to payload
-      payload.submitted_By = document.getElementById("email").value;
+      payload.submittedBy = document.getElementById("email").value;
       payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
       payload.notes = document.getElementById("notes").value;
       payload.score = result.score;
