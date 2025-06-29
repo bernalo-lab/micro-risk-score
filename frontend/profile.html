@@ -115,7 +115,7 @@
         </select>
         <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
         <div class="md:col-span-2">
-          <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+          <button type="submit" id="newRiskResultSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
             Calculate Risk Score
           </button>
         </div>
@@ -164,7 +164,7 @@
           <option value="average">Average</option>
           <option value="poor">Poor</option>
         </select>
-        <input name="annualRevenue" placeholder="Annual Revenue Range" class="w-full p-3 border rounded" />
+        <input name="annualRevenue" placeholder="Annual Revenue" class="w-full p-3 border rounded" />
         <input name="creditScore" placeholder="Credit Score" class="w-full p-3 border rounded" />
         <input name="bankVerification" placeholder="Bank Verification Status" class="w-full p-3 border rounded" />
         <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="w-full p-3 border rounded" />
@@ -331,9 +331,20 @@
     function openAssessOthersModal() {
       document.getElementById("assessOthersModal").classList.remove("hidden");
       document.getElementById("assessOthersModal").classList.add("flex");
+
       // Reset to step 1
       currentAssessStep = 1;
       showAssessStep(currentAssessStep);
+
+      // Reset submit button
+      const submitBtn = document.getElementById("assessSubmitBtn");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      submitBtn.textContent = "Submit";
+
+      // Clear previous result
+      document.getElementById("assessResult").classList.add("hidden");
+      document.getElementById("assessResult").innerHTML = "";
     }
 
     function closeAssessOthersModal() {
@@ -394,8 +405,14 @@
 
       const data = await res.json();
       const resultBox = document.getElementById('newRiskResult');
+      const submitBtn = document.getElementById("newRiskResultSubmitBtn");
 
       if (res.ok) {
+        // Disable the submit button
+        submitBtn.disabled = true;
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        submitBtn.textContent = "Submitted";
+
         resultBox.innerHTML = `
           <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
           <p><strong>Score:</strong> ${data.score}</p>
@@ -598,14 +615,14 @@ function calculateCompositeRisk(data) {
 
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
-      payload.submitted_By = document.getElementById("email").value;
-      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-
       const result  = calculateCompositeRisk(payload);
 
       // Include other data points to payload
-      payload.riskCategory = result.score;
-      payload.riskCategory = result.confidence;
+      payload.submitted_By = document.getElementById("email").value;
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.notes = document.getElementById("notes").value;
+      payload.score = result.score;
+      payload.confidence = result.confidence;
       payload.riskCategory = result.label;
 
       // Insert into database
@@ -617,8 +634,15 @@ function calculateCompositeRisk(data) {
 
       const data = await res.json();
       const resultBox=document.getElementById("assessResult");
+      const submitBtn = document.getElementById("assessSubmitBtn");
 
       if (res.ok) {
+
+        // Disable the submit button
+        submitBtn.disabled = true;
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        submitBtn.textContent = "Submitted";
+
         resultBox.innerHTML=`
           <div class="border rounded p-4 mt-4">
             <h3 class="text-xl font-bold mb-2">Assessment Result</h3>
