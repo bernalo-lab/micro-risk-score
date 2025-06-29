@@ -276,7 +276,9 @@
     }
 
     async function loadAssessments() {
-      const res = await fetch("https://micro-risk-score.onrender.com/api/assessments", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const res = await fetch("https://micro-risk-score.onrender.com/api/assessments",
+        { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
+      });
       const data = await res.json();
       const tbody = document.getElementById("assessmentsTable");
       const exportContainer = document.getElementById("exportButtons");
@@ -289,6 +291,7 @@
             <td class="border p-2">${row.assessed_name || "-"}</td>
             <td class="border p-2">${row.score}</td>
             <td class="border p-2">${row.confidence}%</td>
+            <td class="border p-2">${row.riskCategory}</td>
           `;
           tbody.appendChild(tr);
         });
