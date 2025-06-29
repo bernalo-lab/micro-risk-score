@@ -308,7 +308,7 @@ def assessment_risk_score():
                 "domainAge": data.get("domainAge"),
                 "socialMediaPresence": data.get("socialMediaPresence"),
                 "score": data.get("score"),
-                "confidence": data.get("confidence"),
+                "confidence": data.get("confidence", "0"),
                 "riskCategory": data.get("riskCategory"),
                 "device_type": data.get("device_type", "Unknown"),
                 "observation": data.get("observation"),
