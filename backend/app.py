@@ -317,6 +317,9 @@ def assessment_risk_score():
             }
         accessOthers.insert_one(log_data)
 
+        # ✅ IMPORTANT: Add this success response
+        return jsonify({"message": "Assessment record saved successfully."}), 201
+
     except Exception as e:
         return jsonify({"error": f"Assessment Risk score DB insertion failed: {str(e)}"}), 500
 
