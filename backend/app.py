@@ -284,12 +284,12 @@ def assessment_risk_score():
 
         log_data = {
           "timestamp": datetime.now(timezone.utc),
-                "submitted_By": data.get("submittedBy"),
+                "submittedBy": data.get("submitted_By"),
                 "assessedEmail": data.get("assessedEmail"),
                 "legalName": data.get("legalName"),
-                "taxId": data.get("taxID"),
+                "taxId": data.get("taxId"),
                 "businessNumber": data.get("businessNumber"),
-                "country": data.get("countryOfIncorporation"),
+                "countryOfIncorporation": data.get("country"),
                 "addressProof": data.get("addressProof"),
                 "linkedin": data.get("linkedin"),
                 "website": data.get("website"),

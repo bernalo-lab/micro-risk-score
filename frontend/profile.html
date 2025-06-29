@@ -614,10 +614,9 @@ function calculateCompositeRisk(data) {
       });
 
       const data = await res.json();
-      //const resultBox = document.getElementById('newRiskResult');
+      const resultBox=document.getElementById("assessResult");
 
       if (res.ok) {
-        const resultBox=document.getElementById("assessResult");
         resultBox.innerHTML=`
           <div class="border rounded p-4 mt-4">
             <h3 class="text-xl font-bold mb-2">Assessment Result</h3>
