@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pymongo import MongoClient
@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 import os
 import jwt
 import bcrypt
+import requests
+
+
+
 
 load_dotenv()
 print("🔍 Loaded Environment Variables:")
@@ -17,10 +21,14 @@ print("EMAIL_USER:", os.getenv("EMAIL_USER"))
 print("EMAIL_FROM:", os.getenv("EMAIL_FROM"))
 print("MONGO_URI (partial):", os.getenv("MONGO_URI", "")[:30] + "...")
 
+# Store your keys securely (env vars or config)
+print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
+print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
+
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-# CORS(app, supports_credentials=False) - Use for testing
-
+app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
 
 # MongoDB setup
@@ -87,14 +95,31 @@ def register():
         email = data.get("email")
         password = data.get("password")
         name = data.get("name")
+        recaptcha_token = data.get("recaptchaToken")
 
+        # Check reCAPTCHA token
+        if not recaptcha_token:
+            return jsonify({"error": "reCAPTCHA token is missing."}), 400
+
+        recaptcha_secret = os.getenv("RECAPTCHA_SECRET_KEY")
+        verify_response = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={
+                "secret": recaptcha_secret,
+                "response": recaptcha_token
+            }
+        )
+        verify_result = verify_response.json()
+
+        if not verify_result.get("success"):
+            return jsonify({"error": "Failed reCAPTCHA verification."}), 400
+
+        # Continue with registration
         if users.find_one({"email": email}):
             return jsonify({"error": "User already exists"}), 409
 
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         token = serializer.dumps(email, salt="email-confirm")
-
-        print("📤 Using SMTP Host(in Register):", app.config["MAIL_SERVER"])
 
         users.insert_one({
             "email": email,
@@ -105,19 +130,17 @@ def register():
             "consent": False
         })
 
-        print("📤 SMTP Username(in Register):", app.config["MAIL_USERNAME"])
-
         link = f"{request.host_url}api/verify/{token}"
         msg = Message("Confirm Your Email", sender=EMAIL_FROM, recipients=[email])
         msg.body = f"Welcome to RiskPeek! Please verify your email: {link}"
+
         try:
-            print("✅ Attempting to send email...")
             mail.send(msg)
-            print(f"✅ Email sent to {email}")
         except Exception as mail_error:
             print(f"❌ Failed to send email: {mail_error}")
 
         return jsonify({"message": "User registered. Check email to verify."}), 201
+
     except Exception as e:
         return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 
