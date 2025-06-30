@@ -285,6 +285,25 @@ def global_risk_score():
             }
             submissions.insert_one(log_data)
         else:
+            # validate reCAPTCHA token
+            recaptcha_token = data.get("recaptchaToken")
+
+            # Check reCAPTCHA token
+            if not recaptcha_token:
+              return jsonify({"error": "reCAPTCHA token is missing."}), 400
+
+            recaptcha_secret = os.getenv("RECAPTCHA_SECRET_KEY")
+            verify_response = requests.post(
+              "https://www.google.com/recaptcha/api/siteverify",
+              data={
+                "secret": recaptcha_secret,
+                "response": recaptcha_token
+              }
+            )
+            verify_result = verify_response.json()
+            if not verify_result.get("success"):
+              return jsonify({"error": "Failed reCAPTCHA verification."}), 400
+
             print("🆓 Freemium user - result not saved to DB.")
 
         return jsonify(result), 200
@@ -303,7 +322,6 @@ def assessment_risk_score():
 
         if not data.get("assessedEmail"):
             return jsonify({"error": "Invalid Assessed Email"}), 401
-
 
         log_data = {
           "timestamp": datetime.now(timezone.utc),
@@ -522,6 +540,10 @@ def user_assessments():
         return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": f"Assessment fetch failed: {str(e)}"}), 401
+
+@app.route("/api/recaptcha-sitekey")
+def recaptcha_sitekey():
+    return jsonify({"siteKey": os.getenv("RECAPTCHA_SITE_KEY")})
 
 # (any other routes)
 if __name__ == "__main__":
