@@ -96,6 +96,9 @@ def register():
         password = data.get("password")
         name = data.get("name")
         recaptcha_token = data.get("recaptchaToken")
+        apiAccess = data.get("apiAccess")
+        role = data.get("role")
+
 
         # Check reCAPTCHA token
         if not recaptcha_token:
@@ -120,14 +123,16 @@ def register():
 
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         token = serializer.dumps(email, salt="email-confirm")
-
+ =
         users.insert_one({
             "email": email,
             "password": hashed,
             "name": name,
             "verified": False,
             "created_at": datetime.utcnow(),
-            "consent": False
+            "consent": False,
+            "apiAccess" = False,
+            "role" = role
         })
 
         link = f"{request.host_url}api/verify/{token}"

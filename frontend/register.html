@@ -20,6 +20,13 @@
             <input type="password" placeholder="Password" name="password" required
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
 
+            <select name="role" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Select your account type</option>
+                <option value="user">User - Risk Score / Assess Others</option>
+                <option value="developer">Developer / Analyst - API Access</option>
+            </select>
+
             <!-- reCAPTCHA widget -->
             <div class="g-recaptcha" data-sitekey="6Lfb5nIrAAAAAMle1kRDW_kdzp1PsJ4dsfMkeoVk"></div>
 
@@ -44,6 +51,7 @@
         const name = form.name.value.trim();
         const email = form.email.value.trim();
         const password = form.password.value;
+        const role = form.role.value.trim();
 
         // Get Site Key
         const recaptchaToken = grecaptcha.getResponse();
@@ -55,7 +63,7 @@
         const res = await fetch('https://micro-risk-score.onrender.com/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password, recaptchaToken })
+            body: JSON.stringify({ name, email, password, recaptchaToken, role })
         });
 
         const data = await res.json();
