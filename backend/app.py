@@ -131,8 +131,8 @@ def register():
             "verified": False,
             "created_at": datetime.utcnow(),
             "consent": False,
-            "apiAccess" = False,
-            "role" = role
+            "apiAccess:" = False,
+            "role:" = role
         })
 
         link = f"{request.host_url}api/verify/{token}"
