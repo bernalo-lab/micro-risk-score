@@ -101,30 +101,31 @@
     }
 
     // Save full name
-    document.getElementById("profileForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const nameValue = document.getElementById("fullName").value;
-
-      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + localStorage.getItem("jwt")
-        },
-        body: JSON.stringify({
-          name: nameValue
-        })
-      });
-
-      if (res.ok) {
-        alert("✅ Changes saved successfully!");
-      } else {
-        alert("⚠️ Failed to save changes.");
-        console.error("Save error:", res.status);
+    document.getElementById('saveChanges').addEventListener('click', () => {
+      const name = document.getElementById('fullName').value.trim();
+      if (!name) {
+        alert('Full name cannot be empty.');
+        return;
       }
+      fetch('https://micro-risk-score.onrender.com/api/profile/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify({ name })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save changes');
+        }
+        alert('Profile updated successfully.');
+      })
+      .catch(error => {
+        console.error(error);
+        alert('Error updating profile.');
+      });
     });
-
 
     // Logout handler
     document.getElementById('logout').addEventListener('click', () => {
