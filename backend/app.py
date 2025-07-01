@@ -123,7 +123,7 @@ def register():
 
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         token = serializer.dumps(email, salt="email-confirm")
- =
+ 
         users.insert_one({
             "email": email,
             "password": hashed,
