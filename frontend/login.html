@@ -57,7 +57,13 @@
 
       if (res.ok && data.token) {
         localStorage.setItem('jwt', data.token);
-        window.location.href = '/profile.html';
+
+        // Confirm what page to display depending on Role
+        if (data.role == "user" ) {
+          window.location.href = '/profile.html';
+        } else // Display 'Developer/Analyst' page
+          window.location.href = '/developer_dashboard.html';
+        }
       } else {
         alert(data.error || "Login failed.");
       }

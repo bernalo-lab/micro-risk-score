@@ -98,7 +98,6 @@ def register():
         recaptcha_token = data.get("recaptchaToken")
         role = data.get("role")
 
-
         # Check reCAPTCHA token
         if not recaptcha_token:
             return jsonify({"error": "reCAPTCHA token is missing."}), 400
@@ -131,7 +130,10 @@ def register():
             "created_at": datetime.utcnow(),
             "consent": False,
             "apiAccess": False,
-            "role": role
+            "role": role,
+            "token_generations_today": 0,
+            "last_token_reset_date": datetime.utcnow()
+
         })
 
         link = f"{request.host_url}api/verify/{token}"
@@ -548,6 +550,37 @@ def user_assessments():
 @app.route("/api/recaptcha-sitekey")
 def recaptcha_sitekey():
     return jsonify({"siteKey": os.getenv("RECAPTCHA_SITE_KEY")})
+
+import jwt
+from datetime import datetime, timedelta
+
+@app.route('/api/generate-token', methods=['POST'])
+def generate_token():
+    user = get_authenticated_user()
+    data = request.json
+    duration = int(data['duration'])
+
+    if duration > 12:
+        return jsonify({"error": "Max 12 hours allowed."}), 400
+
+    # Check daily limit
+    if user.token_generations_today >= 2:
+        return jsonify({"error": "Daily limit reached."}), 400
+
+    exp = datetime.utcnow() + timedelta(hours=duration)
+    payload = {
+        "userId": str(user.id),
+        "role": "developer",
+        "apiAccess": True,
+        "exp": exp
+    }
+    token = jwt.encode(payload, app.config['JWT_SECRET'], algorithm="HS256")
+
+    # Update usage counter
+    user.token_generations_today += 1
+    user.save()
+
+    return jsonify({"token": token})
 
 # (any other routes)
 if __name__ == "__main__":

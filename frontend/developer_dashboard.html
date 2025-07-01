@@ -1,0 +1,45 @@
+<div class="max-w-2xl mx-auto p-6 bg-white shadow rounded mt-10">
+  <h2 class="text-2xl font-bold mb-4">Developer API Dashboard</h2>
+
+  <!-- Full Name -->
+  <div class="mb-4">
+    <label class="block text-gray-600">Full Name</label>
+    <input id="fullName" type="text" class="border p-2 w-full rounded" disabled />
+  </div>
+
+  <!-- API Access Toggle -->
+  <div class="mb-4">
+    <label class="block text-gray-600">API Access</label>
+    <button id="toggleApiAccess"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      Activate Access
+    </button>
+  </div>
+
+  <!-- JWT Token Generator (only visible when active) -->
+  <div id="jwtGenerator" class="mb-4 hidden">
+    <label class="block text-gray-600">Generate JWT Token</label>
+    <select id="tokenDuration" class="border p-2 w-full rounded mb-2">
+      <option value="1">1 hour</option>
+      <option value="2">2 hours</option>
+      <option value="4">4 hours</option>
+      <option value="12">12 hours (max)</option>
+    </select>
+    <button id="generateToken"
+      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+      Generate Token
+    </button>
+    <div id="tokenResult" class="mt-2 text-sm break-words"></div>
+  </div>
+
+  <!-- Available APIs -->
+  <div class="mt-6">
+    <h3 class="text-xl font-semibold mb-2">Available APIs</h3>
+    <ul class="list-disc pl-5 text-gray-700">
+      <li>/api/risk-score</li>
+      <li>/api/bulk-risk-assessment</li>
+      <li>/api/transaction-analysis</li>
+      <li>/api/reporting</li>
+    </ul>
+  </div>
+</div>
