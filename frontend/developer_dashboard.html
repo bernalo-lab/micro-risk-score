@@ -85,9 +85,9 @@
   <script>
     // Fetch profile info on load
     document.addEventListener("DOMContentLoaded", () => {
-      fetch('/api/profile', {
+      fetch('https://micro-risk-score.onrender.com/api/profile', {
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
+          'Authorization': 'Bearer ' + localStorage.getItem('jwt')
         }
       })
       .then(response => {
