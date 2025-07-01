@@ -85,26 +85,20 @@
   <script>
     // Fetch profile info on load
     document.addEventListener("DOMContentLoaded", () => {
-      fetch('https://micro-risk-score.onrender.com/api/profile', {
+      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
         method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to load profile');
-        }
-        return response.json();
-      })
-      .then(data => {
-        document.getElementById('fullName').value = data.fullName || '';
-        document.getElementById('email').value = data.email || '';
-      })
-      .catch(error => {
-        console.error(error);
-        alert('Could not load profile data.');
+        headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
       });
+
+      if (!res.ok) {
+        console.error("Error status:", res.status);
+        return;
+      }
+
+      const user = await res.json();
+      document.getElementById("fullName").value = user.name || "";
+      document.getElementById("email").value = user.email || "";
+
     });
 
     // Save full name
