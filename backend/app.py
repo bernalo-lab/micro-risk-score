@@ -183,7 +183,13 @@ def login():
             "exp": datetime.utcnow() + timedelta(hours=12)
         }
         token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-        return jsonify({"token": token, "verified": True}), 200
+        return jsonify(
+          {
+            "token": token,
+            "verified": True,
+            "role": user.get("role")
+          }
+        ), 200
     except Exception as e:
         return jsonify({"error": f"Login failed: {str(e)}"}), 500
 
