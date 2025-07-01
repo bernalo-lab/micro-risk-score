@@ -59,13 +59,13 @@
         localStorage.setItem('jwt', data.token);
 
         // Confirm what page to display depending on Role
-        if (data['role'] == "user" ) {
+        if (data['role'] === "user") {
           window.location.href = '/profile.html';
-        } else { // Display 'Developer/Analyst' page
+        } else if (data['role'] === "developer") {
           window.location.href = '/developer_dashboard.html';
+        } else {   // fallback or error page
+          window.location.href = '/unauthorized.html';
         }
-      } else {
-        alert(data.error || "Login failed.");
       }
     });
   </script>
