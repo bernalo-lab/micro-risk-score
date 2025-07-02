@@ -134,9 +134,19 @@
       window.location.href = '/';
     });
 
-    document.getElementById('activateAccess').addEventListener('click', () => {
-      document.getElementById('apiSection').classList.remove('d-none');
-      alert('API Access Activated.');
+    const activateBtn = document.getElementById('activateAccess');
+    const apiSection = document.getElementById('apiSection');
+
+    activateBtn.addEventListener('click', () => {
+      if (apiSection.classList.contains('d-none')) {
+        // Activate access
+        apiSection.classList.remove('d-none');
+        activateBtn.textContent = 'Deactivate Access';
+      } else {
+        // Deactivate access
+        apiSection.classList.add('d-none');
+        activateBtn.textContent = 'Activate Access';
+      }
     });
 
     document.getElementById('generateToken').addEventListener('click', async () => {
