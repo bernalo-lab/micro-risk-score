@@ -617,7 +617,7 @@ def generate_token_duration():
         return jsonify({'error': 'Invalid duration'}), 400
 
     # Create expiration time
-    expiration = datetime.datetime.utcnow() + expiry_delta
+    expiration = datetime.utcnow() + expiry_delta
 
     # Build token payload
     payload = {
