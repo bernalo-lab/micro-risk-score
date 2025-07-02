@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pymongo import MongoClient
@@ -652,6 +653,153 @@ def toggle_api_access():
         return jsonify({"apiAccess": new_status}), 200
     except Exception as e:
         return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
+
+## Start API
+jwt = JWTManager(app)
+
+
+app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "your-secret"
+jwt = JWTManager(app)
+
+# Example in-memory "database"
+ASSESSORS = {}
+ASSESSMENTS = []
+
+def compute_score(data):
+    # Example logic—replace with real scoring
+    return {
+        "score": 75,
+        "confidence": "Medium",
+        "riskCategory": "Medium Risk",
+        "factors": ["Example factor A", "Example factor B"]
+    }
+
+def analyze_transactions(data):
+    # Example analysis—replace with real
+    return {
+        "summary": "No major anomalies detected.",
+        "anomalies": [],
+        "recommendations": ["Maintain consistent cash flow."]
+    }
+
+# 1) /api/risk-score
+@app.route('/api/risk-score', methods=['POST'])
+@jwt_required()
+def risk_score():
+    user = get_jwt_identity()
+    assessor = ASSESSORS.get(user)
+    if not assessor:
+        return jsonify({"error": "Assessor not found"}), 404
+
+    data = request.get_json()
+    result = compute_score(data)
+
+    # Optionally save to assessments
+    ASSESSMENTS.append({
+        **data,
+        **result,
+        "submittedBy": user,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+
+    return jsonify(result)
+
+# 2) /api/bulk-risk-assessment
+@app.route('/api/bulk-risk-assessment', methods=['POST'])
+@jwt_required()
+def bulk_risk_assessment():
+    user = get_jwt_identity()
+    assessor = ASSESSORS.get(user)
+    if not assessor:
+        return jsonify({"error": "Assessor not found"}), 404
+
+    data = request.get_json()
+    assessments = data.get("assessments", [])
+    results = []
+    for record in assessments:
+        score_result = compute_score(record)
+        ASSESSMENTS.append({
+            **record,
+            **score_result,
+            "submittedBy": user,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        results.append({
+            "legalName": record.get("legalName"),
+            "score": score_result["score"],
+            "riskCategory": score_result["riskCategory"]
+        })
+
+    return jsonify({"results": results})
+
+# 3) /api/transaction-analysis
+@app.route('/api/transaction-analysis', methods=['POST'])
+@jwt_required()
+def transaction_analysis():
+    user = get_jwt_identity()
+    assessor = ASSESSORS.get(user)
+    if not assessor:
+        return jsonify({"error": "Assessor not found"}), 404
+
+    if not assessor.get("consent"):
+        return jsonify({"error": "Consent not granted to use stored assessments"}), 403
+
+    # Use stored assessments for this user
+    user_assessments = [a for a in ASSESSMENTS if a["submittedBy"] == user]
+    analysis = analyze_transactions(user_assessments)
+
+    return jsonify(analysis)
+
+# 4) /api/reporting
+@app.route('/api/reporting', methods=['GET'])
+@jwt_required()
+def reporting():
+    user = get_jwt_identity()
+    assessor = ASSESSORS.get(user)
+    if not assessor:
+        return jsonify({"error": "Assessor not found"}), 404
+
+    if not assessor.get("consent"):
+        return jsonify({"error": "Consent not granted to use stored assessments"}), 403
+
+    user_assessments = [a for a in ASSESSMENTS if a["submittedBy"] == user]
+    if not user_assessments:
+        return jsonify({"message": "No assessments found."})
+
+    scores = [a["score"] for a in user_assessments]
+    avg_score = sum(scores) / len(scores)
+    common_category = max(
+        set(a["riskCategory"] for a in user_assessments),
+        key=lambda c: [a["riskCategory"] for a in user_assessments].count(c)
+    )
+
+    return jsonify({
+        "totalAssessments": len(user_assessments),
+        "averageScore": avg_score,
+        "mostCommonRiskCategory": common_category,
+        "assessments": user_assessments
+    })
+
+
+## End API
+
+
+## Swagger Details
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = "/docs"
+API_URL = "/static/swagger.yaml"
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        "app_name": "RiskPeek Developer APIs"
+    }
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+##
 
 # (any other routes)
 if __name__ == "__main__":

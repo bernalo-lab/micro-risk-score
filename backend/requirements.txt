@@ -1,4 +1,4 @@
-flask
+Flask>=2.0.0
 flask-cors
 pymongo[srv]==4.13.0
 dnspython
@@ -10,3 +10,6 @@ bcrypt
 pandas
 fpdf
 requests
+flask-jwt-extended>=4.0.0
+flask-swagger-ui
+
