@@ -632,6 +632,24 @@ def generate_token_duration():
         traceback.print_exc()
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
+@app.route("/api/toggle-api-access", methods=["POST"])
+def toggle_api_access():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user = users.find_one({"email": payload["email"]})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        current_status = user.get("apiAccess", False)
+        new_status = not current_status
+
+        users.update_one({"email": payload["email"]}, {"$set": {"apiAccess": new_status}})
+
+        return jsonify({"apiAccess": new_status}), 200
+    except Exception as e:
+        return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
+
 # (any other routes)
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

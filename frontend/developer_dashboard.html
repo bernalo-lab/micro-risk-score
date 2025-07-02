@@ -137,15 +137,34 @@
     const activateBtn = document.getElementById('activateAccess');
     const apiSection = document.getElementById('apiSection');
 
-    activateBtn.addEventListener('click', () => {
-      if (apiSection.classList.contains('d-none')) {
-        // Activate access
-        apiSection.classList.remove('d-none');
-        activateBtn.textContent = 'Deactivate Access';
-      } else {
-        // Deactivate access
-        apiSection.classList.add('d-none');
-        activateBtn.textContent = 'Activate Access';
+
+//<<<<<<
+    document.getElementById('activateAccess').addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/toggle-api-access', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+          }
+        });
+
+        if (!res.ok) throw new Error('Failed to toggle access');
+        const data = await res.json();
+
+        // Update UI
+        const apiSection = document.getElementById('apiSection');
+        if (data.apiAccess) {
+          apiSection.classList.remove('d-none');
+          activateBtn.textContent = 'Deactivate Access';
+          alert('API Access Activated');
+        } else {
+          apiSection.classList.add('d-none');
+          activateBtn.textContent = 'Activate Access';
+          alert('API Access Deactivated');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error toggling access.');
       }
     });
 
@@ -169,7 +188,7 @@
         const tokenDisplay = document.getElementById('tokenDisplay');
         tokenDisplay.textContent = data.token;
         tokenDisplay.classList.remove('d-none');
-        console.log("Got Here: 1");
+        console.log("Got Here: 4");
       } catch (err) {
         console.error(err);
         alert('Error generating token.');
