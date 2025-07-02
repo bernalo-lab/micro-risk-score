@@ -158,7 +158,7 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('jwt')
           },
-          body: JSON.stringify({ duration: duration })
+          body: JSON.stringify({ duration })
         });
         if (!res.ok) throw new Error('Failed to generate token');
         const data = await res.json();
