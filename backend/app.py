@@ -589,7 +589,7 @@ def generate_token():
 JWT_ALGORITHM = 'HS256'
 
 @app.route('/api/generate-token-duration', methods=['POST'])
-def generate_token():
+def generate_token_duration():
     auth_header = request.headers.get('Authorization')
     if not auth_header:
         return jsonify({'error': 'Unauthorized'}), 401
