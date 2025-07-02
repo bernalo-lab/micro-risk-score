@@ -595,7 +595,8 @@ def generate_token_duration():
         return jsonify({'error': 'Unauthorized'}), 401
 
     # (Optional) You can parse the Bearer token here to verify user identity
-    # token = auth_header.replace('Bearer ', '')
+    token = auth_header.replace('Bearer ', '')
+
 
     data = request.get_json()
     if not data or 'duration' not in data:
