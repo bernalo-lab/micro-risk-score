@@ -163,7 +163,7 @@
         } else {
           apiSection.classList.add('d-none');
           activateBtn.textContent = 'Activate Access';
-          tokenMeta.innerHTML = `<strong>Role:</strong> ${userRole}<br/><strong>Expires:</strong> ${expiration.toUTCString()}`;
+          tokenMeta.innerHTML = `<strong>Role:</strong> ${userRole}`;
           alert('API Access Deactivated');
         }
       } catch (err) {
