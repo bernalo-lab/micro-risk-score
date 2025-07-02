@@ -36,6 +36,7 @@
   </style>
 </head>
 <body>
+<body>
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-lg-8">
@@ -50,13 +51,20 @@
               <label for="email" class="form-label">Email Address</label>
               <input type="email" id="email" class="form-control" disabled>
             </div>
-            <div class="mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
-              <div class="d-flex gap-2">
+            <div class="row g-2 mb-3">
+              <div class="col-4 d-grid">
                 <button type="button" id="saveChanges" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary">Activate Access</button>
               </div>
-              <button type="button" id="logout" class="btn btn-danger">Logout</button>
+              <div class="col-4 d-grid">
+                <button type="button" id="activateAccess" class="btn btn-secondary">Activate Access</button>
+              </div>
+              <div class="col-4 d-grid">
+                <button type="button" id="logout" class="btn btn-danger">Logout</button>
+              </div>
             </div>
+          </form>
+
+          <div id="apiSection" class="d-none">
             <div class="mb-3">
               <label class="form-label">Generate JWT Token</label>
               <div class="d-flex align-items-center gap-2">
@@ -69,38 +77,34 @@
                 <button type="button" id="generateToken" class="btn btn-primary">Generate Token</button>
               </div>
             </div>
-          </form>
-          <h5>Available APIs:</h5>
-          <ul class="list-group">
-            <li class="list-group-item">/api/risk-score</li>
-            <li class="list-group-item">/api/bulk-risk-assessment</li>
-            <li class="list-group-item">/api/transaction-analysis</li>
-            <li class="list-group-item">/api/reporting</li>
-          </ul>
+            <div id="tokenDisplay" class="alert alert-success d-none"></div>
+            <h5>Available APIs:</h5>
+            <ul class="list-group">
+              <li class="list-group-item">/api/risk-score</li>
+              <li class="list-group-item">/api/bulk-risk-assessment</li>
+              <li class="list-group-item">/api/transaction-analysis</li>
+              <li class="list-group-item">/api/reporting</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Fetch profile info on load
     async function loadUser() {
       const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
-        method: 'GET',
         headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
       });
-
       if (!res.ok) {
         console.error("Error status:", res.status);
         return;
       }
-
       const user = await res.json();
       document.getElementById("fullName").value = user.name || "";
       document.getElementById("email").value = user.email || "";
     }
 
-    // Save full name
     document.getElementById('saveChanges').addEventListener('click', () => {
       const nameValue = document.getElementById('fullName').value.trim();
       if (!nameValue) {
@@ -113,17 +117,10 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('jwt')
         },
-        body: JSON.stringify(
-          {
-            name: nameValue,
-            consent: ""
-          }
-        )
+        body: JSON.stringify({ name: nameValue, consent: "" })
       })
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to save changes');
-        }
+        if (!response.ok) throw new Error('Failed to save changes');
         alert('Profile updated successfully.');
       })
       .catch(error => {
@@ -132,14 +129,40 @@
       });
     });
 
-    // Logout handler
     document.getElementById('logout').addEventListener('click', () => {
       localStorage.removeItem('jwt');
       window.location.href = '/';
     });
 
-    // Load user details on startup
+    document.getElementById('activateAccess').addEventListener('click', () => {
+      document.getElementById('apiSection').classList.remove('d-none');
+      alert('API Access Activated.');
+    });
+
+    document.getElementById('generateToken').addEventListener('click', async () => {
+      const duration = document.getElementById('tokenDuration').value;
+      try {
+        const res = await fetch('https://micro-risk-score.onrender.com/api/generate-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+          },
+          body: JSON.stringify({ duration })
+        });
+        if (!res.ok) throw new Error('Failed to generate token');
+        const data = await res.json();
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        tokenDisplay.textContent = data.token;
+        tokenDisplay.classList.remove('d-none');
+      } catch (err) {
+        console.error(err);
+        alert('Error generating token.');
+      }
+    });
+
     window.addEventListener("DOMContentLoaded", loadUser);
   </script>
+</body>
 </body>
 </html>
