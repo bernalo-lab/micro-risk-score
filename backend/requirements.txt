@@ -1,4 +1,4 @@
-Flask>=2.0.0
+flask
 flask-cors
 pymongo[srv]==4.13.0
 dnspython

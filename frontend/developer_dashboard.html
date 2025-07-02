@@ -86,6 +86,35 @@
               <li class="list-group-item">/api/transaction-analysis</li>
               <li class="list-group-item">/api/reporting</li>
             </ul>
+
+<div class="mt-4">
+  <h5>Call /api/risk-score</h5>
+  <textarea id="riskScoreInput" class="form-control mb-2" rows="6" placeholder='{"legalName":"Acme Ltd","taxId":"123","annualRevenue":500000,"creditScore":700,"amlStatus":"Clear"}'></textarea>
+  <button type="button" id="callRiskScore" class="btn btn-primary">Submit Risk Score</button>
+  <pre id="riskScoreResult" class="mt-3"></pre>
+</div>
+
+<div class="mt-4">
+  <h5>Call /api/bulk-risk-assessment</h5>
+  <textarea id="bulkInput" class="form-control mb-2" rows="6" placeholder='{"assessments":[{"legalName":"Company A","taxId":"001","annualRevenue":300000,"creditScore":650,"amlStatus":"Clear"}]}'></textarea>
+  <button type="button" id="callBulk" class="btn btn-primary">Submit Bulk Assessment</button>
+  <pre id="bulkResult" class="mt-3"></pre>
+</div>
+
+<div class="mt-4">
+  <h5>Call /api/transaction-analysis</h5>
+  <button type="button" id="callTransaction" class="btn btn-primary">Analyze Transactions</button>
+  <pre id="transactionResult" class="mt-3"></pre>
+</div>
+
+<div class="mt-4">
+  <h5>Call /api/reporting</h5>
+  <button type="button" id="callReporting" class="btn btn-primary">Fetch Report</button>
+  <pre id="reportingResult" class="mt-3"></pre>
+</div>
+
+
+
           </div>
         </div>
       </div>
