@@ -590,46 +590,48 @@ JWT_ALGORITHM = 'HS256'
 
 @app.route('/api/generate-token-duration', methods=['POST'])
 def generate_token_duration():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'error': 'Unauthorized'}), 401
 
-    # (Optional) You can parse the Bearer token here to verify user identity
-    #token = auth_header.replace('Bearer ', '')
+        data = request.get_json()
+        if not data or 'duration' not in data:
+            return jsonify({'error': 'Missing duration'}), 400
 
+        duration_str = data['duration'].lower()
 
-    data = request.get_json()
-    if not data or 'duration' not in data:
-        return jsonify({'error': 'Missing duration'}), 400
+        durations_map = {
+            '1 hour': timedelta(hours=1),
+            '6 hours': timedelta(hours=6),
+            '12 hours': timedelta(hours=12),
+            '24 hours': timedelta(hours=24),
+        }
 
-    duration_str = data['duration'].lower()
+        expiry_delta = durations_map.get(duration_str)
+        if not expiry_delta:
+            return jsonify({'error': 'Invalid duration'}), 400
 
-    # Map duration to minutes or hours
-    durations_map = {
-        '1 hour': datetime.timedelta(hours=1),
-        '6 hours': datetime.timedelta(hours=6),
-        '12 hours': datetime.timedelta(hours=12),
-        '24 hours': datetime.timedelta(hours=24),
-    }
+        expiration = datetime.utcnow() + expiry_delta
 
-    expiry_delta = durations_map.get(duration_str)
-    if not expiry_delta:
-        return jsonify({'error': 'Invalid duration'}), 400
+        payload = {
+            'sub': 'api_access',
+            'exp': expiration,
+            'scope': 'developer_api'
+        }
 
-    # Create expiration time
-    expiration = datetime.utcnow() + expiry_delta
+        # ✅ Confirm JWT_SECRET is defined
+        if not JWT_SECRET:
+            return jsonify({'error': 'JWT_SECRET not configured.'}), 500
 
-    # Build token payload
-    payload = {
-        'sub': 'api_access',       # or the user id
-        'exp': expiration,
-        'scope': 'developer_api'
-    }
+        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-    # Encode the JWT
-    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        return jsonify({'token': token}), 200
 
-    return jsonify({'token': token}), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f"Internal server error: {str(e)}"}), 500
 
 # (any other routes)
 if __name__ == "__main__":
