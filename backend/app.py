@@ -620,9 +620,8 @@ def generate_token_duration():
             'scope': 'developer_api'
         }
 
-        # ✅ Confirm JWT_SECRET is defined
         if not JWT_SECRET:
-            return jsonify({'error': 'JWT_SECRET not configured.'}), 500
+            return jsonify({'error': 'JWT_SECRET is not configured'}), 500
 
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -631,7 +630,7 @@ def generate_token_duration():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({'error': f"Internal server error: {str(e)}"}), 500
+        return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 # (any other routes)
 if __name__ == "__main__":
