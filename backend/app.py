@@ -24,8 +24,8 @@ print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
 print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
 
-app = Flask(__name__)
-CORS(app, supports_credentials=True)
+#app = Flask(__name__)
+CORS(app, supports_credentials=False)
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
 
