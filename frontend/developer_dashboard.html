@@ -137,11 +137,9 @@
     const activateBtn = document.getElementById('activateAccess');
     const apiSection = document.getElementById('apiSection');
 
-
-//<<<<<<
     document.getElementById('activateAccess').addEventListener('click', async () => {
       try {
-        const res = await fetch('/api/toggle-api-access', {
+        const res = await fetch('https://micro-risk-score.onrender.com/api/toggle-api-access', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('jwt')
