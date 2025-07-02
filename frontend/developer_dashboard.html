@@ -65,6 +65,7 @@
           </form>
 
           <div id="apiSection" class="d-none">
+            <div id="tokenMeta" class="mt-2 text-muted"></div>
             <div class="mb-3">
               <label class="form-label">Generate JWT Token</label>
               <div class="d-flex align-items-center gap-2">
@@ -92,6 +93,8 @@
   </div>
 
   <script>
+    let userRole = "Developer"; // default
+
     async function loadUser() {
       const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
         headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
@@ -103,6 +106,7 @@
       const user = await res.json();
       document.getElementById("fullName").value = user.name || "";
       document.getElementById("email").value = user.email || "";
+      userRole = user.role || 'Developer';
     }
 
     document.getElementById('saveChanges').addEventListener('click', () => {
@@ -134,9 +138,6 @@
       window.location.href = '/';
     });
 
-    const activateBtn = document.getElementById('activateAccess');
-    const apiSection = document.getElementById('apiSection');
-
     document.getElementById('activateAccess').addEventListener('click', async () => {
       try {
         const res = await fetch('https://micro-risk-score.onrender.com/api/toggle-api-access', {
@@ -150,14 +151,19 @@
         const data = await res.json();
 
         // Update UI
+        const activateBtn = document.getElementById('activateAccess');
         const apiSection = document.getElementById('apiSection');
+        const tokenMeta = document.getElementById('tokenMeta');
+
         if (data.apiAccess) {
           apiSection.classList.remove('d-none');
           activateBtn.textContent = 'Deactivate Access';
+          tokenMeta.innerHTML = `<strong>Role:</strong> ${userRole}`;
           alert('API Access Activated');
         } else {
           apiSection.classList.add('d-none');
           activateBtn.textContent = 'Activate Access';
+          tokenMeta.innerHTML = `<strong>Role:</strong> ${userRole}<br/><strong>Expires:</strong> ${expiration.toUTCString()}`;
           alert('API Access Deactivated');
         }
       } catch (err) {
@@ -175,18 +181,22 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('jwt')
           },
-          body: JSON.stringify({ duration: duration })
+          body: JSON.stringify({ duration })
         });
 
-        console.log("Got Here: 1");
         if (!res.ok) throw new Error('Failed to generate token');
-        console.log("Got Here: 2");
+
         const data = await res.json();
-        console.log("Got Here: 3");
         const tokenDisplay = document.getElementById('tokenDisplay');
         tokenDisplay.textContent = data.token;
         tokenDisplay.classList.remove('d-none');
-        console.log("Got Here: 4");
+
+        // Display expiration
+        const expiration = new Date(data.expiresAt);
+        document.getElementById('tokenMeta').innerHTML = `
+          <strong>Role:</strong> Developer<br/>
+          <strong>Expires:</strong> ${expiration.toUTCString()}
+        `;
       } catch (err) {
         console.error(err);
         alert('Error generating token.');

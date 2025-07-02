@@ -625,7 +625,10 @@ def generate_token_duration():
 
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-        return jsonify({'token': token}), 200
+        return jsonify({
+          'token': token,
+          'expiresAt': expiration.isoformat() + 'Z'
+        }), 200
 
     except Exception as e:
         import traceback
