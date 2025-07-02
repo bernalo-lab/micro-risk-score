@@ -160,11 +160,16 @@
           },
           body: JSON.stringify({ duration })
         });
+
+        console.log("Got Here: 1");
         if (!res.ok) throw new Error('Failed to generate token');
+        console.log("Got Here: 2");
         const data = await res.json();
+        console.log("Got Here: 3");
         const tokenDisplay = document.getElementById('tokenDisplay');
         tokenDisplay.textContent = data.token;
         tokenDisplay.classList.remove('d-none');
+        console.log("Got Here: 1");
       } catch (err) {
         console.error(err);
         alert('Error generating token.');
