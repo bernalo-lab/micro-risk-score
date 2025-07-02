@@ -152,13 +152,13 @@
     document.getElementById('generateToken').addEventListener('click', async () => {
       const duration = document.getElementById('tokenDuration').value;
       try {
-        const res = await fetch('https://micro-risk-score.onrender.com/api/generate-token', {
+        const res = await fetch('https://micro-risk-score.onrender.com/api/generate-token-duration', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('jwt')
           },
-          body: JSON.stringify({ duration })
+          body: JSON.stringify({ duration: duration })
         });
         if (!res.ok) throw new Error('Failed to generate token');
         const data = await res.json();

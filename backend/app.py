@@ -10,9 +10,6 @@ import jwt
 import bcrypt
 import requests
 
-
-
-
 load_dotenv()
 print("🔍 Loaded Environment Variables:")
 print("EMAIL_HOST:", os.getenv("EMAIL_HOST"))
@@ -587,6 +584,51 @@ def generate_token():
     user.save()
 
     return jsonify({"token": token})
+
+# Secret key to sign tokens
+JWT_ALGORITHM = 'HS256'
+
+@app.route('/api/generate-token-duration', methods=['POST'])
+def generate_token():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # (Optional) You can parse the Bearer token here to verify user identity
+    # token = auth_header.replace('Bearer ', '')
+
+    data = request.get_json()
+    if not data or 'duration' not in data:
+        return jsonify({'error': 'Missing duration'}), 400
+
+    duration_str = data['duration'].lower()
+
+    # Map duration to minutes or hours
+    durations_map = {
+        '1 hour': datetime.timedelta(hours=1),
+        '6 hours': datetime.timedelta(hours=6),
+        '12 hours': datetime.timedelta(hours=12),
+        '24 hours': datetime.timedelta(hours=24),
+    }
+
+    expiry_delta = durations_map.get(duration_str)
+    if not expiry_delta:
+        return jsonify({'error': 'Invalid duration'}), 400
+
+    # Create expiration time
+    expiration = datetime.datetime.utcnow() + expiry_delta
+
+    # Build token payload
+    payload = {
+        'sub': 'api_access',       # or the user id
+        'exp': expiration,
+        'scope': 'developer_api'
+    }
+
+    # Encode the JWT
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    return jsonify({'token': token})
 
 # (any other routes)
 if __name__ == "__main__":
