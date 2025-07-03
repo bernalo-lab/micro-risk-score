@@ -25,10 +25,16 @@ print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=[
-    "https://www.riskpeek.tech",
-    "https://riskpeek.tech"
-])
+CORS(app,
+     supports_credentials=True,
+     origins=[
+         "https://www.riskpeek.tech",
+         "https://riskpeek.tech"
+     ],
+     allow_headers=[
+         "Content-Type",
+         "Authorization"
+     ])
 
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
