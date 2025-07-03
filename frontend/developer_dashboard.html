@@ -4,43 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Developer API Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .card {
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .btn-primary {
-      background-color: #4f46e5;
-      border-color: #4f46e5;
-    }
-    .btn-primary:hover {
-      background-color: #4338ca;
-      border-color: #4338ca;
-    }
-    .btn-secondary {
-      background-color: #6b7280;
-      border-color: #6b7280;
-    }
-    .btn-secondary:hover {
-      background-color: #4b5563;
-      border-color: #4b5563;
-    }
+    body { background-color: #f8f9fa; }
+    .card { border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .btn-primary { background-color: #4f46e5; border-color: #4f46e5; }
+    .btn-primary:hover { background-color: #4338ca; border-color: #4338ca; }
+    .btn-secondary { background-color: #6b7280; border-color: #6b7280; }
+    .btn-secondary:hover { background-color: #4b5563; border-color: #4b5563; }
+    .api-table td, .api-table th { vertical-align: middle; }
+    pre { background: #f1f3f5; padding: 0.5rem; border-radius: 4px; }
   </style>
 </head>
 <body>
   <div class="container my-5">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
+      <div class="col-lg-10">
         <div class="card p-4">
-          <h2 class="mb-4">Developer API Dashboard</h2>
+          <h2 class="mb-3">Developer API Dashboard</h2>
+
+          <p class="text-muted">Welcome to the RiskPeek Developer API Dashboard. Here you can manage your API access, generate authentication tokens, and explore available endpoints.</p>
+
           <form id="profileForm" class="mb-4">
             <div class="mb-3">
               <label for="fullName" class="form-label">Full Name</label>
@@ -64,7 +48,12 @@
           </form>
 
           <div id="apiSection" class="d-none">
-            <div id="tokenMeta" class="mt-2 text-muted"></div>
+            <div class="alert alert-info">
+              <strong>What is a Token?</strong><br>
+              A token is a secure credential used to authenticate your API requests.<br>
+              <small>Include it in the <code>Authorization</code> header as shown below.</small>
+            </div>
+
             <div class="mb-3">
               <label class="form-label">Generate JWT Token</label>
               <div class="d-flex align-items-center gap-2">
@@ -77,15 +66,46 @@
                 <button type="button" id="generateToken" class="btn btn-primary">Generate Token</button>
               </div>
             </div>
-            <div id="tokenDisplay" class="alert alert-success d-none"></div>
-            <h5>Available APIs:</h5>
-            <ul class="list-group">
-              <li class="list-group-item">/api/transaction-analysis</li>
-            </ul>
-            <ul class="list-group">
-              <li class="list-group-item">/api/login</li>
-            </ul>
 
+            <div id="tokenDisplay" class="alert alert-success d-none">
+              <div class="d-flex justify-content-between align-items-center">
+                <span id="tokenText"></span>
+                <button class="btn btn-sm btn-outline-secondary" id="copyToken">Copy</button>
+              </div>
+            </div>
+
+            <div id="tokenMeta" class="mt-2 text-muted"></div>
+
+            <h5 class="mt-4">Available APIs</h5>
+            <table class="table table-bordered api-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Endpoint</th>
+                  <th>Method</th>
+                  <th>Description</th>
+                  <th>Example Usage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>/api/login</td>
+                  <td>POST</td>
+                  <td>Authenticate with email and password to receive a JWT token.</td>
+                  <td><pre>POST /api/login</pre></td>
+                </tr>
+                <tr>
+                  <td>/api/transaction-analysis</td>
+                  <td>GET</td>
+                  <td>Retrieve consented transaction records (max 5 fields).</td>
+                  <td><pre>GET /api/transaction-analysis?fields=field1,field2</pre></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="mt-3">
+              <strong>Example cURL:</strong>
+              <pre>curl -H "Authorization: Bearer YOUR_TOKEN" https://api.riskpeek.tech/api/transaction-analysis?fields=field1,field2</pre>
+            </div>
 
           </div>
         </div>
@@ -94,7 +114,7 @@
   </div>
 
   <script>
-    let userRole = "Developer"; // default
+    let userRole = "Developer";
 
     async function loadUser() {
       const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
@@ -151,7 +171,6 @@
         if (!res.ok) throw new Error('Failed to toggle access');
         const data = await res.json();
 
-        // Update UI
         const activateBtn = document.getElementById('activateAccess');
         const apiSection = document.getElementById('apiSection');
         const tokenMeta = document.getElementById('tokenMeta');
@@ -189,10 +208,9 @@
 
         const data = await res.json();
         const tokenDisplay = document.getElementById('tokenDisplay');
-        tokenDisplay.textContent = data.token;
+        document.getElementById('tokenText').textContent = data.token;
         tokenDisplay.classList.remove('d-none');
 
-        // Display expiration
         const expiration = new Date(data.expiresAt);
         document.getElementById('tokenMeta').innerHTML = `
           <strong>Role:</strong> Developer<br/>
@@ -202,6 +220,13 @@
         console.error(err);
         alert('Error generating token.');
       }
+    });
+
+    document.getElementById('copyToken').addEventListener('click', () => {
+      const text = document.getElementById('tokenText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Token copied to clipboard.');
+      });
     });
 
     window.addEventListener("DOMContentLoaded", loadUser);
