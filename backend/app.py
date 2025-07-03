@@ -699,8 +699,8 @@ def get_user_by_email(email):
         }
     return None
 
-@app.route("/api/login", methods=["POST"])
-def login():
+@app.route("/api/auth-login", methods=["POST"])
+def auth_login():
     """
     User Login
     ---
@@ -839,9 +839,6 @@ def transaction_analysis():
 
     return jsonify({"data": records})
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 ## End API
 
