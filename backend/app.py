@@ -195,7 +195,11 @@ def login():
         }
         
         #token = jwt.encode(payload, JWT_SECRET, algorithm="HS256") - # PyJWT
-        token = create_access_token(identity=email) 	# Flask-JWT-Extended
+        # This creates the JWT token using Flask-JWT-Extended
+        token = create_access_token(
+            identity=email,
+            expires_delta=timedelta(hours=12)
+        )
 
         return jsonify(
           {
