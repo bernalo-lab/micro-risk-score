@@ -36,7 +36,6 @@
   </style>
 </head>
 <body>
-<body>
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-lg-8">
@@ -234,45 +233,5 @@
 
     window.addEventListener("DOMContentLoaded", loadUser);
   </script>
-<script>
-document.getElementById('callRiskScore').addEventListener('click', async () => {
-  const input = document.getElementById('riskScoreInput').value.trim();
-  if (!input) {
-    alert('Please enter JSON input.');
-    return;
-  }
-
-  let jsonData;
-  try {
-    jsonData = JSON.parse(input);
-  } catch (err) {
-    alert('Invalid JSON format.');
-    return;
-  }
-
-  const res = await fetch('/api/risk-score', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + localStorage.getItem('api_jwt')
-    },
-    body: JSON.stringify(jsonData)
-  });
-
-  const output = document.getElementById('riskScoreResult');
-  if (!res.ok) {
-    output.textContent = 'Error: ' + res.status;
-    return;
-  }
-  const data = await res.json();
-  output.textContent = JSON.stringify(data, null, 2);
-});
-</script>
-
-
-
-
-
-</body>
 </body>
 </html>
