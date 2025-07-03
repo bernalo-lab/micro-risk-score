@@ -50,7 +50,7 @@
       const res = await fetch('https://micro-risk-score.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: email, password: password })
       });
 
       const data = await res.json();
@@ -66,6 +66,9 @@
         } else {   // fallback or error page
           window.location.href = '/unauthorized.html';
         }
+      } else {
+        alert( data.error );
+        return;
       }
     });
   </script>
