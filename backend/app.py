@@ -10,6 +10,8 @@ import os
 import jwt
 import bcrypt
 import requests
+from flasgger import Swagger
+from flasgger import Swagger
 
 load_dotenv()
 print("🔍 Loaded Environment Variables:")
@@ -26,7 +28,6 @@ EMAIL_FROM = os.getenv("EMAIL_FROM", "no-reply@example.com")
 print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
 print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
-
 app = Flask(__name__)
 CORS(app,
      supports_credentials=True,
@@ -38,7 +39,6 @@ CORS(app,
      methods=["GET", "POST", "OPTIONS"])
 
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
-
 
 # MongoDB setup
 client = MongoClient(os.getenv("MONGO_URI"))
@@ -669,24 +669,181 @@ def toggle_api_access():
         return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
 
 ## Start API
-## End API
+from flask import Flask, request, jsonify
+import jwt
+import datetime
+from flasgger import Swagger
 
+app = Flask(__name__)
+swagger = Swagger(app)
 
-## Swagger Details
-from flask_swagger_ui import get_swaggerui_blueprint
+SECRET_KEY = "your-very-strong-secret-key"  # Change this in production!
 
-SWAGGER_URL = "/docs"
-API_URL = "/static/swagger.yaml"
+# Example allowed fields
+ALLOWED_FIELDS = {
+    "legalName",
+    "taxId",
+    "creditScore",
+    "confidence",
+    "riskCategory"
+    # Add more fields as needed
+}
 
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        "app_name": "RiskPeek Developer APIs"
+# Dummy user lookup
+def get_user_by_email(email):
+    if email == "developer@example.com":
+        return {
+            "email": "developer@example.com",
+            "password": "password123",   # DEMO ONLY
+            "apiAccess": True
+        }
+    return None
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    """
+    User Login
+    ---
+    tags:
+      - Authentication
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+            required:
+              - email
+              - password
+    responses:
+      200:
+        description: Successful login
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      401:
+        description: Invalid credentials
+    """
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+
+    user = get_user_by_email(email)
+    if not user or user["password"] != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    payload = {
+        "email": email,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=12)
     }
-)
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-##
+    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+    return jsonify({"token": token})
+
+
+@app.route("/api/transaction-analysis", methods=["GET"])
+def transaction_analysis():
+    """
+    Retrieve Consented Records
+    ---
+    tags:
+      - Data Access
+    parameters:
+      - in: header
+        name: Authorization
+        required: true
+        schema:
+          type: string
+        description: Bearer token obtained from login
+      - in: query
+        name: fields
+        required: true
+        schema:
+          type: string
+        description: Comma-separated list of fields to retrieve (max 5)
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        description: Max number of records (default 20)
+    responses:
+      200:
+        description: Records retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+      400:
+        description: Bad request (e.g., too many fields)
+      401:
+        description: Unauthorized or invalid token
+      403:
+        description: User does not have API access
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Missing Authorization header"}), 401
+
+    token = auth_header.split(" ")[1]
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        email = decoded.get("email")
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
+    user = get_user_by_email(email)
+    if not user or not user["apiAccess"]:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    fields_param = request.args.get("fields")
+    if not fields_param:
+        return jsonify({"error": "You must specify fields"}), 400
+
+    fields = [f.strip() for f in fields_param.split(",")]
+    if len(fields) > 5:
+        return jsonify({"error": "You can select up to 5 fields only."}), 400
+
+    if not all(f in ALLOWED_FIELDS for f in fields):
+        return jsonify({"error": "Invalid fields requested"}), 400
+
+    limit_param = request.args.get("limit", "20")
+    try:
+        limit = min(int(limit_param), 100)
+    except ValueError:
+        return jsonify({"error": "Invalid limit"}), 400
+
+    # Dummy records for demonstration
+    records = [
+        {f: f"Example-{i}" for f in fields} for i in range(1, limit + 1)
+    ]
+
+    return jsonify({"data": records})
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+## End API
 
 # (any other routes)
 if __name__ == "__main__":
