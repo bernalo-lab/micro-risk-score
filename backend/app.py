@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
-from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
+#from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pymongo import MongoClient
@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import os
-#import jwt
+import jwt
 import bcrypt
 import requests
 
@@ -58,7 +58,7 @@ app.config.update(
 )
 mail = Mail(app)
 
-jwt = JWTManager(app)
+#jwt = JWTManager(app)
 
 from functools import wraps
 from flask import request, Response
@@ -196,12 +196,7 @@ def login():
             "exp": datetime.utcnow() + timedelta(hours=12)
         }
         
-        #token = jwt.encode(payload, JWT_SECRET, algorithm="HS256") - # PyJWT
-        # This creates the JWT token using Flask-JWT-Extended
-        token = create_access_token(
-            identity=email,
-            expires_delta=timedelta(hours=12)
-        )
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256") - # PyJWT
 
         return jsonify(
           {
@@ -577,9 +572,6 @@ def user_assessments():
 def recaptcha_sitekey():
     return jsonify({"siteKey": os.getenv("RECAPTCHA_SITE_KEY")})
 
-import jwt
-from datetime import datetime, timedelta
-
 @app.route('/api/generate-token', methods=['POST'])
 def generate_token():
     user = get_authenticated_user()
@@ -677,126 +669,6 @@ def toggle_api_access():
         return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
 
 ## Start API
-# Example in-memory "database"
-ASSESSORS = {}
-ASSESSMENTS = []
-
-def compute_score(data):
-    # Example logic—replace with real scoring
-    return {
-        "score": 75,
-        "confidence": "Medium",
-        "riskCategory": "Medium Risk",
-        "factors": ["Example factor A", "Example factor B"]
-    }
-
-def analyze_transactions(data):
-    # Example analysis—replace with real
-    return {
-        "summary": "No major anomalies detected.",
-        "anomalies": [],
-        "recommendations": ["Maintain consistent cash flow."]
-    }
-
-# 1) /api/risk-score
-@app.route('/api/risk-score', methods=['POST'])
-@jwt_required()
-def risk_score():
-    user = get_jwt_identity()
-    assessor = ASSESSORS.get(user)
-    if not assessor:
-        return jsonify({"error": "Assessor not found"}), 404
-
-    data = request.get_json()
-    result = compute_score(data)
-
-    # Optionally save to assessments
-    ASSESSMENTS.append({
-        **data,
-        **result,
-        "submittedBy": user,
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    })
-
-    return jsonify(result)
-
-# 2) /api/bulk-risk-assessment
-@app.route('/api/bulk-risk-assessment', methods=['POST'])
-@jwt_required()
-def bulk_risk_assessment():
-    user = get_jwt_identity()
-    assessor = ASSESSORS.get(user)
-    if not assessor:
-        return jsonify({"error": "Assessor not found"}), 404
-
-    data = request.get_json()
-    assessments = data.get("assessments", [])
-    results = []
-    for record in assessments:
-        score_result = compute_score(record)
-        ASSESSMENTS.append({
-            **record,
-            **score_result,
-            "submittedBy": user,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
-        results.append({
-            "legalName": record.get("legalName"),
-            "score": score_result["score"],
-            "riskCategory": score_result["riskCategory"]
-        })
-
-    return jsonify({"results": results})
-
-# 3) /api/transaction-analysis
-@app.route('/api/transaction-analysis', methods=['POST'])
-@jwt_required()
-def transaction_analysis():
-    user = get_jwt_identity()
-    assessor = ASSESSORS.get(user)
-    if not assessor:
-        return jsonify({"error": "Assessor not found"}), 404
-
-    if not assessor.get("consent"):
-        return jsonify({"error": "Consent not granted to use stored assessments"}), 403
-
-    # Use stored assessments for this user
-    user_assessments = [a for a in ASSESSMENTS if a["submittedBy"] == user]
-    analysis = analyze_transactions(user_assessments)
-
-    return jsonify(analysis)
-
-# 4) /api/reporting
-@app.route('/api/reporting', methods=['GET'])
-@jwt_required()
-def reporting():
-    user = get_jwt_identity()
-    assessor = ASSESSORS.get(user)
-    if not assessor:
-        return jsonify({"error": "Assessor not found"}), 404
-
-    if not assessor.get("consent"):
-        return jsonify({"error": "Consent not granted to use stored assessments"}), 403
-
-    user_assessments = [a for a in ASSESSMENTS if a["submittedBy"] == user]
-    if not user_assessments:
-        return jsonify({"message": "No assessments found."})
-
-    scores = [a["score"] for a in user_assessments]
-    avg_score = sum(scores) / len(scores)
-    common_category = max(
-        set(a["riskCategory"] for a in user_assessments),
-        key=lambda c: [a["riskCategory"] for a in user_assessments].count(c)
-    )
-
-    return jsonify({
-        "totalAssessments": len(user_assessments),
-        "averageScore": avg_score,
-        "mostCommonRiskCategory": common_category,
-        "assessments": user_assessments
-    })
-
-
 ## End API
 
 
