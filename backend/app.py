@@ -90,7 +90,7 @@ def debug_env():
 @app.route("/api/submissions", methods=["GET"])
 def get_submissions():
     try:
-        all_data = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
+        all_data = list(submissions.find({}, {"_id": 0}))  # exclude MongoDB _id
         return jsonify(all_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -682,13 +682,7 @@ ALLOWED_FIELDS = {
 
 # Dummy user lookup
 def get_user_by_email(email):
-    if email == "developer@example.com":
-        return {
-            "email": "developer@example.com",
-            "password": "password123",   # DEMO ONLY
-            "apiAccess": True
-        }
-    return None
+    return users.find_one({"email": email})
 
 @app.route("/api/auth-login", methods=["POST"])
 def auth_login():
