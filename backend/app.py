@@ -1,5 +1,4 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pymongo import MongoClient
@@ -667,11 +666,7 @@ def toggle_api_access():
         return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
 
 ## Start API
-jwt = JWTManager(app)
-
-
-#app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "your-secret"
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 jwt = JWTManager(app)
 
 # Example in-memory "database"
