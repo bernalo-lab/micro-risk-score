@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pymongo import MongoClient
