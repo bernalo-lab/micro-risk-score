@@ -19,6 +19,9 @@ print("EMAIL_USER:", os.getenv("EMAIL_USER"))
 print("EMAIL_FROM:", os.getenv("EMAIL_FROM"))
 print("MONGO_URI (partial):", os.getenv("MONGO_URI", "")[:30] + "...")
 
+JWT_SECRET = os.getenv("JWT_SECRET")
+EMAIL_FROM = os.getenv("EMAIL_FROM", "no-reply@example.com")
+
 # Store your keys securely (env vars or config)
 print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
 print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
@@ -34,7 +37,6 @@ CORS(app,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "OPTIONS"])
 
-jwt = JWTManager(app)
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
 
@@ -55,6 +57,8 @@ app.config.update(
     MAIL_USE_SSL=False
 )
 mail = Mail(app)
+
+jwt = JWTManager(app)
 
 from functools import wraps
 from flask import request, Response
@@ -92,8 +96,6 @@ def get_submissions():
 
 # Token signing
 serializer = URLSafeTimedSerializer(os.getenv("JWT_SECRET"))
-JWT_SECRET = os.getenv("JWT_SECRET")
-EMAIL_FROM = os.getenv("EMAIL_FROM", "no-reply@example.com")
 
 @app.route("/api/register", methods=["POST"])
 def register():
