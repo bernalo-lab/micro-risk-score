@@ -11,7 +11,6 @@ import jwt
 import bcrypt
 import requests
 from flasgger import Swagger
-from flasgger import Swagger
 
 load_dotenv()
 print("🔍 Loaded Environment Variables:")
@@ -37,6 +36,8 @@ CORS(app,
      ]}},
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "OPTIONS"])
+
+swagger = Swagger(app)
 
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
@@ -669,16 +670,6 @@ def toggle_api_access():
         return jsonify({"error": f"Toggling failed: {str(e)}"}), 400
 
 ## Start API
-from flask import Flask, request, jsonify
-import jwt
-import datetime
-from flasgger import Swagger
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-SECRET_KEY = "your-very-strong-secret-key"  # Change this in production!
-
 # Example allowed fields
 ALLOWED_FIELDS = {
     "legalName",
@@ -748,7 +739,7 @@ def auth_login():
         "email": email,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=12)
     }
-    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
     return jsonify({"token": token})
 
@@ -804,7 +795,7 @@ def transaction_analysis():
 
     token = auth_header.split(" ")[1]
     try:
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        decoded = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         email = decoded.get("email")
     except jwt.ExpiredSignatureError:
         return jsonify({"error": "Token expired"}), 401
