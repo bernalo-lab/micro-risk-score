@@ -196,7 +196,7 @@ def login():
             "exp": datetime.utcnow() + timedelta(hours=12)
         }
         
-        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256") - # PyJWT
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
         return jsonify(
           {
