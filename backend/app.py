@@ -25,7 +25,11 @@ print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, origins=[
+    "https://www.riskpeek.tech",
+    "https://riskpeek.tech"
+])
+
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
 
@@ -658,7 +662,7 @@ def toggle_api_access():
 jwt = JWTManager(app)
 
 
-app = Flask(__name__)
+#app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "your-secret"
 jwt = JWTManager(app)
 
