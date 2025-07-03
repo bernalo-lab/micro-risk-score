@@ -167,8 +167,12 @@ def verify_email(token):
     except Exception as e:
         return f"Invalid or expired token: {str(e)}", 400
 
-@app.route("/api/login", methods=["POST"])
+@app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
+
+    if request.method == "OPTIONS":
+        return '', 200
+
     try:
         data = request.get_json()
         email = data.get("email")
