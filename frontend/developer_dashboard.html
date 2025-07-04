@@ -204,7 +204,7 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('jwt')
           },
-          body: JSON.stringify({ duration })
+          body: JSON.stringify( { duration: duration, email: localStorage.getItem('email') } )
         });
 
         if (!res.ok) throw new Error('Failed to generate token');

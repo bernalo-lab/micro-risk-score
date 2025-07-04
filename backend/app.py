@@ -617,7 +617,9 @@ def generate_token_duration():
             return jsonify({'error': 'Missing duration'}), 400
 
         duration_str = data['duration'].lower()
+        email = data['email']
 
+        
         durations_map = {
             '6 hours': timedelta(hours=6),
             '12 hours': timedelta(hours=12),
