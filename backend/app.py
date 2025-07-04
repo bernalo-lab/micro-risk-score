@@ -798,8 +798,10 @@ def transaction_analysis():
         return jsonify({"error": "Invalid token"}), 401
 
     user = get_user_by_email(email)
-    if not user or not user["apiAccess"]:
-        return jsonify({"error": "Unauthorized"}), 403
+    if not user:
+        return jsonify({"error": "Unauthorized User"}), 403
+    if not user["apiAccess"]:
+        return jsonify({"error": "Unauthorized API Access"}), 403
 
     fields_param = request.args.get("fields")
     if not fields_param:
