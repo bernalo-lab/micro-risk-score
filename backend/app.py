@@ -744,7 +744,6 @@ def auth_login():
 
 @app.route("/api/transaction-analysis", methods=["GET"])
 def transaction_analysis():
-
 """
 Retrieve Consented Records
 ---
