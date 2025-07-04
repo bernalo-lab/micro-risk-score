@@ -591,7 +591,8 @@ def generate_token():
         "userId": str(user.id),
         "role": "developer",
         "apiAccess": True,
-        "exp": exp
+        "exp": exp,
+        "email": str(user.email)
     }
     token = jwt.encode(payload, app.config['JWT_SECRET'], algorithm="HS256")
 
@@ -618,9 +619,9 @@ def generate_token_duration():
         duration_str = data['duration'].lower()
 
         durations_map = {
-            '1 hour': timedelta(hours=1),
             '6 hours': timedelta(hours=6),
             '12 hours': timedelta(hours=12),
+            '18 hours': timedelta(hours=18),
             '24 hours': timedelta(hours=24),
         }
 
