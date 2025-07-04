@@ -636,7 +636,8 @@ def generate_token_duration():
         payload = {
             'sub': 'api_access',
             'exp': expiration,
-            'scope': 'developer_api'
+            'scope': 'developer_api',
+            'email': email
         }
 
         if not JWT_SECRET:
