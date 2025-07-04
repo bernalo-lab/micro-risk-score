@@ -843,7 +843,7 @@ def transaction_analysis():
     # Need to return data where 'Consent' has been given by person who submitted data
     # Query to run - SELECT * FROM accessOthers WHERE submittedBy IN (SELECT submittedBy from submissions WHERE consent = true)
     # 1) Find all consented emails
-    consented_emails = submissions.distinct("email", {"consent": True})
+    consented_emails = users.distinct("email", {"consent": True})
 
     # 2) Query accessOthers for those emails
     query = {
