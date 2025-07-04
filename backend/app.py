@@ -753,52 +753,43 @@ def transaction_analysis():
       - in: header
         name: Authorization
         required: true
-        schema:
-          type: string
+        type: string
         description: Bearer token obtained from login. Example: "Bearer yourtoken"
       - in: query
         name: fields
         required: true
-        schema:
-          type: string
+        type: string
         description: Comma-separated list of fields to retrieve (max 5). Example: "legalName,confidence,creditScore"
       - in: query
         name: limit
-        schema:
-          type: integer
+        type: integer
         description: Max number of records to return. Default: 20.
       - in: query
         name: confidenceMin
-        schema:
-          type: number
+        type: number
         description: Minimum confidence value to filter records. Example: 50
       - in: query
         name: confidenceMax
-        schema:
-          type: number
+        type: number
         description: Maximum confidence value to filter records.
       - in: query
         name: creditScoreMin
-        schema:
-          type: integer
+        type: integer
         description: Minimum credit score to filter records. Example: 500
       - in: query
         name: creditScoreMax
-        schema:
-          type: integer
+        type: integer
         description: Maximum credit score to filter records.
     responses:
       200:
         description: Records retrieved successfully
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: array
-                  items:
-                    type: object
+        schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
       400:
         description: Bad request (e.g., invalid fields or parameters)
       401:
