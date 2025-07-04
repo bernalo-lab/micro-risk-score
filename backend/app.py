@@ -755,19 +755,38 @@ def transaction_analysis():
         required: true
         schema:
           type: string
-        description: Bearer token obtained from login
+        description: Bearer token obtained from login. Example: "Bearer yourtoken"
       - in: query
         name: fields
         required: true
         schema:
           type: string
-        description: Comma-separated list of fields to retrieve (max 5)
+        description: Comma-separated list of fields to retrieve (max 5). Example: "legalName,confidence,creditScore"
       - in: query
         name: limit
-        required: false
         schema:
           type: integer
-        description: Max number of records (default 20)
+        description: Max number of records to return. Default: 20.
+      - in: query
+        name: confidenceMin
+        schema:
+          type: number
+        description: Minimum confidence value to filter records. Example: 50
+      - in: query
+        name: confidenceMax
+        schema:
+          type: number
+        description: Maximum confidence value to filter records.
+      - in: query
+        name: creditScoreMin
+        schema:
+          type: integer
+        description: Minimum credit score to filter records. Example: 500
+      - in: query
+        name: creditScoreMax
+        schema:
+          type: integer
+        description: Maximum credit score to filter records.
     responses:
       200:
         description: Records retrieved successfully
@@ -781,12 +800,13 @@ def transaction_analysis():
                   items:
                     type: object
       400:
-        description: Bad request (e.g., too many fields)
+        description: Bad request (e.g., invalid fields or parameters)
       401:
         description: Unauthorized or invalid token
       403:
         description: User does not have API access
     """
+
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return jsonify({"error": "Missing Authorization header"}), 401
@@ -845,23 +865,48 @@ def transaction_analysis():
     # 1) Find all consented emails
     consented_emails = users.distinct("email", {"consent": True})
 
-    # 2) Query accessOthers for those emails
+    # 2) Base query for consented records
     query = {
       "submittedBy": {"$in": consented_emails}
     }
 
-    # 3) Build projection dict to include only requested fields
+    # 3) Add optional filters
+    confidence_min = request.args.get("confidenceMin")
+    confidence_max = request.args.get("confidenceMax")
+    credit_score_min = request.args.get("creditScoreMin")
+    credit_score_max = request.args.get("creditScoreMax")
+
+    # Confidence
+    if confidence_min or confidence_max:
+        query["confidence"] = {}
+    if confidence_min:
+        query["confidence"]["$gte"] = float(confidence_min)
+    if confidence_max:
+        query["confidence"]["$lte"] = float(confidence_max)
+
+    # Credit Score Query
+    if credit_score_min or credit_score_max:
+        query["creditScore"] = {}
+    if credit_score_min:
+        query["creditScore"]["$gte"] = int(credit_score_min)
+    if credit_score_max:
+        query["creditScore"]["$lte"] = int(credit_score_max)
+
+    # 4) Build projection dict to include only requested fields
     projection = {f: 1 for f in fields}
     projection["_id"] = 0  # Exclude Mongo _id
 
-    # 4) Execute query with projection and limit
+    # 5) Execute query with projection and limit
     records = list(
       accessOthers.find(query, projection).sort("timestamp", -1).limit(limit)
     )
 
+    # 6) Years Active
+    years_active_min = request.args.get("yearsActiveMin")
+    if years_active_min:
+        query["yearsActive"] = {"$gte": int(years_active_min)}
+
     return jsonify({"data": records})
-
-
 
 ## End API
 
