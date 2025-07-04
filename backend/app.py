@@ -799,7 +799,12 @@ def transaction_analysis():
 
     user = get_user_by_email(email)
     if not user:
-        return jsonify({"error": "Unauthorized User"}), 403
+        return jsonify(
+          {
+            "error": "Unauthorized User",
+            "email": email
+          }
+        ), 403
     if not user["apiAccess"]:
         return jsonify({"error": "Unauthorized API Access"}), 403
 
