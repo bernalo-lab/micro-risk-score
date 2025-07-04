@@ -744,59 +744,59 @@ def auth_login():
 
 @app.route("/api/transaction-analysis", methods=["GET"])
 def transaction_analysis():
-"""
-Retrieve Consented Records
----
-tags:
-  - Data Access
-parameters:
-  - in: header
-    name: Authorization
-    required: true
-    type: string
-    description: Bearer token obtained from login. Example: "Bearer yourtoken"
-  - in: query
-    name: fields
-    required: true
-    type: string
-    description: Comma-separated list of fields to retrieve (max 5). Example: "legalName,confidence,creditScore"
-  - in: query
-    name: limit
-    type: integer
-    description: Max number of records to return. Default: 20.
-  - in: query
-    name: confidenceMin
-    type: number
-    description: Minimum confidence value to filter records. Example: 50
-  - in: query
-    name: confidenceMax
-    type: number
-    description: Maximum confidence value to filter records.
-  - in: query
-    name: creditScoreMin
-    type: integer
-    description: Minimum credit score to filter records. Example: 500
-  - in: query
-    name: creditScoreMax
-    type: integer
-    description: Maximum credit score to filter records.
-responses:
-  200:
-    description: Records retrieved successfully
-    schema:
-      type: object
-      properties:
-        data:
-          type: array
+    """
+    Retrieve Consented Records
+    ---
+    tags:
+      - Data Access
+    parameters:
+      - in: header
+        name: Authorization
+        required: true
+        type: string
+        description: Bearer token obtained from login. Example: "Bearer yourtoken"
+      - in: query
+        name: fields
+        required: true
+        type: string
+        description: Comma-separated list of fields to retrieve (max 5). Example: "legalName,confidence,creditScore"
+      - in: query
+        name: limit
+        type: integer
+        description: Max number of records to return. Default: 20.
+      - in: query
+        name: confidenceMin
+        type: number
+        description: Minimum confidence value to filter records. Example: 50
+      - in: query
+        name: confidenceMax
+        type: number
+        description: Maximum confidence value to filter records.
+      - in: query
+        name: creditScoreMin
+        type: integer
+        description: Minimum credit score to filter records. Example: 500
+      - in: query
+        name: creditScoreMax
+        type: integer
+        description: Maximum credit score to filter records.
+    responses:
+      200:
+        description: Records retrieved successfully
+        schema:
+          type: object
+          properties:
+            data:
+              type: array
           items:
             type: object
-  400:
-    description: Bad request (e.g., invalid fields or parameters)
-  401:
-    description: Unauthorized or invalid token
-  403:
-    description: User does not have API access
-"""
+      400:
+        description: Bad request (e.g., invalid fields or parameters)
+      401:
+        description: Unauthorized or invalid token
+      403:
+        description: User does not have API access
+    """
 
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
