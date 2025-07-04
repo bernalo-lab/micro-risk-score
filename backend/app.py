@@ -800,7 +800,10 @@ def transaction_analysis():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
+    # Get Developer details
     user = get_user_by_email(email)
+
+    # Validate Developer email
     if not user:
         return jsonify(
           {
@@ -808,9 +811,12 @@ def transaction_analysis():
             "email": email
           }
         ), 403
+
+    # Does Developer has the right to access the APIs?
     if not user["apiAccess"]:
         return jsonify({"error": "Unauthorized API Access"}), 403
 
+    # Start process to retrieve data
     fields_param = request.args.get("fields")
     if not fields_param:
         return jsonify({"error": "You must specify fields"}), 400
@@ -833,7 +839,28 @@ def transaction_analysis():
         {f: f"Example-{i}" for f in fields} for i in range(1, limit + 1)
     ]
 
+    # Real data
+    # Need to return data where 'Consent' has been given by person who submitted data
+    # Query to run - SELECT * FROM accessOthers WHERE submittedBy IN (SELECT submittedBy from submissions WHERE consent = true)
+    # 1) Find all consented emails
+    consented_emails = submissions.distinct("email", {"consent": True})
+
+    # 2) Query accessOthers for those emails
+    query = {
+      "submittedBy": {"$in": consented_emails}
+    }
+
+    # 3) Build projection dict to include only requested fields
+    projection = {f: 1 for f in fields}
+    projection["_id"] = 0  # Exclude Mongo _id
+
+    # 4) Execute query with projection and limit
+    records = list(
+      accessOthers.find(query, projection).sort("timestamp", -1).limit(limit)
+    )
+
     return jsonify({"data": records})
+
 
 
 ## End API
