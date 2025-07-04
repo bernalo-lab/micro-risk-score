@@ -57,6 +57,12 @@
 
       if (res.ok && data.token) {
         localStorage.setItem('jwt', data.token);
+        localStorage.setItem('email', email);
+
+        // Uppercase first char in Role
+        const role = const roleFormatted = data["role"].replace(/^./, c => c.toUpperCase());
+        localStorage.setItem('role', role);
+
 
         // Confirm what page to display depending on Role
         if (data['role'] === "user") {
