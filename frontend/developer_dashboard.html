@@ -109,13 +109,52 @@
               <strong>Example cURL:</strong>
               <pre>curl -H "Authorization: Bearer YOUR_TOKEN" https://api.riskpeek.tech/api/transaction-analysis?fields=field1,field2</pre>
             </div>
-
+         
+          <!-- START Postman Guide Section -->
+          <h4 class="mt-4">📘 Postman Setup Guide</h4>
+          <button class="btn btn-sm btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#postmanGuide">
+            Show/Hide Guide
+          </button>
+          <div class="collapse" id="postmanGuide">
+            <div class="card card-body bg-white">
+              <h5>1️⃣ About This Guide</h5>
+              <p>This guide helps you set up Postman to test the RiskPeek API endpoints.</p>
+              <h5>2️⃣ What You’ll Need</h5>
+              <ul><li>Internet connection</li><li>Your API credentials</li><li>Postman installed</li></ul>
+              <h5>3️⃣ Installing Postman</h5>
+              <p>Download from <a href="https://www.postman.com/downloads/" target="_blank">postman.com/downloads</a>.</p>
+              <h5>4️⃣ Importing the Collection</h5>
+              <ol>
+                <li>Open Postman</li>
+                <li>Click <b>Import</b></li>
+                <li>Paste the JSON collection</li>
+                <li>Click <b>Import</b></li>
+              </ol>
+              <h5>5️⃣ Configuring Environment Variables</h5>
+              <table class="table table-bordered">
+                <thead><tr><th>Variable</th><th>Value</th></tr></thead>
+                <tbody>
+                  <tr><td>baseUrl</td><td><code>https://micro-risk-score.onrender.com</code></td></tr>
+                  <tr><td>jwt</td><td>(leave blank)</td></tr>
+                </tbody>
+              </table>
+              <h5>6️⃣ Authenticating</h5>
+              <p>Send a POST to <code>/api/login</code> with your credentials. The token saves automatically.</p>
+              <h5>7️⃣ Making Requests</h5>
+              <p>Use the token in Authorization headers.</p>
+              <h5>8️⃣ Example Query</h5>
+              <pre>GET /api/transaction-analysis?fields=legalName,confidence,creditScore&confidenceMin=50</pre>
+              <h5>9️⃣ Need Help?</h5>
+              <p>Contact your team lead or API administrator.</p>
+            </div>
+          </div>
+          <!-- END Postman Guide Section -->
           </div>
         </div>
       </div>
     </div>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let userRole = "Developer";
 
