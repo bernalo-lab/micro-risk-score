@@ -369,7 +369,10 @@ def assessment_risk_score():
 
         # Validate data
         if not data.get("submitted_By"):
-            return jsonify({"error": "Invalid Submitted By Email"}), 401
+            return jsonify(
+             { "error": "Invalid 'Submitted By' Email",
+               "email": data.get("submitted_By")
+             }), 401
 
         if not data.get("assessedEmail"):
             return jsonify({"error": "Invalid Assessed Email"}), 401
