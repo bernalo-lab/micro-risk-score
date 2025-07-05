@@ -35,6 +35,11 @@ swagger_template = {
         "description": "API Documentation",
         "version": "1.0"
     },
+    "host": "micro-risk-score.onrender.com",
+    "basePath": "/",
+    "schemes": [
+        "https"
+    ],
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",
