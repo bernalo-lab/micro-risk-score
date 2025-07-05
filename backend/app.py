@@ -754,12 +754,12 @@ responses:
           }
         ), 401
 
-    if user["password"] != password:
-        return jsonify({"error": "Invalid logon credentials"}), 401
+
+    if not bcrypt.checkpw(password.encode(), user["password"]):
+            return jsonify({"error": "Invalid logon credentials"}), 401
 
     if not user.get("verified"):
       return jsonify({"error": "Email not verified"}), 403
-
 
     if not user.get("apiAccess"):
         return jsonify({"error": "Unauthorised API access"}), 402
