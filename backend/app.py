@@ -688,6 +688,74 @@ ALLOWED_FIELDS = {
 def get_user_by_email(email):
     return users.find_one({"email": email})
 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@app.route("/api/api-access-status", methods=["POST"])
+def api_access_status():
+    """
+API Access Status
+
+---
+tags:
+  - Authentication
+consumes:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+responses:
+  "200":
+    description: Successful login
+    schema:
+      type: object
+      properties:
+        apiAccessStatus:
+          type: string
+  "400":
+    description: Invalid credentials - Missing email or password
+  "401":
+    description: Invalid credentials
+  "402":
+    description: Unauthorised - Email not verified
+    """
+
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+
+    user = get_user_by_email(email)
+    # Validate user
+    if not user:
+        return jsonify(
+          {
+            "error": "Unauthorized User",
+            "email": email
+          }
+        ), 401
+
+    if not bcrypt.checkpw(password.encode(), user["password"]):
+            return jsonify({"error": "Invalid logon credentials"}), 401
+
+    if not user.get("verified"):
+      return jsonify({"error": "Email not verified"}), 402
+
+    return jsonify({
+        'apiAccessStatus': user.get("apiAccess")
+    }), 200
+
 @app.route("/api/auth-login", methods=["POST"])
 def auth_login():
     """
