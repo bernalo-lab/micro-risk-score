@@ -28,6 +28,24 @@ print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
 print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
 app = Flask(__name__)
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "RiskPeek API",
+        "description": "API Documentation",
+        "version": "1.0"
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+        }
+    }
+}
+swagger = Swagger(app, template=swagger_template)
+
 CORS(app,
      supports_credentials=True,
      resources={r"/*": {"origins": [
@@ -37,7 +55,7 @@ CORS(app,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "OPTIONS"])
 
-swagger = Swagger(app)
+#swagger = Swagger(app)
 
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
@@ -696,6 +714,8 @@ API Access Status
 ---
 tags:
   - Authentication
+security:
+  - Bearer: []
 consumes:
   - application/json
 parameters:
@@ -763,6 +783,8 @@ User Login
 ---
 tags:
   - Authentication
+security:
+  - Bearer: []
 consumes:
   - application/json
 parameters:
@@ -872,27 +894,19 @@ Retrieve Consented Records
 ---
 tags:
   - Data Access
+security:
+  - Bearer: []
 parameters:
-  - in: header
-    name: Authorization
-    required: true
-    type: string
-    description: |
-      Bearer token obtained from login.
-      Example: Bearer yourtoken
   - in: query
     name: fields
     required: true
     type: string
-    description: |
-      Comma-separated list of fields to retrieve (max 5).
-      Example: legalName,confidence,creditScore
+    description: "Comma-separated fields. Example: legalName,confidence"
   - in: query
     name: limit
     type: integer
-    description: |
-      Max number of records to return.
-      Default: 20
+    description: "Max number of records. Default: 20"
+  # (rest of your parameters)
   - in: query
     name: confidenceMin
     type: number
