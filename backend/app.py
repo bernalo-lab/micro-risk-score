@@ -368,9 +368,8 @@ def assessment_risk_score():
         data = request.get_json()
 
         # Validate data
-        #if not data.get("submitted_By"):
-            # return jsonify({"error": data.get("submitted_By")}), 401
-            #return jsonify({"error": "Invalid 'Submitted By' Email"}), 401
+        if not data.get("submittedBy"):
+            return jsonify({"error": "Invalid 'Submitted By' Email"}), 401
 
 
         if not data.get("assessedEmail"):
@@ -378,7 +377,7 @@ def assessment_risk_score():
 
         log_data = {
           "timestamp": datetime.now(timezone.utc),
-                "submittedBy": data.get("submitted_By"),
+                "submittedBy": data.get("submittedBy"),
                 "assessedEmail": data.get("assessedEmail"),
                 "legalName": data.get("legalName"),
                 "taxId": data.get("taxId"),
