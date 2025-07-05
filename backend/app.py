@@ -745,8 +745,8 @@ def auth_login():
 @app.route("/api/transaction-analysis", methods=["GET"])
 def transaction_analysis():
 
-# Start YAML
----
+# Start YAML Endpoint Logic
+    """
 Retrieve Consented Records
 
 ---
@@ -815,7 +815,8 @@ responses:
   "403":
     description: |
       User does not have API access
-# End YAML
+    """
+# End YAML Endpoint Logic
 
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
