@@ -691,40 +691,53 @@ def get_user_by_email(email):
 @app.route("/api/auth-login", methods=["POST"])
 def auth_login():
     """
-    User Login
-    ---
-    tags:
-      - Authentication
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-              password:
-                type: string
-            required:
-              - email
-              - password
-    responses:
-      200:
-        description: Successful login
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-      401:
-        description: Invalid credentials
+User Login
+
+---
+tags:
+  - Authentication
+consumes:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        duration:
+          type: integer
+          description: Maximum Duration 12 hours.
+          Default: 3 hours
+      required:
+        - email
+        - password
+responses:
+  "200":
+    description: Successful login
+    schema:
+      type: object
+      properties:
+        token:
+          type: string
+        expiresAt:
+          type: string
+  "400":
+    description: Invalid credentials - Missing email or password
+  "401":
+    description: Invalid credentials
+  "402":
+    description: Unauthorised API access
     """
+
     data = request.json
     email = data.get("email")
     password = data.get("password")
+    duration = data.get("duration")
 
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
@@ -733,14 +746,40 @@ def auth_login():
     if not user or user["password"] != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
+    if not user.get("apiAccess"):
+        return jsonify({"error": "Unauthorised API access"}), 402
+
+    # Set default duration if not provided
+    if not duration:
+        duration = 3
+    else:
+        try:
+            duration = int(duration)
+        except ValueError:
+            return jsonify({"error": "Invalid duration format"}), 400
+
+    # Cap maximum duration to 12 hours
+    if duration > 12:
+        duration = 12
+
+    expiration = datetime.utcnow() + timedelta(hours=duration)
+
     payload = {
-        "email": email,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=12)
+        'sub': 'api_access',
+        'exp': expiration,
+        'scope': 'developer_api',
+        'email': email
     }
-    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-    return jsonify({"token": token})
+    if not JWT_SECRET:
+        return jsonify({'error': 'JWT_SECRET is not configured'}), 500
 
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    return jsonify({
+        'token': token,
+        'expiresAt': expiration.isoformat() + 'Z'
+    }), 200
 
 @app.route("/api/transaction-analysis", methods=["GET"])
 def transaction_analysis():
