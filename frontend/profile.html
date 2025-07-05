@@ -650,6 +650,7 @@ function calculateCompositeRisk(data) {
 
       // Include other data points to payload
       payload.submittedBy = document.getElementById("email").value;
+      console.error("Email:", payload.submittedBy);
       payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
       payload.notes = document.getElementById("notes").value;
       payload.score = result.score;
