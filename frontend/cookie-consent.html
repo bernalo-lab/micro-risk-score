@@ -1,0 +1,70 @@
+<!-- Paste this in your HTML body -->
+<div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #ddd; padding:1em; box-shadow:0 -2px 5px rgba(0,0,0,0.1); z-index:9999; font-family:Arial,sans-serif;">
+  <p style="margin:0; font-size:0.9em;">
+    We use cookies to enhance your experience, analyse usage, and deliver relevant ads. You can manage your preferences below.
+  </p>
+  <div style="margin-top:0.5em;">
+    <button onclick="acceptAllCookies()" style="margin-right:0.5em;">Accept All</button>
+    <button onclick="rejectAllCookies()" style="margin-right:0.5em;">Reject Non-Essential</button>
+    <button onclick="openCookieSettings()">Cookie Settings</button>
+  </div>
+</div>
+
+<div id="cookie-settings-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; font-family:Arial,sans-serif;">
+  <div style="background:#fff; padding:1em; max-width:500px; margin:5% auto; border-radius:5px;">
+    <h3 style="margin-top:0;">Cookie Preferences</h3>
+    <p style="font-size:0.9em;">Select which cookies you allow:</p>
+    <label><input type="checkbox" id="essential-cookies" checked disabled /> Essential Cookies (always active)</label><br>
+    <label><input type="checkbox" id="analytics-cookies" /> Analytics Cookies</label><br>
+    <label><input type="checkbox" id="advertising-cookies" /> Advertising Cookies</label><br>
+    <div style="margin-top:1em;">
+      <button onclick="saveCookieSettings()">Save Preferences</button>
+      <button onclick="closeCookieSettings()" style="margin-left:0.5em;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Show banner if consent not yet set
+if (!localStorage.getItem('cookieConsent')) {
+  document.getElementById('cookie-banner').style.display = 'block';
+}
+
+function acceptAllCookies() {
+  localStorage.setItem('cookieConsent', JSON.stringify({
+    analytics: true,
+    advertising: true
+  }));
+  document.getElementById('cookie-banner').style.display = 'none';
+  location.reload();
+}
+
+function rejectAllCookies() {
+  localStorage.setItem('cookieConsent', JSON.stringify({
+    analytics: false,
+    advertising: false
+  }));
+  document.getElementById('cookie-banner').style.display = 'none';
+  location.reload();
+}
+
+function openCookieSettings() {
+  document.getElementById('cookie-settings-modal').style.display = 'block';
+}
+
+function closeCookieSettings() {
+  document.getElementById('cookie-settings-modal').style.display = 'none';
+}
+
+function saveCookieSettings() {
+  const analytics = document.getElementById('analytics-cookies').checked;
+  const advertising = document.getElementById('advertising-cookies').checked;
+  localStorage.setItem('cookieConsent', JSON.stringify({
+    analytics: analytics,
+    advertising: advertising
+  }));
+  document.getElementById('cookie-settings-modal').style.display = 'none';
+  document.getElementById('cookie-banner').style.display = 'none';
+  location.reload();
+}
+</script>
