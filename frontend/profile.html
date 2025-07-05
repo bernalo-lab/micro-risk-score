@@ -1,1 +1,761 @@
-See Privacy Notice & Policy
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile - RiskPeek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-blue-50 min-h-screen flex justify-center p-6">
+  <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-3xl">
+    <h1 class="text-2xl font-bold text-blue-800 mb-6">User Profile</h1>
+
+    <form id="profileForm" class="space-y-5">
+      <div>
+        <label class="block font-semibold mb-1">Full Name</label>
+        <input type="text" id="fullName" name="fullName" class="w-full border rounded p-3" required />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Email</label>
+        <input type="email" id="email" name="email" class="w-full border rounded p-3 bg-gray-100 cursor-not-allowed" readonly />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">
+          <input type="checkbox" id="consent" name="consent" class="mr-2" />
+          I consent to share my data with approved third-party partners
+        </label>
+      </div>
+
+      <div class="flex justify-between">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+          Save Changes
+        </button>
+        <button type="button" onclick="logout()" class="text-red-500 hover:underline">Logout</button>
+      </div>
+    </form>
+
+    <div class="my-6">
+      <button type="button" onclick="openNewRiskModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+        Start New Risk Assessment
+      </button>
+    </div>
+
+    <div class="my-6">
+      <button onclick="openAssessOthersModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+        Assess Someone Else
+      </button>
+    </div>
+
+    <hr class="my-8" />
+
+    <div class="mt-8">
+      <div class="flex border-b mb-4">
+        <button id="tabHistory" onclick="showTab('history')" class="py-2 px-4 font-semibold border-b-2 border-blue-600 text-blue-700">My History</button>
+        <button id="tabAssessments" onclick="showTab('assessments')" class="py-2 px-4 font-semibold text-gray-600 hover:text-blue-700">Assessments I've Made</button>
+      </div>
+
+      <div id="historyTab">
+        <table class="table-auto w-full text-sm border">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="border p-2">Date</th>
+              <th class="border p-2">Score</th>
+              <th class="border p-2">Confidence</th>
+              <th class="border p-2">Factors</th>
+            </tr>
+          </thead>
+          <tbody id="scoreTable" class="text-center"></tbody>
+        </table>
+      </div>
+
+      <div id="assessmentsTab" class="hidden">
+        <table class="table-auto w-full text-sm border">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="border p-2">Date</th>
+              <th class="border p-2">Assessed Name</th>
+              <th class="border p-2">Score</th>
+              <th class="border p-2">Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="assessmentsTable" class="text-center"></tbody>
+        </table>
+      </div>
+
+      <div id="exportButtons" class="mt-6 flex gap-4 hidden">
+        <button onclick="downloadCSV('history')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Download My History CSV
+        </button>
+        <button onclick="downloadCSV('assessments')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+          Download Assessments CSV
+        </button>
+        <button onclick="downloadPDF('history')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Download My History PDF
+        </button>
+        <button onclick="downloadPDF('assessments')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+          Download Assessments PDF
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modals and scripts -->
+  <!-- New Risk Assessment Modal -->
+  <div id="newRiskModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl relative">
+      <button onclick="closeNewRiskModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+      <h2 class="text-2xl font-bold text-blue-700 mb-4">New Risk Assessment</h2>
+      <form id="newRiskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
+        <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
+        <input type="email" id="newRiskEmail" name="email" placeholder="Email Address" required class="p-3 border rounded cursor-not-allowed" readonly" />
+        <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
+        <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
+        <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
+        <input type="url" name="linkedin" placeholder="LinkedIn Profile" class="p-3 border rounded" />
+        <input type="url" name="github" placeholder="GitHub Profile" class="p-3 border rounded" />
+        <select name="paymentHistory" class="p-3 border rounded">
+          <option value="">Payment History</option>
+          <option value="excellent">Excellent</option>
+          <option value="good">Good</option>
+          <option value="average">Average</option>
+          <option value="poor">Poor</option>
+        </select>
+        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
+        <div class="md:col-span-2">
+          <button type="submit" id="newRiskResultSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+            Calculate Risk Score
+          </button>
+        </div>
+      </form>
+      <div id="newRiskResult" class="mt-6 text-center text-blue-800 hidden"></div>
+    </div>
+  </div>
+  
+
+  <!-- Assess Someone Else Modal -->
+  <div id="assessOthersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-3xl relative">
+      <button onclick="closeAssessOthersModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+      <h2 id="assessStepTitle" class="text-xl font-bold text-blue-700 mb-4">Step 1 of 6: Identity</h2>
+
+      <form id="assessOthersForm" class="space-y-4">
+        <!-- Step 1: Identity -->
+        <div class="assess-step" id="assessStep1">
+          <input name="legalName" placeholder="Full Legal Name" required class="w-full p-3 border rounded" />
+          <input type="email" name="assessedEmail" placeholder="Email Address" required class="w-full p-3 border rounded" />
+          <input name="businessNumber" placeholder="Business Registration Number" class="w-full p-3 border rounded" />
+          <input name="taxId" placeholder="Tax ID" class="w-full p-3 border rounded" />
+          <input name="country" placeholder="Country of Incorporation" required class="w-full p-3 border rounded" />
+          <input name="addressProof" placeholder="Proof of Address (e.g., Document)" class="w-full p-3 border rounded" />
+        </div>
+
+      <!-- Step 2: Reputation -->
+      <div class="assess-step hidden" id="assessStep2">
+        <input name="linkedin" placeholder="LinkedIn URL" class="w-full p-3 border rounded" />
+        <input name="website" placeholder="Website URL" class="w-full p-3 border rounded" />
+        <input name="yearsActive" placeholder="Years Active" class="w-full p-3 border rounded" />
+        <input name="employees" placeholder="Number of Employees" class="w-full p-3 border rounded" />
+        <select name="legalDisputes" class="w-full p-3 border rounded">
+          <option value="">Any Legal Disputes?</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Step 3: Financial -->
+      <div class="assess-step hidden" id="assessStep3">
+        <select name="paymentHistory" required class="w-full p-3 border rounded">
+          <option value="">Payment History</option>
+          <option value="excellent">Excellent</option>
+          <option value="good">Good</option>
+          <option value="average">Average</option>
+          <option value="poor">Poor</option>
+        </select>
+        <input name="annualRevenue" placeholder="Annual Revenue" class="w-full p-3 border rounded" />
+        <input name="creditScore" placeholder="Credit Score" class="w-full p-3 border rounded" />
+        <input name="bankVerification" placeholder="Bank Verification Status" class="w-full p-3 border rounded" />
+        <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="w-full p-3 border rounded" />
+      </div>
+
+      <!-- Step 4: Compliance -->
+      <div class="assess-step hidden" id="assessStep4">
+        <select name="amlStatus" class="w-full p-3 border rounded">
+          <option value="">AML/KYC Status</option>
+          <option value="verified">Verified</option>
+          <option value="pending">Pending</option>
+          <option value="unknown">Unknown</option>
+        </select>
+        <select name="sanctionsScreening" class="w-full p-3 border rounded">
+          <option value="">Sanctions Screening</option>
+          <option value="pass">Pass</option>
+          <option value="fail">Fail</option>
+        </select>
+        <select name="gdprCompliance" class="w-full p-3 border rounded">
+          <option value="">GDPR Compliance</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Step 5: Digital Footprint -->
+      <div class="assess-step hidden" id="assessStep5">
+        <input name="domainAge" placeholder="Domain Age (Years)" class="w-full p-3 border rounded" />
+        <select name="socialMediaPresence" class="w-full p-3 border rounded">
+          <option value="">Social Media Presence</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <!-- Step 6: Observations -->
+      <div class="assess-step hidden" id="assessStep6">
+        <select name="observation" required class="w-full p-3 border rounded">
+          <option value="">Observation</option>
+          <option value="concern">Concern</option>
+          <option value="positive">Positive</option>
+        </select>
+        <textarea name="notes" id="notes" placeholder="Any additional observations or comments..." rows="4" class="w-full p-3 border rounded"></textarea>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-6">
+        <button type="button" id="assessPrevBtn" onclick="prevAssessStep()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hidden">Previous</button>
+        <button type="button" id="assessNextBtn" onclick="nextAssessStep()" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+        <button type="submit" id="assessSubmitBtn" class="bg-green-600 text-white px-4 py-2 rounded hidden">Submit</button>
+      </div>
+    </form>
+
+    <div id="assessResult" class="mt-4 text-center text-blue-800 hidden"></div>
+  </div>
+  </div>
+
+  <script>
+    async function loadUser() {
+      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
+        method: 'GET',
+        headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
+      });
+
+      if (!res.ok) {
+        console.error("Error status:", res.status);
+        return;
+      }
+
+      const user = await res.json();
+      document.getElementById("fullName").value = user.name || "";
+      document.getElementById("email").value = user.email || "";
+      localStorage.setItem("email", document.getElementById("email").value);
+      document.getElementById("consent").checked = !!user.consent;
+
+      loadHistory();
+    }
+
+    async function loadHistory() {
+      const res = await fetch("https://micro-risk-score.onrender.com/api/score-history", { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") } });
+      const data = await res.json();
+      const tbody = document.getElementById("scoreTable");
+      const exportContainer = document.getElementById("exportButtons");
+      tbody.innerHTML = "";
+      if (res.ok && data.length > 0) {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border p-2">${row.timestamp}</td>
+            <td class="border p-2">${row.score}</td>
+            <td class="border p-2">${row.confidence}%</td>
+            <td class="border p-2">${row.factors.join(", ")}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        exportContainer.classList.remove("hidden");
+      } else {
+        tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
+        exportContainer.classList.add("hidden");
+      }
+    }
+
+    async function loadAssessments() {
+      const res = await fetch("https://micro-risk-score.onrender.com/api/assessments",
+        { headers: { "Authorization": "Bearer " + localStorage.getItem("jwt") }
+      });
+      const data = await res.json();
+      const tbody = document.getElementById("assessmentsTable");
+      const exportContainer = document.getElementById("exportButtons");
+      tbody.innerHTML = "";
+      if (res.ok && data.length > 0) {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border p-2">${row.timestamp}</td>
+            <td class="border p-2">${row.assessedEmail || "-"}</td>
+            <td class="border p-2">${row.score}</td>
+            <td class="border p-2">${row.confidence}%</td>
+            <td class="border p-2">${row.riskCategory}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        exportContainer.classList.remove("hidden");
+      } else {
+        tbody.innerHTML = "<tr><td colspan='4' class='p-4 text-gray-500'>No data found.</td></tr>";
+
+        <!-- Check if data exist for Registered User before disabling 'Export' buttons -->
+        if (localStorage.getItem('email') == null) {
+          exportContainer.classList.add("hidden");
+        }
+      }
+    }
+
+    function showTab(tab) {
+      document.getElementById("historyTab").classList.toggle("hidden", tab !== "history");
+      document.getElementById("assessmentsTab").classList.toggle("hidden", tab !== "assessments");
+      document.getElementById("tabHistory").classList.toggle("border-blue-600", tab === "history");
+      document.getElementById("tabHistory").classList.toggle("text-blue-700", tab === "history");
+      document.getElementById("tabHistory").classList.toggle("text-gray-600", tab !== "history");
+      document.getElementById("tabAssessments").classList.toggle("border-blue-600", tab === "assessments");
+      document.getElementById("tabAssessments").classList.toggle("text-blue-700", tab === "assessments");
+      document.getElementById("tabAssessments").classList.toggle("text-gray-600", tab !== "assessments");
+      if (tab === "assessments") loadAssessments();
+    }
+
+    function openNewRiskModal() {
+      //document.getElementById("newRiskEmail").value = localStorage.getItem("email");      
+
+      // Show the modal first
+      const modal = document.getElementById("newRiskModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      // Reset form fields
+      document.getElementById("newRiskForm").reset();
+
+      // Wait for the browser to render the modal, then set the email
+      setTimeout(() => {
+        const userEmail = document.getElementById("email").value;
+        const emailField = document.getElementById("newRiskEmail");
+        if (emailField) {
+          emailField.value = userEmail;
+        } else {
+          console.error("newRiskEmail input not found in the DOM after opening modal.");
+        }
+      }, 50); // small delay ensures DOM is ready
+
+      // Clear previous result
+      document.getElementById("newRiskResult").classList.add("hidden");
+      document.getElementById("newRiskResult").innerHTML = "";
+
+    }
+
+    function closeNewRiskModal() {
+      document.getElementById("newRiskModal").classList.add("hidden");
+      document.getElementById("newRiskModal").classList.remove("flex");
+    }
+
+    function openAssessOthersModal() {
+      document.getElementById("assessOthersModal").classList.remove("hidden");
+      document.getElementById("assessOthersModal").classList.add("flex");
+
+      // Reset form fields
+      document.getElementById("assessOthersForm").reset();
+
+      // Reset to step 1
+      currentAssessStep = 1;
+      showAssessStep(currentAssessStep);
+
+      // Important: ensure only Step 1 fields are required
+      updateRequiredFields(currentAssessStep);
+
+      // Reset submit button
+      const submitBtn = document.getElementById("assessSubmitBtn");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      submitBtn.textContent = "Submit";
+
+      // Clear previous result
+      document.getElementById("assessResult").classList.add("hidden");
+      document.getElementById("assessResult").innerHTML = "";
+    }
+
+    function closeAssessOthersModal() {
+      document.getElementById("assessOthersModal").classList.add("hidden");
+      document.getElementById("assessOthersModal").classList.remove("flex");
+    }
+
+
+    function logout() {
+      localStorage.removeItem("jwt");
+      window.location.href = "/";
+    }
+    window.addEventListener("DOMContentLoaded", loadUser);
+  </script>
+  <script>
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const consentValue = document.getElementById("consent").checked;
+      const nameValue = document.getElementById("fullName").value;
+
+      const res = await fetch("https://micro-risk-score.onrender.com/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("jwt")
+        },
+        body: JSON.stringify({
+          name: nameValue,
+          consent: consentValue
+        })
+      });
+
+      if (res.ok) {
+        alert("✅ Changes saved successfully!");
+      } else {
+        alert("⚠️ Failed to save changes.");
+        console.error("Save error:", res.status);
+      }
+    });
+
+  </script>
+  <script>
+    document.getElementById('newRiskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.submitted_via_form = "true";  // explicitly freemium
+
+      const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('newRiskResult');
+      const submitBtn = document.getElementById("newRiskResultSubmitBtn");
+
+      if (res.ok) {
+        // Disable the submit button
+        submitBtn.disabled = true;
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        submitBtn.textContent = "Submitted";
+
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+    });
+  </script>
+
+  <script>
+    function updateRequiredFields(step) {
+      document.querySelectorAll(".assess-step").forEach((div, i) => {
+        div.querySelectorAll("input, select, textarea").forEach(el => {
+          if (el.dataset.originalRequired === undefined) {
+            el.dataset.originalRequired = el.required;
+          }
+          el.required = (i === step - 1) && (el.dataset.originalRequired === "true" || el.dataset.originalRequired === true);
+        });
+      });
+    }
+  </script>
+  <script>
+    let currentAssessStep = 1;
+
+    function showAssessStep(step) {
+      // Hide all steps
+      document.querySelectorAll(".assess-step").forEach(div => div.classList.add("hidden"));
+      // Show current
+      document.getElementById(`assessStep${step}`).classList.remove("hidden");
+      // Update title
+     document.getElementById("assessStepTitle").textContent = `Step ${step} of 6: ${
+        ["Identity","Reputation","Financial","Compliance","Digital Footprint","Observations"][step-1]
+     }`;
+
+    // Manage buttons
+    document.getElementById("assessPrevBtn").classList.toggle("hidden", step === 1);
+    document.getElementById("assessNextBtn").classList.toggle("hidden", step === 6);
+    document.getElementById("assessSubmitBtn").classList.toggle("hidden", step !== 6);
+
+    updateRequiredFields(step);
+  }
+
+  function nextAssessStep() {
+    if (currentAssessStep < 6) {
+      currentAssessStep++;
+      showAssessStep(currentAssessStep);
+    }
+  }
+
+  function prevAssessStep() {
+    if (currentAssessStep > 1) {
+      currentAssessStep--;
+      showAssessStep(currentAssessStep);
+    }
+  }
+</script>
+
+  <script>
+function calculateCompositeRisk(data) {
+  let totalScore = 0;
+  let totalConfidence = 0;
+
+  function val(input, map) {
+    return map[input] ?? 0;
+  }
+
+  function numericRange(val, ranges) {
+    for (let r of ranges) {
+      if (val >= r.min) return r.score;
+    }
+    return 0;
+  }
+
+  // Helper: contribution
+  function add(scorePart, confPart, weight, confWeight) {
+    totalScore += scorePart * weight;
+    totalConfidence += confPart * confWeight;
+  }
+
+  // Identity & Verification
+  add(data.legalName ?100:0, data.legalName?100:0, 0.03,0.05);
+  add(data.businessNumber?100:50, data.businessNumber?100:50,0.04,0.05);
+  add(data.taxId?100:50, data.taxId?100:50,0.04,0.05);
+  add(data.country?100:0, data.country?100:0,0.04,0.04);
+  add(data.addressProof?100:50,data.addressProof?100:50,0.05,0.05);
+  add(
+    val(data.bankVerification,{"Verified":100,"Pending":50,"None":0,"":0}),
+    val(data.bankVerification,{"Verified":100,"Pending":50,"None":0,"":0}),
+    0.05,0.06
+  );
+
+  // Financial
+  add(
+    val(data.paymentHistory,{"excellent":100,"good":75,"average":50,"poor":25,"":0}),
+    val(data.paymentHistory,{"excellent":100,"good":75,"average":50,"poor":25,"":0}),
+    0.08,0.06
+  );
+
+  add(
+    val(data.annualRevenue, {">1M":100,">500k":75,">100k":50,"<100k":25,"":0}),
+    val(data.annualRevenue, {">1M":100,">500k":75,">100k":50,"<100k":25,"":0}),
+    0.05,0.04
+  );
+
+  const credit=parseInt(data.creditScore);
+  const creditScoreVal=numericRange(credit,[
+    {min:750,score:100},{min:650,score:75},{min:500,score:50},{min:1,score:25}
+  ]);
+  add(creditScoreVal,creditScoreVal,0.07,0.06);
+
+  const repScore=parseFloat(data.reputationScore);
+  add(isNaN(repScore)?0:repScore*10,isNaN(repScore)?0:repScore*10,0.05,0.03);
+
+  // Reputation & Maturity
+  add(data.linkedin?100:0,data.linkedin?100:0,0.03,0.02);
+  add(data.website?100:0,data.website?100:0,0.03,0.02);
+
+  const years=parseInt(data.yearsActive);
+  const yearsVal=numericRange(years,[
+    {min:10,score:100},{min:5,score:75},{min:2,score:50},{min:0,score:25}
+  ]);
+  add(yearsVal,yearsVal,0.05,0.04);
+
+  const employees=parseInt(data.employees);
+  const empVal=numericRange(employees,[
+    {min:50,score:100},{min:10,score:75},{min:3,score:50},{min:0,score:25}
+  ]);
+  add(empVal,empVal,0.03,0.03);
+
+  const domain=parseInt(data.domainAge);
+  const domVal=numericRange(domain,[
+    {min:10,score:100},{min:5,score:75},{min:2,score:50},{min:0,score:25}
+  ]);
+  add(domVal,domVal,0.03,0.03);
+
+  add(
+    val(data.socialMediaPresence,{"active":100,"inactive":25,"":0}),
+    val(data.socialMediaPresence,{"active":100,"inactive":25,"":0}),
+    0.03,0.02
+  );
+
+  // Compliance
+  add(
+    val(data.amlStatus,{"verified":100,"pending":50,"unknown":25,"":0}),
+    val(data.amlStatus,{"verified":100,"pending":50,"unknown":25,"":0}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.sanctionsScreening,{"pass":100,"fail":0,"":50}),
+    val(data.sanctionsScreening,{"pass":100,"fail":0,"":50}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.gdprCompliance,{"yes":100,"no":0,"":50}),
+    val(data.gdprCompliance,{"yes":100,"no":0,"":50}),
+    0.05,0.06
+  );
+
+  add(
+    val(data.legalDisputes,{"no":100,"yes":0,"":50}),
+    val(data.legalDisputes,{"no":100,"yes":0,"":50}),
+    0.05,0.06
+  );
+
+  // Observations
+  let obsScore=75;
+  if(data.observation){
+    if(data.observation.toLowerCase().includes("concern")) obsScore=50;
+    if(data.observation.toLowerCase().includes("positive")) obsScore=90;
+  }
+  add(obsScore,obsScore,0.10,0.02);
+
+  // Normalize
+  const finalScore=Math.round(totalScore);
+  const finalConfidence=Math.min(Math.round(totalConfidence),100);
+
+  let riskLabel="Low Risk";
+  if(finalScore<60) riskLabel="High Risk";
+  else if(finalScore<80) riskLabel="Medium Risk";
+
+  return {
+    score:finalScore,
+    confidence:finalConfidence,
+    label:riskLabel
+  };
+}
+
+  </script>
+
+  <script>
+    document.getElementById('assessOthersForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      const result  = calculateCompositeRisk(payload);
+
+      // Include other data points to payload
+      payload.submittedBy = document.getElementById("email").value;
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.notes = document.getElementById("notes").value;
+      payload.score = result.score;
+      payload.confidence = result.confidence;
+      payload.riskCategory = result.label;
+
+      // Insert into database
+      const res = await fetch('https://micro-risk-score.onrender.com/api/assessment-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox=document.getElementById("assessResult");
+      const submitBtn = document.getElementById("assessSubmitBtn");
+
+      if (res.ok) {
+
+        // Disable the submit button
+        submitBtn.disabled = true;
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        submitBtn.textContent = "Submitted";
+
+        resultBox.innerHTML=`
+          <div class="border rounded p-4 mt-4">
+            <h3 class="text-xl font-bold mb-2">Assessment Result</h3>
+            <p><strong>Composite Risk Score:</strong> ${result.score}/100</p>
+            <p><strong>Confidence Level:</strong> ${result.confidence}%</p>
+            <p><strong>Risk Category:</strong> <span class="${
+              result.label==="Low Risk"?"text-green-600":
+              result.label==="Medium Risk"?"text-yellow-600":"text-red-600"
+            } font-semibold">${result.label}</span></p>
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Assessment Error: Failed to insert record into database.");
+      }
+    });
+  </script>
+
+<script>
+  function downloadCSV(type) {
+    fetch(`https://micro-risk-score.onrender.com/download/csv?type=${type}`, {
+      headers: { Authorization: "Bearer " + localStorage.getItem("jwt") }
+    })
+    .then(res => {
+      if (res.status === 204) {
+        alert("You have no records to download.");
+        return;
+      }
+      return res.blob();
+    })
+    .then(blob => {
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = type === "assessments"
+          ? "riskpeek_assessments.csv"
+          : "riskpeek_score_history.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    })
+    .catch(err => {
+      console.error("Download error:", err);
+      alert("Download failed. Please try again.");
+    });
+  }
+
+  function downloadPDF(type) {
+    fetch(`https://micro-risk-score.onrender.com/download/pdf?type=${type}`, {
+      headers: { Authorization: "Bearer " + localStorage.getItem("jwt") }
+    })
+    .then(res => {
+      if (res.status === 204) {
+        alert("You have no records to download.");
+        return;
+      }
+      return res.blob();
+    })
+    .then(blob => {
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = type === "assessments"
+          ? "riskpeek_assessments.pdf"
+          : "riskpeek_score_history.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+       window.URL.revokeObjectURL(url);
+    }
+  })
+  .catch(err => {
+      console.error("Download error:", err);
+      alert("Download failed. Please try again.");
+    });
+  }
+</script>
+
+
+</body>
+</html>
