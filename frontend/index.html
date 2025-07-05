@@ -7,115 +7,52 @@
     <title>Welcome to RiskPeek</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl shadow-xl p-10 max-w-2xl w-full">
-        <div class="text-center">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-700 mb-4">Welcome to RiskPeek</h1>
-            <p class="text-gray-600 text-md sm:text-lg leading-relaxed mb-8">
-                Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
-                Register now to receive more accurate scores, store your assessments, and unlock premium insights.
-            </p>
-        </div>
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <a href="/register.html" class="w-full sm:w-auto">
-                <button class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition duration-200">
-                    Register
-                </button>
-            </a>
-            <a href="/login.html" class="w-full sm:w-auto">
-                <button class="w-full sm:w-auto border border-blue-600 text-blue-600 px-6 py-3 rounded-xl hover:bg-blue-50 transition duration-200">
-                    Login
-                </button>
-            </a>
-            <a href="/freemium.html" class="w-full sm:w-auto">
-                <button class="w-full sm:w-auto bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition duration-200">
-                    Try Without Login
-                </button>
-            </a>
-        </div>
-    </div>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col items-center justify-center px-4">
 
-    <script>
-      <!-- Paste this in your HTML body -->
-<div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #ddd; padding:1em; box-shadow:0 -2px 5px rgba(0,0,0,0.1); z-index:9999; font-family:Arial,sans-serif;">
-  <p style="margin:0; font-size:0.9em;">
-    We use cookies to enhance your experience, analyse usage, and deliver relevant ads. You can manage your preferences below.
-  </p>
-  <div style="margin-top:0.5em;">
-    <button onclick="acceptAllCookies()" style="margin-right:0.5em;">Accept All</button>
-    <button onclick="rejectAllCookies()" style="margin-right:0.5em;">Reject Non-Essential</button>
-    <button onclick="openCookieSettings()">Cookie Settings</button>
-  </div>
-</div>
-
-<div id="cookie-settings-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; font-family:Arial,sans-serif;">
-  <div style="background:#fff; padding:1em; max-width:500px; margin:5% auto; border-radius:5px;">
-    <h3 style="margin-top:0;">Cookie Preferences</h3>
-    <p style="font-size:0.9em;">Select which cookies you allow:</p>
-    <label><input type="checkbox" id="essential-cookies" checked disabled /> Essential Cookies (always active)</label><br>
-    <label><input type="checkbox" id="analytics-cookies" /> Analytics Cookies</label><br>
-    <label><input type="checkbox" id="advertising-cookies" /> Advertising Cookies</label><br>
-    <div style="margin-top:1em;">
-      <button onclick="saveCookieSettings()">Save Preferences</button>
-      <button onclick="closeCookieSettings()" style="margin-left:0.5em;">Cancel</button>
-    </div>
-  </div>
-</div>
-    <footer class="mt-10 text-center text-gray-500 text-sm">
-      <p>
-        <a href="/privacy-notice.html" class="hover:underline">Privacy Notice</a> |
-        <a href="/privacy-policy.html" class="hover:underline">Privacy Policy</a> |
-        <a href="/terms-of-service.html" class="hover:underline">Terms of Service</a> |
-        <a href="/cookie-policy.html" class="hover:underline">Cookie Policy</a> |
-        <a href="/consent-agreements.html" class="hover:underline">Consent Agreements</a> |
-        <a href="/disclaimers.html" class="hover:underline">Disclaimers</a> |
-        <a href="/faq.html" class="hover:underline">FAQs</a>
+  <!-- MAIN CONTENT -->
+  <div class="bg-white rounded-2xl shadow-xl p-10 max-w-2xl w-full">
+    <div class="text-center">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-700 mb-4">Welcome to RiskPeek</h1>
+      <p class="text-gray-600 text-md sm:text-lg leading-relaxed mb-8">
+        Our Global Risk Score platform helps you evaluate digital and financial reputations globally.
+        Register now to receive more accurate scores, store your assessments, and unlock premium insights.
       </p>
-    </footer>
+    </div>
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+      <a href="/register.html" class="w-full sm:w-auto">
+        <button class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition duration-200">
+          Register
+        </button>
+      </a>
+      <a href="/login.html" class="w-full sm:w-auto">
+        <button class="w-full sm:w-auto border border-blue-600 text-blue-600 px-6 py-3 rounded-xl hover:bg-blue-50 transition duration-200">
+          Login
+        </button>
+      </a>
+      <a href="/freemium.html" class="w-full sm:w-auto">
+        <button class="w-full sm:w-auto bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition duration-200">
+          Try Without Login
+        </button>
+      </a>
+    </div>
+  </div>
 
-<script>
-  <!-- Show banner if consent not yet set -->
-  if (!localStorage.getItem('cookieConsent')) {
-    document.getElementById('cookie-banner').style.display = 'block';
-  }
+  <!-- FOOTER -->
+  <footer class="mt-10 text-center text-gray-500 text-sm">
+    <p>
+      <a href="/privacy-notice.html" class="hover:underline">Privacy Notice</a> |
+      <a href="/privacy-policy.html" class="hover:underline">Privacy Policy</a> |
+      <a href="/terms-of-service.html" class="hover:underline">Terms of Service</a> |
+      <a href="/cookie-policy.html" class="hover:underline">Cookie Policy</a> |
+      <a href="/consent-agreements.html" class="hover:underline">Consent Agreements</a> |
+      <a href="/disclaimers.html" class="hover:underline">Disclaimers</a> |
+      <a href="/faq.html" class="hover:underline">FAQs</a>
+    </p>
+  </footer>
 
-  function acceptAllCookies() {
-    localStorage.setItem('cookieConsent', JSON.stringify({
-      analytics: true,
-      advertising: true
-    }));
-    document.getElementById('cookie-banner').style.display = 'none';
-    location.reload();
-  }
+  <!-- COOKIE CONSENT SCRIPT -->
+  <script src="/cookie-consent.js"></script>
+</body>
 
-  function rejectAllCookies() {
-    localStorage.setItem('cookieConsent', JSON.stringify({
-      analytics: false,
-      advertising: false
-    }));
-    document.getElementById('cookie-banner').style.display = 'none';
-    location.reload();
-  }
-
-  function openCookieSettings() {
-    document.getElementById('cookie-settings-modal').style.display = 'block';
-  }
-
-  function closeCookieSettings() {
-   document.getElementById('cookie-settings-modal').style.display = 'none';
-  }
-
-  function saveCookieSettings() {
-    const analytics = document.getElementById('analytics-cookies').checked;
-    const advertising = document.getElementById('advertising-cookies').checked;
-    localStorage.setItem('cookieConsent', JSON.stringify({
-      analytics: analytics,
-      advertising: advertising
-    }));
-    document.getElementById('cookie-settings-modal').style.display = 'none';
-    document.getElementById('cookie-banner').style.display = 'none';
-    location.reload();
-  }
-</script>
 </body>
 </html>
