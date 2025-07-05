@@ -688,7 +688,6 @@ ALLOWED_FIELDS = {
 def get_user_by_email(email):
     return users.find_one({"email": email})
 
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 @app.route("/api/api-access-status", methods=["POST"])
 def api_access_status():
     """
