@@ -778,8 +778,7 @@ parameters:
           type: string
         duration:
           type: integer
-          description: Maximum Duration 12 hours.
-          Default: 3 hours
+          description: "Maximum duration in hours (default: 3, max: 12)"
       required:
         - email
         - password
