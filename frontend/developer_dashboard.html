@@ -64,18 +64,16 @@
                   <option>24 hours</option>
                 </select>
                 <button type="button" id="generateToken" class="btn btn-primary">Generate Token</button>
+                <button type="button" id="launchSwagger" class="btn btn-outline-primary">Launch Swagger UI</button>
               </div>
             </div>
 
-
-<div id="tokenDisplay" class="alert alert-success d-none">
-            <div class="token-container">
+            <div id="tokenDisplay" class="alert alert-success d-none">
+              <div class="token-container">
               <span id="tokenText" class="token-text"></span>
               <button class="btn btn-sm btn-outline-secondary" id="copyToken">Copy</button>
+              </div>
             </div>
-          </div>
-
-
 
             <div id="tokenMeta" class="mt-2 text-muted"></div>
 
@@ -278,6 +276,11 @@
       navigator.clipboard.writeText(text).then(() => {
         alert('Token copied to clipboard.');
       });
+    });
+
+        <!-- Launch 'Swager UI' -->
+    document.getElementById('launchSwagger').addEventListener('click', () => {
+      window.open('https://micro-risk-score.onrender.com/apidocs/', '_blank');
     });
 
     window.addEventListener("DOMContentLoaded", loadUser);
