@@ -3,138 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Free Business Risk Score Calculator | RiskPeek</title>
+  <title>Freemium Risk Score - RiskPeek</title>
   <meta name="description" content="Get your free business risk score instantly. No registration required. No data stored. Fast, secure creditworthiness assessment.">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-  <script>
-    function submitRiskForm(event) {
-      event.preventDefault();
-      const company = document.getElementById('company').value;
-      const country = document.getElementById('country').value;
-      const industry = document.getElementById('industry').value;
-      const revenue = document.getElementById('revenue').value;
-      const years = document.getElementById('years').value;
-
-      const payload = {
-        company,
-        country,
-        industry,
-        revenue,
-        years
-      };
-
-      fetch('/api/global-risk-score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(data => {
-        const resultBox = document.getElementById('resultBox');
-        resultBox.classList.remove('hidden');
-        resultBox.innerHTML = `
-          <h3 class="text-xl font-semibold mb-2">Your Risk Score:</h3>
-          <p class="text-2xl text-blue-600 font-bold">${data.score}</p>
-          <p class="mt-2 text-gray-700">${data.description || ''}</p>
-        `;
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Something went wrong. Please try again later.');
-      });
-    }
-  </script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <div class="max-w-3xl mx-auto p-6">
-    <section class="mb-8 text-gray-700">
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl">
+    <!-- SEO-rich intro -->
+    <section class="mb-6 text-gray-700">
       <h1 class="text-3xl font-bold text-blue-700 mb-3">Free Business Risk Score Calculator</h1>
       <p class="mb-2">
-        Use our free tool to instantly estimate your business or personal risk profile. Our advanced credit risk assessment combines data from payment history, reputation, and digital footprint to provide a reliable risk rating.
-      </p>
-      <p class="mb-2">
-        Whether you're applying for business credit, evaluating suppliers, or verifying client trustworthiness, this free creditworthiness check helps you make confident decisions.
+        Instantly estimate your business or personal risk profile. Our advanced risk assessment combines payment history, digital footprint, and reputation scoring to deliver a reliable rating.
       </p>
       <p>
-        Get started now—enter your details below to calculate your risk score. For advanced fraud detection tools and comprehensive business credit reports, <a href="/premium-risk-assessment" class="text-blue-600 underline">explore our premium solutions</a>.
+        No registration required. No data stored. Your information is processed securely in real time.
       </p>
     </section>
 
-    <!-- AdSense ad slot above the form -->
-    <div class="mb-6 text-center">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXX"
-           data-ad-slot="YYYYYY"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-blue-700">Freemium Risk Score</h2>
+      <a href="/" class="text-blue-600 hover:underline text-sm">Back to Home</a>
     </div>
 
-    <form onsubmit="submitRiskForm(event)" class="bg-white shadow p-6 rounded">
-      <h2 class="text-xl font-semibold mb-4">Calculate Your Risk Score</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">Company Name</label>
-          <input type="text" id="company" required class="w-full border rounded px-3 py-2"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Country</label>
-          <input type="text" id="country" required class="w-full border rounded px-3 py-2"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Industry</label>
-          <input type="text" id="industry" required class="w-full border rounded px-3 py-2"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Annual Revenue</label>
-          <input type="number" id="revenue" required class="w-full border rounded px-3 py-2"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Years in Operation</label>
-          <input type="number" id="years" required class="w-full border rounded px-3 py-2"/>
-        </div>
+    <form id="riskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="text" name="firstName" placeholder="First Name" required class="p-3 border rounded" />
+      <input type="text" name="lastName" placeholder="Last Name" required class="p-3 border rounded" />
+      <input type="email" name="email" placeholder="Email Address" required class="p-3 border rounded" />
+      <input type="text" name="postcode" placeholder="Postcode" required class="p-3 border rounded" />
+      <input type="text" name="country" placeholder="Country" required class="p-3 border rounded" />
+      <input type="text" name="idType" placeholder="ID Type (e.g. Passport)" class="p-3 border rounded" />
+      <input type="url" name="linkedin" placeholder="LinkedIn Profile" class="p-3 border rounded" />
+      <input type="url" name="github" placeholder="GitHub Profile" class="p-3 border rounded" />
+      <select name="paymentHistory" class="p-3 border rounded">
+        <option value="">Payment History</option>
+        <option value="excellent">Excellent</option>
+        <option value="good">Good</option>
+        <option value="average">Average</option>
+        <option value="poor">Poor</option>
+      </select>
+      <input type="number" name="reputationScore" step="0.1" min="0" max="10" placeholder="Reputation Score (0–10)" class="p-3 border rounded" />
+
+      <!-- reCAPTCHA widget -->
+      <div class="md:col-span-2">
+        <div class="g-recaptcha" data-sitekey="6Lfb5nIrAAAAAMle1kRDW_kdzp1PsJ4dsfMkeoVk"></div>
       </div>
-      <!-- Privacy reassurance note -->
-      <p class="text-xs text-gray-500 mt-3">
-        All information entered is processed in real-time and not stored or saved.
-      </p>
-      <!-- Visual badge -->
-      <div class="flex items-center gap-2 mt-2 text-green-600 text-sm">
+
+      <!-- Privacy reassurance badge -->
+      <div class="md:col-span-2 flex items-center gap-2 text-green-600 text-sm mt-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
         No data stored or shared
       </div>
-      <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+
+      <div class="md:col-span-2">
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+          Calculate Risk Score
+        </button>
+      </div>
     </form>
 
-    <div id="resultBox" class="hidden bg-green-50 border border-green-200 mt-6 p-4 rounded"></div>
+    <div id="resultBox" class="mt-6 text-center text-blue-800 hidden"></div>
 
-    <!-- CTA for premium report -->
+    <!-- CTA for premium -->
     <div class="mt-6 text-center">
-      <p class="mb-3">Want a detailed PDF report with advanced insights?</p>
+      <p class="mb-2">Want a detailed PDF report with advanced insights?</p>
       <a href="/premium-risk-assessment" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Get Premium Risk Report
       </a>
     </div>
 
-    <!-- AdSense ad slot below results -->
-    <div class="mt-8 text-center">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXX"
-           data-ad-slot="ZZZZZZ"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    </div>
-
-    <footer class="mt-12 text-center text-sm text-gray-600">
+    <footer class="mt-8 text-center text-sm text-gray-600">
       <p class="mb-2">
-        <strong>Privacy Notice:</strong> This calculator does not store, save, or share any information you enter. All processing happens in your browser and is discarded after you close the page.
+        <strong>Privacy Notice:</strong> This calculator does not store, save, or share any information you enter. All processing happens securely in real time and is discarded after you close the page.
       </p>
       <p>
         <a href="/privacy-policy" class="underline">Privacy Policy</a> •
@@ -144,8 +85,46 @@
     </footer>
   </div>
 
+  <!-- Load reCAPTCHA API -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    document.getElementById('riskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      payload.device_type = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+      payload.submitted_via_form = "false";
+
+      const recaptchaToken = grecaptcha.getResponse();
+      if (!recaptchaToken) {
+        alert("Please complete the reCAPTCHA.");
+        return;
+      }
+      payload.recaptchaToken = recaptchaToken;
+
+      const res = await fetch('https://micro-risk-score.onrender.com/api/global-risk-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const resultBox = document.getElementById('resultBox');
+
+      if (res.ok) {
+        resultBox.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">Risk Score Result</h3>
+          <p><strong>Score:</strong> ${data.score}</p>
+          <p><strong>Confidence:</strong> ${data.confidence}%</p>
+          <p><strong>Factors:</strong> ${data.factors.join(', ')}</p>
+        `;
+        resultBox.classList.remove('hidden');
+      } else {
+        alert(data.error || "Failed to calculate score.");
+      }
+    });
   </script>
 </body>
 </html>
