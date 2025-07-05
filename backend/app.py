@@ -719,8 +719,6 @@ API Access Status
 ---
 tags:
   - Authentication
-security:
-  - Bearer: []
 consumes:
   - application/json
 parameters:
@@ -788,8 +786,6 @@ User Login
 ---
 tags:
   - Authentication
-security:
-  - Bearer: []
 consumes:
   - application/json
 parameters:
