@@ -91,10 +91,19 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>/api/login</td>
+                  <td>/api/auth-login</td>
                   <td>POST</td>
-                  <td>Authenticate with email and password to receive a JWT token.</td>
+                  <td>
+                    Authenticate with email and password to receive a JWT token you can use to access the APIs.</br>
+                    You can also specify the life span of the token in hours (max. 12 hours)
+                  </td>
                   <td><pre>POST /api/login</pre></td>
+                </tr>
+                <tr>
+                  <td>/api/api-access-status</td>
+                  <td>POST</td>
+                  <td>Authenticate with email and password to see your API Access Status.</td>
+                  <td><pre>POST /api/api-access-status</pre></td>
                 </tr>
                 <tr>
                   <td>/api/transaction-analysis</td>
