@@ -732,6 +732,8 @@ responses:
     description: Invalid credentials
   "402":
     description: Unauthorised API access
+  "403":
+    description: Unauthorised - Email not verified
     """
 
     data = request.json
@@ -743,8 +745,21 @@ responses:
         return jsonify({"error": "Missing email or password"}), 400
 
     user = get_user_by_email(email)
-    if not user or user["password"] != password:
-        return jsonify({"error": "Invalid credentials"}), 401
+    # Validate user
+    if not user:
+        return jsonify(
+          {
+            "error": "Unauthorized User",
+            "email": email
+          }
+        ), 401
+
+    if user["password"] != password:
+        return jsonify({"error": "Invalid logon credentials"}), 401
+
+    if not user.get("verified"):
+      return jsonify({"error": "Email not verified"}), 403
+
 
     if not user.get("apiAccess"):
         return jsonify({"error": "Unauthorised API access"}), 402
@@ -854,6 +869,9 @@ responses:
   "403":
     description: |
       User does not have API access
+  "404":
+    description: |
+      User email not verified
     """
 # End YAML Endpoint Logic
 
@@ -872,6 +890,9 @@ responses:
 
     # Get Developer details
     user = get_user_by_email(email)
+
+    if not user.get("verified"):
+      return jsonify({"error": "Email not verified"}), 404
 
     # Validate Developer email
     if not user:
