@@ -11,108 +11,225 @@
     <h1 class="text-3xl font-bold text-blue-700 mb-4">Frequently Asked Questions</h1>
 
     <div class="space-y-6">
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">What is RiskPeek?</h2>
-    <p class="text-gray-700">
-      RiskPeek is a platform for generating digital and financial risk assessments based on user-provided and publicly available data.
-    </p>
+  <!-- Search bar -->
+  <div class="mb-6">
+    <input
+      type="text"
+      id="faqSearch"
+      placeholder="Search FAQs..."
+      class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      oninput="filterFaqs()"
+    />
   </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Who can use RiskPeek?</h2>
-    <p class="text-gray-700">
+<!-- FAQ Items -->
+  <div id="faqList" class="space-y-4">
+
+    <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>What is RiskPeek?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
+        RiskPeek is a platform for generating digital and financial risk assessments based on user-provided and publicly available data.
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Who can use RiskPeek?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Individuals, freelancers, and businesses can all benefit from understanding and improving their risk profiles.
-    </p>
-  </div>
+      </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">What data do you use to calculate a score?</h2>
-    <p class="text-gray-700">
+    <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>What data do you use to calculate a score?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Our scoring combines identity verification, payment history, compliance checks, online reputation signals (like public reviews), and your digital footprint.
-    </p>
-  </div>
+      </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Do you store my data?</h2>
-    <p class="text-gray-700">
+    <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Do you store my data?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Freemium assessments are not stored. For registered users, data is stored securely and only shared with your explicit consent.
-    </p>
-  </div>
+      </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Is RiskPeek GDPR compliant?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Is RiskPeek GDPR compliant?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Yes. We adhere to GDPR and other data protection regulations. You have the right to access, correct, or delete your data at any time.
-    </p>
-  </div>
+      </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Can I evaluate someone else?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Can I evaluate someone else?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Yes, provided you have their consent or are using public information responsibly. Misuse of personal data is prohibited.
-    </p>
-  </div>
+      </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How accurate is the RiskPeek score?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How accurate is the RiskPeek score?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Our score is based on multiple verified sources and proven algorithms. While no risk assessment is perfect, we aim for transparency and reliability in every report.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Is there a free version?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Is there a free version?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Yes. You can generate a Freemium assessment without creating an account. Premium assessments include additional insights and historical reports.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How much does a premium assessment cost?</h2>
-    <p class="text-gray-700">
-      Pricing varies based on the depth of the report and subscription options. Please see our pricing page or contact us for details.
-    </p>
-  </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How do I withdraw consent?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How do I withdraw consent?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       You can withdraw consent anytime by logging into your account settings or emailing support@bernalo.com.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How secure is my information?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How secure is my information?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       We use encryption, strict access controls, and secure infrastructure to protect your data. We never sell your information to third parties.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How quickly can I get a risk assessment?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How quickly can I get a risk assessment?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Freemium assessments are generated instantly. Premium assessments are typically ready within minutes.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">Can I improve my score?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>Can I improve my score?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       Yes. Your report will include recommendations for improving your risk profile, such as verifying additional information or addressing inconsistencies.
-    </p>
-  </div>
+     </div>
+    </div>
 
-  <div>
-    <h2 class="text-lg font-semibold text-gray-800">How do I contact support?</h2>
-    <p class="text-gray-700">
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How do I contact support?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
       You can email us at support@bernalo.com. We aim to respond within 1 business day.
-    </p>
-  </div>
+     </div>
+    </div>
 
+   <div class="border border-gray-200 rounded">
+      <button
+        class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
+        onclick="toggleFaq(this)">
+        <span>How do I contact support?</span>
+        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden px-4 pb-4 text-gray-700">
+      You can email us at support@bernalo.com. We aim to respond within 1 business day.
+     </div>
+    </div>
+
+</div>
 </div>
 
     <footer class="mt-8 text-sm text-gray-500">
-      <p><a href="/" class="text-blue-600 hover:underline">Back to Home</a></p>
+      <p>
+        <a href="/" class="text-blue-600 hover:underline">Back to Home</a> |
+      <a href="/contactUs.html" class="text-blue-600 hover:underline">Contact Us</a>
+      </p>
     </footer>
   </div>
 </body>
