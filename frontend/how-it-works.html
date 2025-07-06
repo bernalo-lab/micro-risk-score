@@ -1,50 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+<meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>How It Works - RiskPeek</title>
+  <meta name="description" content="Learn how RiskPeek helps you evaluate trust and reputation in 3 steps: provide information, generate a risk score, and securely share or download your assessment.">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen px-4 py-10">
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen px-4 py-10">
   <div class="bg-white max-w-3xl mx-auto p-6 rounded-2xl shadow">
     <h1 class="text-3xl font-bold text-blue-700 mb-4">How It Works</h1>
 
     <p class="text-gray-700 mb-4">
-      RiskPeek is designed to make evaluating trust simple, transparent, and secure. Here’s how it works in 3 easy steps:
+      RiskPeek makes evaluating trust simple, transparent, and secure. Here’s how it works in three clear steps:
     </p>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">1. Provide Information</h2>
-    <p class="text-gray-700 mb-4">
-      You can assess yourself or someone else. Simply enter basic details like name, country, payment history, and optional links to online profiles (LinkedIn, GitHub, etc.). If you’re assessing someone else, make sure you have their consent or are using publicly available information.
+    <!-- Step 1 -->
+    <div class="mb-6">
+      <div class="flex items-center mb-2">
+        <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <h2 class="text-xl font-semibold">1. Provide Information</h2>
+      </div>
+      <p class="text-gray-700 mb-4">
+        You can assess yourself or someone else. Enter essential details such as name, country, payment history, and optional links to public profiles (LinkedIn, GitHub, etc.). If assessing someone else, be sure you have their consent or are using publicly available information.
+      </p>
+      <img src="/assets/registered-user-data-entry.png" alt="Data Entry Screenshot" class="rounded shadow mb-4"/>
+      <p class="text-gray-700 mb-4">
+        For training examples, see our user guide covering identity, reputation, and digital footprint sections.
+      </p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="mb-6">
+      <div class="flex items-center mb-2">
+        <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <h2 class="text-xl font-semibold">2. Generate a Risk Score</h2>
+      </div>
+      <p class="text-gray-700 mb-4">
+        Our system securely analyzes your data across multiple dimensions:
+      </p>
+      <ul class="list-disc pl-6 text-gray-700 mb-4">
+        <li>Identity Verification</li>
+        <li>Payment History</li>
+        <li>Online Reputation</li>
+        <li>Compliance and Sanctions Checks</li>
+        <li>Digital Footprint</li>
+      </ul>
+      <p class="text-gray-700 mb-4">
+        The process typically takes under 30 seconds. You’ll see a progress indicator while we match and verify records.
+      </p>
+      <img src="/assets/risk-score-sample.png" alt="Risk Score Screenshot" class="rounded shadow mb-4"/>
+      <p class="text-gray-700 mb-4">
+        Each score includes a clear explanation of contributing factors, helping you understand your trust profile in detail.
+      </p>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="mb-6">
+      <div class="flex items-center mb-2">
+        <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <h2 class="text-xl font-semibold">3. Save, Share, or Download</h2>
+      </div>
+      <p class="text-gray-700 mb-4">
+        Registered users can save assessments to their dashboard, download PDF reports, or securely share results with others. All sharing is fully consent-based—only you decide who sees your information.
+      </p>
+      <img src="/assets/assessment-dashboard.png" alt="Assessment Dashboard Screenshot" class="rounded shadow mb-4"/>
+      <p class="text-gray-700 mb-4">
+        For deeper insights, you can upgrade to a premium report with enhanced verification, recommendations, and historical tracking.
+      </p>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-8">
+      <a href="/freemium.html" class="inline-block bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 transition">
+        Try a Free Assessment
+      </a>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-6 text-center">
+      Last updated: July 2025
     </p>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">2. Generate a Risk Score</h2>
-    <p class="text-gray-700 mb-4">
-      Our system instantly analyzes the data across multiple dimensions:
-    </p>
-    <ul class="list-disc pl-6 text-gray-700 mb-4">
-      <li>Identity Verification</li>
-      <li>Payment History</li>
-      <li>Online Reputation</li>
-      <li>Compliance and Sanctions Checks</li>
-      <li>Digital Footprint</li>
-    </ul>
-    <p class="text-gray-700 mb-4">
-      Within seconds, you receive a clear risk score and a short explanation of the factors behind it.
-    </p>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">3. Save, Share, or Download</h2>
-    <p class="text-gray-700 mb-4">
-      If you’re a registered user, you can save assessments to your dashboard, download a PDF report, or securely share your results with others. All sharing is consent-based—only you decide who sees your information.
-    </p>
-
-    <p class="text-gray-700 mb-4">
-      For more detailed insights, you can upgrade to a premium report that includes additional verification and recommendations.
-    </p>
-
-    <footer class="mt-8 text-sm text-gray-500">
-      <p><a href="/" class="text-blue-600 hover:underline">Back to Home</a></p>
+    <footer class="mt-8 text-sm text-gray-500 text-center">
+      <p>
+        <a href="/" class="text-blue-600 hover:underline">Back to Home</a>
+      </p>
     </footer>
   </div>
 </body>
