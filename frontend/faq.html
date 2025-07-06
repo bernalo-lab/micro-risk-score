@@ -198,13 +198,13 @@
       <button
         class="w-full flex justify-between items-center px-4 py-3 text-left text-gray-800 font-medium focus:outline-none"
         onclick="toggleFaq(this)">
-        <span>How do I contact support?</span>
+        <span>Can I improve my score?</span>
         <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
         </svg>
       </button>
       <div class="hidden px-4 pb-4 text-gray-700">
-      You can email us at support@bernalo.com. We aim to respond within 1 business day.
+Yes. Your report will include recommendations for improving your risk profile, such as verifying additional information or addressing inconsistencies.
      </div>
     </div>
 
@@ -232,5 +232,24 @@
       </p>
     </footer>
   </div>
+<script>
+  function toggleFaq(button) {
+    const content = button.nextElementSibling;
+    content.classList.toggle('hidden');
+    // Rotate the chevron
+    const icon = button.querySelector('svg');
+    icon.classList.toggle('rotate-180');
+  }
+
+  function filterFaqs() {
+    const query = document.getElementById('faqSearch').value.toLowerCase();
+    const items = document.getElementById('faqList').children;
+    for (let item of items) {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(query) ? '' : 'none';
+    }
+  }
+</script>
+
 </body>
 </html>
