@@ -28,6 +28,15 @@ print("RECAPTCHA_SECRET_KEY:", os.getenv("YOUR_RECAPTCHA_SECRET_KEY"))
 print("RECAPTCHA_SITE_KEY:", os.getenv("YOUR_RECAPTCHA_SITE_KEY"))
 
 app = Flask(__name__)
+CORS(app,
+     supports_credentials=True,
+     resources={r"/*": {"origins": [
+         "https://www.riskpeek.tech",
+         "https://riskpeek.tech"
+     ]}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "OPTIONS"])
+
 swagger_template = {
     "swagger": "2.0",
     "info": {
@@ -51,16 +60,6 @@ swagger_template = {
 }
 swagger = Swagger(app, template=swagger_template)
 
-CORS(app,
-     supports_credentials=True,
-     resources={r"/*": {"origins": [
-         "https://www.riskpeek.tech",
-         "https://riskpeek.tech"
-     ]}},
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "OPTIONS"])
-
-#swagger = Swagger(app)
 
 app.secret_key = os.getenv("YOUR_RECAPTCHA_SECRET_KEY")  # Needed for flash messages
 
