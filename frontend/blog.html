@@ -14,6 +14,16 @@
       Insights, tips, and updates on building trust and managing digital reputation.
     </p>
 
+<div class="mb-6">
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search articles..."
+    class="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    onkeyup="filterArticles()"
+  />
+</div>
+
     <div class="space-y-4">
       <!-- Example Article Link -->
       <a href="/blog/how-to-evaluate-digital-reputation.html" class="block border border-gray-200 rounded p-4 hover:bg-blue-50 transition">
@@ -23,11 +33,39 @@
       </a>
 
       <!-- Duplicate and adapt for each article -->
+
+      <a href="/blog/digital-reputation-101.html" class="block border border-gray-200 rounded p-4 hover:bg-blue-50 transition">
+        <h2 class="text-xl font-semibold text-blue-600">Digital Reputation 101: What It Is and Why It Matters in 2025</h2>
+        <p class="text-gray-600 text-sm">Published: July 2025</p>
+        <p class="text-gray-700 mt-2">Learn practical steps to assess online reputation and reduce risk when working with freelancers or partners.</p>
+      </a>
+
+
+
+
+
     </div>
 
     <div class="text-center mt-8">
       <a href="/" class="text-blue-600 hover:underline">← Back to Home</a>
     </div>
   </div>
+
+<script>
+function filterArticles() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const articles = document.querySelectorAll(".space-y-4 > a");
+
+  articles.forEach(article => {
+    const text = article.textContent.toLowerCase();
+    if (text.includes(input)) {
+      article.style.display = "";
+    } else {
+      article.style.display = "none";
+    }
+  });
+}
+</script>
+
 </body>
 </html>
