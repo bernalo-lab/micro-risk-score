@@ -1,0 +1,144 @@
+{
+  "info": {
+    "name": "RiskPeek API",
+    "_postman_id": "abcd1234-5678-90ab-cdef-1234567890ab",
+    "description": "Collection to explore RiskPeek APIs: Login and Transaction Analysis with filtering.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"your-email@example.com\",\n    \"password\": \"your-password\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "login"]
+        },
+        "description": "Authenticate and get a JWT token. The response contains 'token'."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "pm.environment.set(\"jwt\", json.token);",
+              "console.log(\"Token saved to environment variable.\");"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transaction Analysis - Basic",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/transaction-analysis?fields=legalName,confidence,creditScore",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "transaction-analysis"],
+          "query": [
+            {
+              "key": "fields",
+              "value": "legalName,confidence,creditScore"
+            }
+          ]
+        },
+        "description": "Retrieve consented records with basic fields."
+      },
+      "response": []
+    },
+    {
+      "name": "Transaction Analysis - With Filters",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/transaction-analysis?fields=legalName,confidence,creditScore&confidenceMin=50&creditScoreMin=500",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "transaction-analysis"],
+          "query": [
+            {
+              "key": "fields",
+              "value": "legalName,confidence,creditScore"
+            },
+            {
+              "key": "confidenceMin",
+              "value": "50"
+            },
+            {
+              "key": "creditScoreMin",
+              "value": "500"
+            }
+          ]
+        },
+        "description": "Retrieve consented records filtered by confidence >= 50 and credit score >= 500."
+      },
+      "response": []
+    },
+    {
+      "name": "Transaction Analysis - With Limit",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/transaction-analysis?fields=legalName,confidence,creditScore&limit=2",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "transaction-analysis"],
+          "query": [
+            {
+              "key": "fields",
+              "value": "legalName,confidence,creditScore"
+            },
+            {
+              "key": "limit",
+              "value": "2"
+            }
+          ]
+        },
+        "description": "Retrieve only the 2 most recent consented records."
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://micro-risk-score.onrender.com"
+    },
+    {
+      "key": "jwt",
+      "value": ""
+    }
+  ]
+}

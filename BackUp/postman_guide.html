@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RiskPeek API – Postman Setup & Usage Guide</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body {
+  background-color: #f8f9fa;
+  padding: 2rem;
+}
+h1, h2, h3 {
+  color: #333;
+}
+pre {
+  background: #eee;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.table td, .table th {
+  vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 class="mb-3">🌟 RiskPeek API – Postman Setup & Usage Guide</h1>
+  <p><strong>Version:</strong> 1.0<br>
+  <strong>Prepared for:</strong> Novice Developers<br>
+  <strong>Date:</strong> July 2025</p>
+
+  <h2>🟢 Table of Contents</h2>
+  <ul>
+    <li>1. About This Guide</li>
+    <li>2. What You’ll Need</li>
+    <li>3. Installing Postman</li>
+    <li>4. Importing the RiskPeek API Collection</li>
+    <li>5. Configuring Environment Variables</li>
+    <li>6. Authenticating and Saving Your Token</li>
+    <li>7. Making API Requests</li>
+    <li>8. Example Queries</li>
+    <li>9. Troubleshooting</li>
+  </ul>
+
+  <h3>1️⃣ About This Guide</h3>
+  <p>This guide helps you set up <strong>Postman</strong> to test the RiskPeek API endpoints:</p>
+  <ul>
+    <li><code>/api/login</code> for authentication</li>
+    <li><code>/api/transaction-analysis</code> for querying consented records</li>
+  </ul>
+  <p>No prior experience required.</p>
+
+  <h3>2️⃣ What You’ll Need</h3>
+  <ul>
+    <li>An internet connection</li>
+    <li>Your RiskPeek API credentials (email & password)</li>
+    <li>Postman (free) installed on your computer</li>
+  </ul>
+
+  <h3>3️⃣ Installing Postman</h3>
+  <ol>
+    <li>Go to <a href="https://www.postman.com/downloads/" target="_blank">https://www.postman.com/downloads/</a></li>
+    <li>Download the version for your operating system (Windows, Mac, Linux).</li>
+    <li>Install the application.</li>
+    <li>Launch Postman.</li>
+  </ol>
+
+  <h3>4️⃣ Importing the RiskPeek API Collection</h3>
+  <ol>
+    <li>Open Postman.</li>
+    <li>Click <strong>Import</strong> in the top-left corner.</li>
+    <li>Choose <strong>Raw Text</strong>.</li>
+    <li>Copy the provided JSON collection and paste it into the textbox.<br>
+    <em>(Ask your team lead if you don’t have the JSON collection.)</em></li>
+    <li>Click <strong>Continue</strong>, then <strong>Import</strong>.</li>
+  </ol>
+  <p>✅ You should see a collection named <strong>RiskPeek API</strong> in your sidebar.</p>
+
+  <h3>5️⃣ Configuring Environment Variables</h3>
+  <ol>
+    <li>At the top-right, click the <strong>Environment</strong> dropdown.</li>
+    <li>Click <strong>Manage Environments</strong>.</li>
+    <li>Click <strong>Add</strong> to create a new environment called <code>RiskPeek</code>.</li>
+    <li>Add these variables:</li>
+  </ol>
+  <table class="table table-bordered">
+    <thead>
+      <tr><th>Variable</th><th>Initial Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>baseUrl</td><td><code>https://micro-risk-score.onrender.com</code></td></tr>
+      <tr><td>jwt</td><td><em>(leave blank)</em></td></tr>
+    </tbody>
+  </table>
+  <ol start="5">
+    <li>Click <strong>Save</strong>.</li>
+    <li>Select <code>RiskPeek</code> as the active environment from the dropdown.</li>
+  </ol>
+  <p>✅ You have now configured your environment.</p>
+
+  <h3>6️⃣ Authenticating and Saving Your Token</h3>
+  <ol>
+    <li>In the collection, click <strong>Login</strong>.</li>
+    <li>Go to the <strong>Body</strong> tab.</li>
+    <li>Enter your email and password:</li>
+  </ol>
+  <pre>{
+  "email": "your-email@example.com",
+  "password": "your-password"
+}</pre>
+  <ol start="4">
+    <li>Click <strong>Send</strong>.</li>
+  </ol>
+  <p>✅ If successful, you’ll see a JSON response containing <code>token</code>.</p>
+  <p><strong>Step 5:</strong> The token is automatically saved to the <code>jwt</code> variable for use in other requests.</p>
+
+  <h3>7️⃣ Making API Requests</h3>
+  <ol>
+    <li>Click on <strong>Transaction Analysis – Basic</strong> in the collection.</li>
+    <li>Click <strong>Send</strong>.</li>
+  </ol>
+  <p>✅ You should see consented records returned.</p>
+  <p><strong>Example Query Parameters:</strong></p>
+  <ul>
+    <li><code>fields</code>: <code>legalName,confidence,creditScore</code></li>
+    <li><code>limit</code>: <code>5</code></li>
+  </ul>
+
+  <h3>8️⃣ Example Queries</h3>
+  <p><strong>Retrieve records with filters:</strong></p>
+  <p><strong>Request:</strong> Transaction Analysis – With Filters</p>
+  <p><strong>Query Parameters:</strong></p>
+  <ul>
+    <li><code>fields</code>: <code>legalName,confidence,creditScore</code></li>
+    <li><code>confidenceMin</code>: <code>50</code></li>
+    <li><code>creditScoreMin</code>: <code>500</code></li>
+    <li><code>limit</code>: <code>5</code></li>
+  </ul>
+  <p>✅ Click <strong>Send</strong> to see filtered results.</p>
+
+  <h3>9️⃣ Troubleshooting</h3>
+  <table class="table table-bordered">
+    <thead>
+      <tr><th>Issue</th><th>Solution</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>401 Unauthorized</td><td>Make sure you ran <strong>Login</strong> and the <code>jwt</code> variable was saved.</td></tr>
+      <tr><td>403 Forbidden</td><td>Make sure your API access is activated.</td></tr>
+      <tr><td>400 Bad Request</td><td>Check your query parameters (<code>fields</code>, etc.).</td></tr>
+      <tr><td>No Data Returned</td><td>Try removing filters or increasing the <code>limit</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🎯 Need Help?</h3>
+  <p>Contact your API admin or team lead for further assistance.</p>
+  <p>✅ Tip: You can use the <strong>
