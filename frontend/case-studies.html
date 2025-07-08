@@ -14,20 +14,48 @@
       Real-world examples of how RiskPeek has made a difference.
     </p>
 
+ <div class="mb-6">
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search Case & Studies..."
+    class="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    onkeyup="filterArticles()"
+  />
+</div>
+
     <div class="space-y-4">
-      <!-- Example Case Study Link -->
-      <a href="/case-studies/freelancer-trust-success.html" class="block border border-gray-200 rounded p-4 hover:bg-blue-50 transition">
-        <h2 class="text-xl font-semibold text-blue-600">Building Freelancer Trust: A Success Story</h2>
-        <p class="text-gray-600 text-sm">Published: July 2025</p>
-        <p class="text-gray-700 mt-2">Learn how one freelancer increased their credibility and secured more contracts using RiskPeek.</p>
+      <!-- Example Article Link -->
+
+      <a href="/case-studies/july2025/freelancer-trust-restored-enhanced.html" class="block border border-gray-200 rounded p-4 hover:bg-blue-50 transition">
+        <h2 class="text-xl font-semibold text-blue-600">🌍 Cross-Border Freelance Verification</h2>
+        <p class="text-gray-600 text-sm">Published: 3rd July 2025</p>
+        <p class="text-gray-700 mt-2">Discover how a UK freelance designer overcame cross-border trust issues and secured a Singapore client by leveraging RiskPeek's Global Risk Score.</p>
       </a>
 
-      <!-- Duplicate and adapt for each case study -->
+
     </div>
 
     <div class="text-center mt-8">
-      <a href="/" class="text-blue-600 hover:underline">← Back to Home</a>
+      <a href="/" class="text-blue-600 center hover:underline">← Back to Home</a>
     </div>
   </div>
+
+<script>
+function filterArticles() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const articles = document.querySelectorAll(".space-y-4 > a");
+
+  articles.forEach(article => {
+    const text = article.textContent.toLowerCase();
+    if (text.includes(input)) {
+      article.style.display = "";
+    } else {
+      article.style.display = "none";
+    }
+  });
+}
+</script>
+
 </body>
 </html>
